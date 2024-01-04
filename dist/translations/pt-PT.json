@@ -1,0 +1,37 @@
+{
+    "$schema": "./schema.json",
+    "splash": {
+        "start": "A iniciar",
+        "offline": "Sem conexão à internet",
+        "check": "A procurar por atualizações",
+        "updating": "A atualizar",
+        "login": "A iniciar sessão",
+        "finish": "A finalizar!"
+    },
+    "sidebar": {
+        "login": "Iniciar Sessão",
+        "home": "Página Inicial",
+        "send": "Enviar",
+        "receive": "Receber",
+        "settings": "Definições"
+    },
+    "home": {
+        "hey": "Olá",
+        "send": "Enviar ficheiros",
+        "receive": "Receber ficheiros",
+        "settings": "Definições"
+    },
+    "send": {
+        "title": "Enviar ficheiros",
+        "chooseTitle": "Escolher ficheiros",
+        "chooseSubtitle": "Ou arraste para aqui!",
+        "chooseAdd": "Adicionar ficheiros",
+        "message": "Mensagem",
+        "size": "Tamanho Total",
+        "quantity": "Quantidade Total",
+        "file": "ficheiro",
+        "files": "ficheiros",
+        "send": "Enviar"
+    },
+    "receive": {}
+}
