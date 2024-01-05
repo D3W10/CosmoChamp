@@ -10,7 +10,7 @@
 
 <div class="w-full h-full" in:fly={$transition.in} out:fly={$transition.out}>
     <div class="w-full h-full flex flex-col justify-center items-center">
-        <h1 class="w-125 mb-3 text-xl font-semibold">Welcome Champ</h1>
+        <h1 class="w-125 mb-3 text-2xl font-semibold">Welcome Champ</h1>
         <div class="h-4/6 flex space-x-5">
             <button class="w-60 flex flex-col justify-center items-center relative bg-secondary rounded-xl space-y-2 overflow-hidden z-0 before:w-0 before:h-0 before:block before:absolute before:bg-overlay before:rounded-full before:transition-all before:duration-500 before:ease-leap-out before:-z-10 hover:before:w-112 hover:before:h-112" on:click={() => showModal = true}>
                 <Icon name="create" className="w-12 h-12 drop-shadow-lg" />

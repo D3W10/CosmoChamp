@@ -1,9 +1,22 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { info } from "$lib/stores/infoStore";
+    import { page } from "$lib/stores/pageStore";
+    import { settings } from "$lib/stores/settingsStore";
     import FrameBar from "$lib/components/FrameBar.svelte";
     import Home from "$lib/pages/Home.svelte";
     import Settings from "$lib/pages/Settings.svelte";
-    import { info } from "$lib/stores/infoStore";
-    import { page } from "$lib/stores/pageStore";
+
+    onMount(() => setup())
+
+    $: $settings, setup();
+
+    function setup() {
+        try {
+            document.documentElement.setAttribute("data-theme", $settings?.theme == 1 ? "dark" : ($settings?.theme == 2 ? "blue" : "light"));
+        }
+        catch {}
+    }
 </script>
 
 <svelte:head>

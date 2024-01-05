@@ -2,14 +2,25 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import Store from "electron-store";
 import { autoUpdater } from "electron-updater";
 import Logger from "./logger";
+import { IStore } from "./lib/Store.interface";
 
 require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
 const winWidth = 1000, winHeight = 600, isProd: boolean = process.env.NODE_ENV == "production" && (process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null) && !process.argv.includes("DEBUG");
 const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
+
+const appConfig = new Store<IStore>({
+    defaults: {
+        lastRunVersion: app.getVersion(),
+        settings: {
+            theme: 0
+        }
+    }
+});
 
 logger.log(`Starting ${packageData.displayName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
 logger.log("Running on Electron " + process.versions.electron + " and NodeJS " + process.versions.node);
@@ -40,11 +51,6 @@ async function createWindow() {
    //updaterInfo.initAutoUpdater(autoUpdater, mainWindow.window);
 }
 
-/* if (!app.requestSingleInstanceLock())
-    app.quit(); */
-
-//app.on("second-instance", (_, argv) => uriHandler(argv));
-
 app.whenReady().then(() => createWindow());
 
 app.on("window-all-closed", () => {
@@ -65,6 +71,12 @@ ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
 ipcMain.on("MinimizeWindow", () => BrowserWindow.getFocusedWindow()!.minimize());
 
 ipcMain.on("ResizeWindow", (_, width: number, height: number) => BrowserWindow.getFocusedWindow()!.setBounds({ width: width != -1 ? width : winWidth, height: height != -1 ? height : winHeight }));
+
+ipcMain.on("GetSetting", (_event, key: string) => _event.returnValue = appConfig.get(key));
+
+ipcMain.on("SetSetting", (_event, key: string, value: any) => appConfig.set(key, value));
+
+ipcMain.on("ResetSettings", () => appConfig.clear());
 
 ipcMain.on("GetAppInfo", (event) => {
     event.returnValue = {
