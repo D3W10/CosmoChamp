@@ -17,7 +17,7 @@
         </button>
     </div>
     <div class="space-y-5">
-        <div class="h-8 flex justify-between">
+        <div class="h-8 flex justify-between relative">
             <p>Theme</p>
             <ComboBox className="w-24" items={["Light", "Dark", "Blue"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
         </div>

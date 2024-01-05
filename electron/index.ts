@@ -10,7 +10,7 @@ import { IStore } from "./lib/Store.interface";
 require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
-const winWidth = 1000, winHeight = 600, isProd: boolean = process.env.NODE_ENV == "production" && (process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null) && !process.argv.includes("DEBUG");
+const winWidth = 1000, winHeight = 600, isDev: boolean = process.env.NODE_ENV != "production", isDebug = process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null && !process.argv.includes("DEBUG");
 const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
 
 const appConfig = new Store<IStore>({
@@ -25,7 +25,7 @@ const appConfig = new Store<IStore>({
 logger.log(`Starting ${packageData.displayName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
 logger.log("Running on Electron " + process.versions.electron + " and NodeJS " + process.versions.node);
 
-if (!isProd)
+if (isDebug)
     logger.log("\x1b[35mDEBUG mode enabled!\x1b[0m");
 
 async function createWindow() {
@@ -39,14 +39,14 @@ async function createWindow() {
         fullscreenable: false,
         maximizable: false,
         show: true,
-        icon: path.join(__dirname, "./www/branding/logo.png"),
+        icon: !isDev ? path.join(__dirname, "./www/branding/logo.png") : path.join(__dirname, "../svelte/static/branding/logo.png"),
         webPreferences: {
-            devTools: !isProd,
+            devTools: isDev,
             preload: path.join(__dirname, "preload.js")
         }
     });
 
-    window.loadURL(isProd ? "file:///" + path.join(__dirname, "www", "index.html") : "http://localhost:5173/");
+    window.loadURL(!isDev ? "file:///" + path.join(__dirname, "www", "index.html") : "http://localhost:5173/");
     window.once("ready-to-show", () => window.show());
    //updaterInfo.initAutoUpdater(autoUpdater, mainWindow.window);
 }

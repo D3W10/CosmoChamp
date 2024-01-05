@@ -8,7 +8,7 @@
     }
 
     body {
-        @apply text-foreground bg-secondary font-medium;
+        @apply text-foreground bg-secondary font-medium select-none;
         font-family: poppins;
         -webkit-font-smoothing: antialiased;
     }
@@ -19,11 +19,11 @@
     }
 
     dialog {
-        @apply w-125 p-0 rounded-2xl border-none;
+        @apply w-125 p-0 text-foreground bg-secondary rounded-2xl border-none;
     }
 
     dialog::backdrop {
-        @apply bg-black/30;
+        @apply bg-black/50;
     }
 
     /* #region Themes */
