@@ -18,6 +18,14 @@
         -webkit-user-drag: none;
     }
 
+    dialog {
+        @apply w-125 p-0 rounded-2xl border-none;
+    }
+
+    dialog::backdrop {
+        @apply bg-black/30;
+    }
+
     /* #region Themes */
 
     html {

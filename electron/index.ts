@@ -4,7 +4,7 @@ import path from "path";
 import os from "os";
 import Store from "electron-store";
 import { autoUpdater } from "electron-updater";
-import Logger from "./logger";
+import Logger from "./lib/logger";
 import { IStore } from "./lib/Store.interface";
 
 require("electron-reload")(__dirname);
