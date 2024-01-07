@@ -39,7 +39,7 @@ async function createWindow() {
         fullscreenable: false,
         maximizable: false,
         show: true,
-        icon: !isDev ? path.join(__dirname, "./www/branding/logo.png") : path.join(__dirname, "../svelte/static/branding/logo.png"),
+        icon: !isDev ? path.join(__dirname, "./www/logo.png") : path.join(__dirname, "../svelte/static/logo.png"),
         webPreferences: {
             devTools: isDev,
             preload: path.join(__dirname, "preload.js")

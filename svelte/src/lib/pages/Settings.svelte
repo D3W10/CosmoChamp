@@ -22,7 +22,7 @@
             <ComboBox className="w-24" items={["Light", "Dark", "Blue"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
         </div>
         <div class="flex items-center space-x-4">
-            <img src="./branding/logo.png" alt="Logo" class="w-16" />
+            <img src="./logo.png" alt="Logo" class="w-16" />
             <div class="flex flex-col">
                 <p>{$info?.name}</p>
                 <p class="text-sm">Version {$info?.version}</p>
