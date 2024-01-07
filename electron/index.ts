@@ -10,7 +10,7 @@ import { IStore } from "./lib/Store.interface";
 require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
-const winWidth = 1000, winHeight = 600, isDev: boolean = process.env.NODE_ENV != "production", isDebug = process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null && !process.argv.includes("DEBUG");
+const isDev: boolean = process.env.NODE_ENV != "production", isDebug = process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null && !process.argv.includes("DEBUG");
 const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
 
 const appConfig = new Store<IStore>({
@@ -31,8 +31,8 @@ if (isDebug)
 async function createWindow() {
     window = new BrowserWindow({
         title: packageData.displayName,
-        width: winWidth,
-        height: winHeight,
+        width: 1000,
+        height: 600,
         frame: false,
         resizable: false,
         fullscreen: false,
@@ -69,8 +69,6 @@ ipcMain.on("LoggerError", (_, msg) => pLogger.error(msg));
 ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
 
 ipcMain.on("MinimizeWindow", () => BrowserWindow.getFocusedWindow()!.minimize());
-
-ipcMain.on("ResizeWindow", (_, width: number, height: number) => BrowserWindow.getFocusedWindow()!.setBounds({ width: width != -1 ? width : winWidth, height: height != -1 ? height : winHeight }));
 
 ipcMain.on("GetSetting", (_event, key: string) => _event.returnValue = appConfig.get(key));
 

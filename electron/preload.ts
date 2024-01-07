@@ -1,7 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-let isCompressed = false;
-
 export interface AppInfo {
     name: string;
     version: string;
@@ -45,15 +43,6 @@ export function minimizeWindow() {
 }
 
 /**
- * Toggle the window compression
- */
-export function compressWindow() {
-    ipcRenderer.send("ResizeWindow", -1, !isCompressed ? 40 : -1);
-    log("Window " + (!isCompressed ? "Compressed" : "Decompressed"));
-    isCompressed = !isCompressed;
-}
-
-/**
  * Obtains a setting by it's key from the settings file
  * @param key The key of the setting you want to get
  * @returns The setting value
@@ -91,7 +80,6 @@ contextBridge.exposeInMainWorld("app", {
     error,
     closeWindow,
     minimizeWindow,
-    compressWindow,
     getSetting,
     setSetting,
     resetSettings,
