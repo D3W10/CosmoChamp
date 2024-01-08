@@ -6,6 +6,7 @@
     import { settings } from "$lib/stores/settingsStore";
     import Icon from "$lib/components/Icon.svelte";
     import ComboBox from "$lib/components/ComboBox.svelte";
+    import Button from "$lib/components/Button.svelte";
 </script>
 
 <div class="w-full h-full p-16" in:fly={$transition.in} out:fly={$transition.out}>
@@ -20,6 +21,10 @@
         <div class="h-8 flex justify-between relative">
             <p>Theme</p>
             <ComboBox className="w-24" items={["Light", "Dark", "Blue"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
+        </div>
+        <div class="h-8 flex justify-between relative">
+            <p>Rules</p>
+            <Button on:click={() => page.set({ current: "rules", back: false })}>Check Rules</Button>
         </div>
         <div class="flex items-center space-x-4">
             <img src="./logo.png" alt="Logo" class="w-16" />

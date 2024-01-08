@@ -4,8 +4,6 @@
     import { transition } from "$lib/stores/transitionStore";
     import Icon from "$lib/components/Icon.svelte";
     import ProgressBar from "$lib/components/ProgressBar.svelte";
-
-    export let gameMode: boolean;
 </script>
 
 <div class="w-full h-full flex flex-col" in:fly={$transition.in} out:fly={$transition.out}>
@@ -28,7 +26,7 @@
             <Icon name="chevron" className="w-1/2 fill-current -rotate-90" />
         </button>
     </div>
-    {#if !gameMode}
+    {#if $page.options && $page.options.gameMode != undefined && $page.options.gameMode}
         <div class="h-1/5 flex bg-secondary rounded-t-2xl">
             <div class="w-1/4 p-6 flex justify-start items-center">
                 <div class="flex flex-col space-y-2">

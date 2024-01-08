@@ -5,6 +5,7 @@
     import { settings } from "$lib/stores/settingsStore";
     import FrameBar from "$lib/components/FrameBar.svelte";
     import Home from "$lib/pages/Home.svelte";
+    import Rules from "$lib/pages/Rules.svelte";
     import Game from "$lib/pages/Game.svelte";
     import Settings from "$lib/pages/Settings.svelte";
 
@@ -29,7 +30,7 @@
     {#if $page.current == "home"}
         <Home />
     {:else if $page.current == "rules"}
-        <Settings />
+        <Rules />
     {:else if $page.current == "game"}
         <Game />
     {:else if $page.current == "result"}
