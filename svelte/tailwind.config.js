@@ -13,7 +13,7 @@ module.exports = {
                 background: "var(--color-background)",
                 secondary: "var(--color-secondary)",
                 tertiary: "var(--color-tertiary)",
-                overlay: "var(--color-overlay)"
+                shade: "rgb(var(--color-shade) / <alpha-value>)"
             },
             transitionTimingFunction: {
                 "leap-out": "cubic-bezier(.3,.6,.45,1)"

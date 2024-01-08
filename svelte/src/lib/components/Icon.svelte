@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let name: "create" | "join" | "settings" | "chevron";
     export let className = "";
+    export let name: "create" | "join" | "settings" | "chevron";
 </script>
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class={className}>
