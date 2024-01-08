@@ -11,7 +11,7 @@
 <div class="w-full h-full p-16" in:fly={$transition.in} out:fly={$transition.out}>
     <div class="mb-7 flex justify-between items-start">
         <h1 class="text-2xl font-semibold">Settings</h1>
-        <button class="flex items-center text-blue-500" on:click={() => page.set({ current: "home", back: true })}>
+        <button class="flex items-center text-primary-light" on:click={() => page.set({ current: "home", back: true })}>
             <Icon name="chevron" className="w-5 h-5 mr-1 fill-current rotate-90" />
             Back
         </button>

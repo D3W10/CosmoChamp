@@ -18,8 +18,21 @@
         -webkit-user-drag: none;
     }
 
+    input {
+        @apply w-full px-2 py-1.5 text-sm font-normal bg-transparent border-0 ring-0 outline-none focus:ring-0;
+    }
+
+    input::placeholder {
+        @apply text-slate-500 font-normal;
+    }
+
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+        @apply m-0;
+        -webkit-appearance: none;
+    }
+
     dialog {
-        @apply w-125 p-0 text-foreground bg-secondary rounded-2xl border-none;
+        @apply p-0 text-foreground bg-secondary rounded-2xl border-none select-none;
     }
 
     dialog::backdrop {
@@ -29,27 +42,27 @@
     /* #region Themes */
 
     html {
-        --color-foreground: #020617;
-        --color-background: #f8fafc;
-        --color-secondary: #e2e8f0;
-        --color-tertiary: #cbd5e1;
-        --color-overlay: #00000010;
+        --color-foreground: theme(colors.slate.950);
+        --color-background: theme(colors.slate.50);
+        --color-secondary: theme(colors.slate.200);
+        --color-tertiary: theme(colors.slate.300);
+        --color-shade: 0 0 0;
     }
 
     html[data-theme="dark"] {
-        --color-foreground: #f8fafc;
-        --color-background: #020617;
-        --color-secondary: #0f172a;
-        --color-tertiary: #1e293b;
-        --color-overlay: #ffffff10;
+        --color-foreground: theme(colors.slate.50);
+        --color-background: theme(colors.slate.950);
+        --color-secondary: theme(colors.slate.900);
+        --color-tertiary: theme(colors.slate.800);
+        --color-shade: 255 255 255;
     }
 
     html[data-theme="blue"] {
-        --color-foreground: #f8fafc;
+        --color-foreground: theme(colors.slate.50);
         --color-background: #0c132a;
-        --color-secondary: #172554;
-        --color-tertiary: #1e3a8a;
-        --color-overlay: #ffffff10;
+        --color-secondary: theme(colors.blue.950);
+        --color-tertiary: theme(colors.blue.900);
+        --color-shade: 255 255 255;
     }
 
     /* #endregion */
