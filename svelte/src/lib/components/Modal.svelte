@@ -1,5 +1,11 @@
 <script lang="ts">
+    import Button from "./Button.svelte";
+
     export let show: boolean;
+    export let title = "";
+    export let button = "Okay";
+    export let canCancel = true;
+    export let cancelButton = "Cancel";
 
     let dialog: HTMLDialogElement;
 
@@ -7,10 +13,18 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog bind:this={dialog} on:close={() => (show = false)} on:click|self={() => dialog.close()}>
-    <div class="p-5" role="alertdialog" on:click|stopPropagation>
+<dialog class="w-[26rem]" bind:this={dialog} on:close={() => (show = false)}>
+    <div class="p-5 flex flex-col space-y-5" role="alertdialog" on:click|stopPropagation>
+        {#if title != ""}
+            <h1 class="text-2xl font-semibold">{title}</h1>
+        {/if}
         <slot />
-        <button on:click={() => dialog.close()}>close modal</button>
+        <div class="flex justify-end items-center space-x-3">
+            {#if canCancel}
+                <Button secondary on:click={() => dialog.close()}>{cancelButton}</Button>
+            {/if}
+            <Button on:click={() => dialog.close()}>{button}</Button>
+        </div>
     </div>
 </dialog>
 
