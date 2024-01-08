@@ -19,7 +19,7 @@
     }
 </script>
 
-<button class={"absolute right-0 bg-tertiary rounded-lg overflow-hidden " + className} role="combobox" aria-controls="comboboxItems" aria-expanded={open} on:click={() => open = !open}>
+<button class={"absolute right-0 bg-tertiary rounded-lg overflow-hidden z-10 " + className} role="combobox" aria-controls="comboboxItems" aria-expanded={open} on:click={() => open = !open}>
     <div class="px-3 py-1 flex justify-between items-center bg-secondary rounded-b-lg text-left">
         <span>{selectedItem}</span>
         <Icon name="chevron" className={"w-5 h-5 ml-2 fill-current transition-transform duration-500 " + (open ? "-rotate-180" : "")} />
