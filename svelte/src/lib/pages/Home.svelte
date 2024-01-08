@@ -4,6 +4,7 @@
     import { transition } from "$lib/stores/transitionStore";
     import Icon from "../components/Icon.svelte";
     import Modal from "../components/Modal.svelte";
+    import Input from "../components/Input.svelte";
 
     let showModal = false;
 </script>
@@ -29,19 +30,15 @@
         </div>
     </div>
 </div>
-<Modal bind:show={showModal}>
-    <ol class="definition-list">
-        <li>of or relating to modality in logic</li>
-        <li>
-            containing provisions as to the mode of procedure or the manner of taking effect —used of a
-            contract or legacy
-        </li>
-        <li>of or relating to a musical mode</li>
-        <li>of or relating to structure as opposed to substance</li>
-        <li>
-            of, relating to, or constituting a grammatical form or category characteristically indicating
-            predication
-        </li>
-        <li>of or relating to a statistical mode</li>
-    </ol>
+<Modal bind:show={showModal} title="Create Room" button="Create">
+    <div class="flex space-x-4">
+        <div class="w-3/4 space-y-1">
+            <span class="ml-0.5 text-sm">IP Address</span>
+            <Input type="text" placeholder="127.0.0.1" />
+        </div>
+        <div class="w-1/4 space-y-1">
+            <span class="ml-0.5 text-sm">Port</span>
+            <Input type="number" placeholder="1515" min={1} max={49150} />
+        </div>
+    </div>
 </Modal>
