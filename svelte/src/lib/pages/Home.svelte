@@ -43,9 +43,9 @@
         </div>
     </div>
     <div class="flex space-x-4">
-        <div class="w-1/2 relative space-y-1">
+        <div class="w-1/2 space-y-1">
             <span class="ml-0.5 text-sm">Mode</span>
-            <ComboBox items={["Normal", "Vanilla"]} />
+            <ComboBox className="w-full" items={["Normal", "Vanilla"]} />
         </div>
         <div class="w-1/2 space-y-1">
             <span class="ml-0.5 text-sm">Goal</span>

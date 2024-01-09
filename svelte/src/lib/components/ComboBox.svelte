@@ -19,15 +19,15 @@
     }
 </script>
 
-<button class={"absolute right-0 bg-tertiary rounded-lg overflow-hidden z-10 " + className} role="combobox" aria-controls="comboboxItems" aria-expanded={open} on:click={() => open = !open}>
-    <div class="px-3 py-1 flex justify-between items-center bg-secondary rounded-b-lg text-left">
-        <span>{selectedItem}</span>
+<button class={"block relative z-10 " + className} role="combobox" aria-controls="comboboxItems" aria-expanded={open} on:click={() => open = !open}>
+    <div class="px-2 py-1.5 flex justify-between items-center bg-tertiary text-left rounded-md">
+        <span class="text-sm">{selectedItem}</span>
         <Icon name="chevron" className={"w-5 h-5 ml-2 fill-current transition-transform duration-500 " + (open ? "-rotate-180" : "")} />
     </div>
     {#if open}
-        <div id="comboboxItems" class="flex flex-col bg-tertiary" transition:slide={{ duration: 500, easing: quintOut }}>
+        <div id="comboboxItems" class="w-full absolute top-6 flex flex-col bg-tertiary rounded-b-md overflow-hidden -z-10" transition:slide={{ duration: 500, easing: quintOut }}>
             {#each items as item, i}
-                <button class="px-3 py-1 text-left" on:click={() => itemSelected(i)}>{item}</button>
+                <button class={"px-2 py-1.5 text-left text-sm bg-shade/5 " + (i == 0 ? "pt-3.5" : "")} on:click={() => itemSelected(i)}>{item}</button>
             {/each}
         </div>
     {/if}
