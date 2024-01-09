@@ -2,11 +2,12 @@
     import { fly } from "svelte/transition";
     import { page } from "$lib/stores/pageStore";
     import { transition } from "$lib/stores/transitionStore";
-    import Icon from "../components/Icon.svelte";
-    import Modal from "../components/Modal.svelte";
-    import Input from "../components/Input.svelte";
+    import Icon from "$lib/components/Icon.svelte";
+    import Modal from "$lib/components/Modal.svelte";
+    import Input from "$lib/components/Input.svelte";
+    import ComboBox from "$lib/components/ComboBox.svelte";
 
-    let showModal = false;
+    let showCreateModal = false, showJoinModal = false;
 </script>
 
 <div class="w-full h-full" in:fly={$transition.in} out:fly={$transition.out}>
@@ -30,11 +31,32 @@
         </div>
     </div>
 </div>
-<Modal bind:show={showModal} title="Create Room" button="Create">
+<Modal bind:show={showCreateModal} title="Create Room" button="Create" cancelButton="Back">
     <div class="flex space-x-4">
         <div class="w-3/4 space-y-1">
             <span class="ml-0.5 text-sm">IP Address</span>
-            <Input type="text" placeholder="127.0.0.1" />
+            <Input type="ip" placeholder="127.0.0.1" maxlength={15} />
+        </div>
+        <div class="w-1/4 space-y-1">
+            <span class="ml-0.5 text-sm">Port</span>
+            <Input type="number" placeholder="1515" min={1} max={49150} />
+        </div>
+    </div>
+    <div class="flex space-x-4">
+        <div class="w-1/2 relative space-y-1">
+            <span class="ml-0.5 text-sm">Mode</span>
+            <ComboBox items={["Normal", "Vanilla"]} />
+        </div>
+        <div class="w-1/2 space-y-1">
+            <span class="ml-0.5 text-sm">Goal</span>
+        </div>
+    </div>
+</Modal>
+<Modal bind:show={showJoinModal} title="Join Room" button="Join" cancelButton="Back">
+    <div class="flex space-x-4">
+        <div class="w-3/4 space-y-1">
+            <span class="ml-0.5 text-sm">IP Address</span>
+            <Input type="ip" placeholder="127.0.0.1" maxlength={15} />
         </div>
         <div class="w-1/4 space-y-1">
             <span class="ml-0.5 text-sm">Port</span>
