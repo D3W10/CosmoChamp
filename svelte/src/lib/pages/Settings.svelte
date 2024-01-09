@@ -19,11 +19,11 @@
     </div>
     <div class="space-y-5">
         <div class="h-8 flex justify-between relative">
-            <p>Theme</p>
+            <p class="flex items-center">Theme</p>
             <ComboBox className="w-24" items={["Light", "Dark", "Blue"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
         </div>
         <div class="h-8 flex justify-between relative">
-            <p>Rules</p>
+            <p class="flex items-center">Rules</p>
             <Button on:click={() => page.set({ current: "rules", back: false })}>Check Rules</Button>
         </div>
         <div class="flex items-center space-x-4">

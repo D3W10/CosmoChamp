@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<style>
+<style lang="postcss">
     button {
         -webkit-app-region: no-drag;
     }
