@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
     import Button from "./Button.svelte";
 
     export let show: boolean;
@@ -8,13 +9,17 @@
     export let cancelButton = "Cancel";
 
     let dialog: HTMLDialogElement;
+    const dispatch = createEventDispatcher();
 
     $: {
         if (dialog && show)
             dialog.showModal();
     }
 
-    function closeModal() {
+    function closeModal(submit: boolean) {
+        if (submit)
+            setTimeout(() => dispatch("submit"), 0);
+
         setTimeout(() => dialog.close(), 400);
         show = false;
     }
@@ -28,9 +33,9 @@
         <slot />
         <div class="flex justify-end items-center space-x-3">
             {#if canCancel}
-                <Button secondary on:click={closeModal}>{cancelButton}</Button>
+                <Button secondary on:click={() => closeModal(false)}>{cancelButton}</Button>
             {/if}
-            <Button on:click={() => dialog.close()}>{button}</Button>
+            <Button on:click={() => closeModal(true)}>{button}</Button>
         </div>
     </div>
 </dialog>

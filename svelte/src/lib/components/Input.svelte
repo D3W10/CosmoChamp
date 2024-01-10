@@ -1,6 +1,9 @@
 <script lang="ts">
+    import { spring } from "svelte/motion";
+    import Icon from "./Icon.svelte";
+
     export let className  = "";
-    export let type: "text" | "number" | "ip";
+    export let type: "text" | "number" | "wheel" | "ip";
     export let value: any = null;
     export let placeholder = "";
     export let maxlength: number | undefined = undefined;
@@ -8,30 +11,52 @@
     export let max = 10;
     export let step = 1;
     
-    let inputType: string = "", error = false;
-
-    const inputTypeMapper = {
-        text: ["text", "ip"],
-        number: ["number"]
-    }
+    let error = false, inputElm: HTMLInputElement;
+    const displayed = spring();
 
     $: {
-        for (const key in inputTypeMapper) {
-            if (inputTypeMapper[key as keyof typeof inputTypeMapper].includes(type)) {
-                inputType = key;
-                break;
-            }
-        }
+        if (type == "wheel" && value === null)
+            value = min;
     }
+    
+    $: displayed.set(value / step);
+    $: offset = ((n: number, m: number) => ((n % m) + m) % m)($displayed, 1);
 
-    function saveAndCheck(e: Event & { currentTarget: EventTarget & HTMLInputElement; }) {
-        if (e.currentTarget.checkValidity())
-            value = e.currentTarget.value;
-
-        error = !e.currentTarget.checkValidity();
+    $: {
+        if (value !== null && value !== "") {
+            if ((type == "text" || type == "number") && inputElm != undefined)
+                error = !inputElm.checkValidity();
+            else if (type == "ip")
+                error = !/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/g.test(value);
+        }
+        else
+            error = false;
     }
 </script>
 
 <div class={"bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary " + (error ? "ring-2 ring-inset ring-red-600 focus-within:ring-red-600 " : "") + className}>
-    <input type={inputType} placeholder={placeholder} {maxlength} {min} {max} {step} on:input={saveAndCheck} />
+    {#if type == "text"}
+        <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} />
+    {:else if type == "number"}
+        <input type="number" placeholder={placeholder} {min} {max} {step} bind:value bind:this={inputElm} />
+    {:else if type == "ip"}
+        <input type="text" placeholder={placeholder} maxlength={15} bind:value bind:this={inputElm} />
+    {:else if type == "wheel"}
+        <div class="flex">
+            <div class="w-full h-8 relative overflow-hidden">
+                <div class="w-full h-full absolute" style="transform: translate(0, {100 * offset}%)">
+                    <p class="w-full h-full px-2 py-1.5 absolute text-sm -top-full">{Math.floor($displayed + 1) * step}</p>
+                    <p class="w-full h-full px-2 py-1.5 absolute text-sm">{Math.floor($displayed) * step}</p>
+                </div>
+            </div>
+            <div class="h-8 px-1.5 flex flex-col justify-center">
+                <button class="overflow-hidden" on:click={() => (value = Math.min(Math.max(value + step, min), max))}>
+                    <Icon name="chevron" className="h-4 -mb-1 fill-current -rotate-180" />
+                </button>
+                <button class="overflow-hidden" on:click={() => (value = Math.min(Math.max(value - step, min), max))}>
+                    <Icon name="chevron" className="h-4 -mt-1 fill-current" />
+                </button>
+            </div>
+        </div>
+    {/if}
 </div>
