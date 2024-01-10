@@ -20,7 +20,7 @@
     <div class="space-y-5">
         <div class="h-8 flex justify-between">
             <p class="flex items-center">Theme</p>
-            <ComboBox className="w-24" items={["Light", "Dark", "Blue"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
+            <ComboBox className="w-32" items={["Light", "Midnight", "Cosmo", "Starlight", "Sun", "Milky Way"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
         </div>
         <div class="h-8 flex justify-between">
             <p class="flex items-center">Rules</p>

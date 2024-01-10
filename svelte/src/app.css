@@ -3,6 +3,14 @@
 @import "tailwindcss/utilities";
 
 @layer base {
+    ::-webkit-scrollbar {
+        @apply w-1.5 h-1.5 bg-transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        @apply bg-shade/10 rounded-full;
+    }
+
     html, body {
         @apply flex relative w-full h-full flex-col select-none;
     }
@@ -23,7 +31,7 @@
     }
 
     input::placeholder {
-        @apply text-slate-500 font-normal;
+        @apply text-shade/50 font-medium;
     }
 
     input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
@@ -49,7 +57,7 @@
         --color-shade: 0 0 0;
     }
 
-    html[data-theme="dark"] {
+    html[data-theme="midnight"] {
         --color-foreground: theme(colors.slate.50);
         --color-background: theme(colors.slate.950);
         --color-secondary: theme(colors.slate.900);
@@ -57,11 +65,35 @@
         --color-shade: 255 255 255;
     }
 
-    html[data-theme="blue"] {
+    html[data-theme="cosmo"] {
         --color-foreground: theme(colors.slate.50);
         --color-background: #0c132a;
         --color-secondary: theme(colors.blue.950);
         --color-tertiary: theme(colors.blue.900);
+        --color-shade: 255 255 255;
+    }
+
+    html[data-theme="starlight"] {
+        --color-foreground: theme(colors.yellow.950);
+        --color-background: theme(colors.yellow.50);
+        --color-secondary: theme(colors.yellow.100);
+        --color-tertiary: theme(colors.yellow.200);
+        --color-shade: 0 0 0;
+    }
+
+    html[data-theme="sun"] {
+        --color-foreground: theme(colors.red.50);
+        --color-background: #230505;
+        --color-secondary: theme(colors.red.950);
+        --color-tertiary: theme(colors.red.900);
+        --color-shade: 255 255 255;
+    }
+
+    html[data-theme="milkyway"] {
+        --color-foreground: theme(colors.emerald.50);
+        --color-background: theme(colors.emerald.950);
+        --color-secondary: theme(colors.emerald.900);
+        --color-tertiary: theme(colors.emerald.800);
         --color-shade: 255 255 255;
     }
 

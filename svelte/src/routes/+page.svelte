@@ -15,7 +15,9 @@
 
     function setup() {
         try {
-            document.documentElement.setAttribute("data-theme", $settings?.theme == 1 ? "dark" : ($settings?.theme == 2 ? "blue" : "light"));
+            let themeTranslation = { 0: "light", 1: "midnight", 2: "cosmo", 3: "starlight", 4: "sun", 5: "milkyway" };
+
+            document.documentElement.setAttribute("data-theme", themeTranslation[$settings?.theme as keyof typeof themeTranslation]);
         }
         catch {}
     }
