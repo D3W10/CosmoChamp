@@ -16,7 +16,7 @@
             <img class="w-24 -ml-10 bg-secondary rounded-md" src="./cards/back.png" alt="Card Back" />
         </div>
         <div class="mt-6 flex space-x-8">
-            <span class="flex text-shade/50">1<img class="w-6 mx-0.5" src="./point.png" alt="cosmo">point</span>
+            <span class="flex text-shade/50">1<img class="w-6 mx-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points">point</span>
             <span>Player 2</span>
         </div>
     </div>
@@ -40,7 +40,7 @@
     <div class="px-6 flex justify-between items-end">
         <div class="mb-6 flex space-x-8">
             <span>Player 1</span>
-            <span class="flex text-shade/50">5<img class="w-6 mx-0.5" src="./point.png" alt="cosmo">points</span>
+            <span class="flex text-shade/50">5<img class="w-6 mx-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points">points</span>
         </div>
         <div class="flex -mb-20">
             <img class="w-32 bg-secondary rounded-lg transition-transform z-[0] hover:-translate-y-5" src="./cards/water3.png" alt="Card Back" />
