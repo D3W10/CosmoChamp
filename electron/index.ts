@@ -11,7 +11,7 @@ require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
 const isDev: boolean = process.env.NODE_ENV != "production", isDebug = process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null && !process.argv.includes("DEBUG");
-const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
+const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), rLogger = new Logger("Renderer", 36), packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
 
 const appConfig = new Store<IStore>({
     defaults: {
@@ -60,11 +60,18 @@ app.on("window-all-closed", () => {
 
 //#region Preload Events
 
-ipcMain.on("LoggerInfo", (_, msg) => pLogger.log(msg));
+ipcMain.on("LoggerPreload", (_, type: "info" | "warn" | "error", msg: string) => log(pLogger, type, msg));
 
-ipcMain.on("LoggerWarn", (_, msg) => pLogger.warn(msg));
+ipcMain.on("LoggerRenderer", (_, type: "info" | "warn" | "error", msg: string) => log(rLogger, type, msg));
 
-ipcMain.on("LoggerError", (_, msg) => pLogger.error(msg));
+function log(logger: Logger, type: "info" | "warn" | "error", msg: string) {
+    if (type == "info")
+        logger.log(msg);
+    else if (type == "warn")
+        logger.warn(msg);
+    else if (type == "error")
+        logger.error(msg);
+}
 
 ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
 

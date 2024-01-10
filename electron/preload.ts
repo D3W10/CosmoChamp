@@ -1,5 +1,9 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
+const pWarn = (msg: string) => ipcRenderer.send("LoggerPreload", "warn", msg);
+const pError = (msg: string) => ipcRenderer.send("LoggerPreload", "error", msg);
+
 export interface AppInfo {
     name: string;
     version: string;
@@ -9,21 +13,21 @@ export interface AppInfo {
  * Logs a message to the console
  */
 export function log(msg: string) {
-    ipcRenderer.send("LoggerInfo", msg);
+    ipcRenderer.send("LoggerRenderer", "info", msg);
 }
 
 /**
  * Logs a warning message to the console
  */
 export function warn(msg: string) {
-    ipcRenderer.send("LoggerWarn", msg);
+    ipcRenderer.send("LoggerRenderer", "warn", msg);
 }
 
 /**
  * Logs an error message to the console
  */
 export function error(msg: string) {
-    ipcRenderer.send("LoggerError", msg);
+    ipcRenderer.send("LoggerRenderer", "error", msg);
 }
 
 /**
@@ -31,7 +35,7 @@ export function error(msg: string) {
  */
 export function closeWindow() {
     ipcRenderer.send("CloseWindow");
-    log("Window Closed");
+    pLog("Window Closed");
 }
 
 /**
@@ -39,7 +43,7 @@ export function closeWindow() {
  */
 export function minimizeWindow() {
     ipcRenderer.send("MinimizeWindow");
-    log("Window Minimized");
+    pLog("Window Minimized");
 }
 
 /**
