@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+let receiveMessage: (message: string) => unknown;
 const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
 const pWarn = (msg: string) => ipcRenderer.send("LoggerPreload", "warn", msg);
 const pError = (msg: string) => ipcRenderer.send("LoggerPreload", "error", msg);
@@ -73,10 +74,56 @@ export function resetSettings() {
 
 /**
  * Obtains the application info
+ * @returns The application info
  */
 export function getAppInfo() {
     return ipcRenderer.sendSync("GetAppInfo") as AppInfo;
 }
+
+/**
+ * Creates a server with the provided IP address and port number
+ * 
+ * @param ip The IP address to bind the server to
+ * @param port The port number to listen on
+ * @returns The success/error code
+ */
+export async function createServer(ip: string, port: number) {
+    return await ipcRenderer.invoke("CreateServer", ip, port) as Promise<string>;
+}
+
+/**
+ * Connects to a server with the provided IP address and port number
+ * 
+ * @param ip The IP address of the server to connect
+ * @param port The port number of the server to connect
+ * @returns The success/error code
+ */
+export async function connectClient(ip: string, port: number) {
+    return await ipcRenderer.invoke("ConnectClient", ip, port) as Promise<string>;
+}
+
+/**
+ * Sends a message to the server/client connected
+ * 
+ * @param message The message to send to the server/client
+ */
+export function sendMessage(message: string) {
+    return ipcRenderer.send("SendMessage", message);
+}
+
+/**
+ * Updates the callback function reference to where messages should be sent
+ * 
+ * @param callback The function to receive the messages
+ */
+export function updateReceiveCallback(callback: (message: string) => unknown) {
+    receiveMessage = callback;
+}
+
+ipcRenderer.on("SendMessage", (_event, message: string) => {
+    pLog("Msg: " + message);
+    receiveMessage(message);
+});
 
 contextBridge.exposeInMainWorld("app", {
     log,
@@ -87,5 +134,9 @@ contextBridge.exposeInMainWorld("app", {
     getSetting,
     setSetting,
     resetSettings,
-    getAppInfo
+    getAppInfo,
+    createServer,
+    connectClient,
+    sendMessage,
+    updateReceiveCallback
 });

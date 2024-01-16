@@ -5,13 +5,15 @@ import os from "os";
 import Store from "electron-store";
 import { autoUpdater } from "electron-updater";
 import Logger from "./lib/logger";
+import Messenger from "./lib/messenger";
 import { IStore } from "./lib/Store.interface";
 
 require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
 const isDev: boolean = process.env.NODE_ENV != "production", isDebug = process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null && !process.argv.includes("DEBUG");
-const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), rLogger = new Logger("Renderer", 36), packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
+const packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
+const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), rLogger = new Logger("Renderer", 36), messenger = new Messenger(logger);
 
 const appConfig = new Store<IStore>({
     defaults: {
@@ -90,5 +92,25 @@ ipcMain.on("GetAppInfo", (event) => {
         version: packageData.version
     }
 });
+
+ipcMain.handle("CreateServer", async (_event, ip: string, port: any) => {
+    try {
+        return await messenger.createServer(ip, port, (message) => window.webContents.send("SendMessage", message));
+    }
+    catch (err) {
+        return err;
+    }
+});
+
+ipcMain.handle("ConnectClient", async (_event, ip: string, port: any) => {
+    try {
+        return await messenger.connectClient(ip, port, (message) => window.webContents.send("SendMessage", message));
+    }
+    catch (err) {
+        return err;
+    }
+});
+
+ipcMain.on("SendMessage", (_event, message: string) => messenger.send(message));
 
 //#endregion

@@ -10,14 +10,15 @@
 
     let gameModes = ["Normal", "Vanilla", "Inferno" ];
     let showCreateModal = false, showJoinModal = false;
-    let modeValue: number, goalValue: number;
+    let ipValue: string, portValue: number, modeValue: number, goalValue: number;
 
     function onCreateRoom() {
-        game.set({ mode: gameModes[modeValue], goal: goalValue });
+        game.set({ host: true, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: gameModes[modeValue], goal: goalValue });
         page.set({ current: "rules", back: false });
     }
 
     function onJoinRoom() {
+        game.set({ host: false, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: gameModes[modeValue], goal: goalValue });
         page.set({ current: "rules", back: false });
     }
 </script>
@@ -47,11 +48,11 @@
     <div class="flex space-x-4">
         <div class="w-3/4 space-y-1">
             <span class="ml-0.5 text-sm">IP Address</span>
-            <Input type="ip" placeholder="127.0.0.1" />
+            <Input type="ip" placeholder="127.0.0.1" bind:value={ipValue} />
         </div>
         <div class="w-1/4 space-y-1">
             <span class="ml-0.5 text-sm">Port</span>
-            <Input type="number" placeholder="1515" min={1} max={49150} />
+            <Input type="number" placeholder="1515" min={1} max={57322} bind:value={portValue} />
         </div>
     </div>
     <div class="flex space-x-4">
@@ -69,11 +70,11 @@
     <div class="flex space-x-4">
         <div class="w-3/4 space-y-1">
             <span class="ml-0.5 text-sm">IP Address</span>
-            <Input type="ip" placeholder="127.0.0.1" maxlength={15} />
+            <Input type="ip" placeholder="127.0.0.1" maxlength={15} bind:value={ipValue} />
         </div>
         <div class="w-1/4 space-y-1">
             <span class="ml-0.5 text-sm">Port</span>
-            <Input type="number" placeholder="1515" min={1} max={49150} />
+            <Input type="number" placeholder="1515" min={1} max={49150} bind:value={portValue} />
         </div>
     </div>
 </Modal>
