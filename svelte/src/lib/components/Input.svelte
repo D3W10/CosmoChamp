@@ -36,11 +36,11 @@
 
 <div class={"bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary " + (error ? "ring-2 ring-inset ring-red-600 focus-within:ring-red-600 " : "") + className}>
     {#if type == "text"}
-        <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} />
+        <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} on:input />
     {:else if type == "number"}
-        <input type="number" placeholder={placeholder} {min} {max} {step} bind:value bind:this={inputElm} />
+        <input type="number" placeholder={placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input />
     {:else if type == "ip"}
-        <input type="text" placeholder={placeholder} maxlength={15} bind:value bind:this={inputElm} />
+        <input type="text" placeholder={placeholder} maxlength={15} bind:value bind:this={inputElm} on:input />
     {:else if type == "wheel"}
         <div class="flex">
             <div class="w-full h-8 relative overflow-hidden">
