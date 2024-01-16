@@ -14,11 +14,11 @@
 
     function onCreateRoom() {
         game.set({ mode: gameModes[modeValue], goal: goalValue });
-        page.set({ current: "rules", back: false, options: { gameMode: true } })
+        page.set({ current: "rules", back: false });
     }
 
     function onJoinRoom() {
-        page.set({ current: "rules", back: false, options: { gameMode: true } })
+        page.set({ current: "rules", back: false });
     }
 </script>
 

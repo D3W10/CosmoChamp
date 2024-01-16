@@ -17,7 +17,8 @@ const appConfig = new Store<IStore>({
     defaults: {
         lastRunVersion: app.getVersion(),
         settings: {
-            theme: 0
+            theme: 0,
+            playerName: "Guest"
         }
     }
 });
