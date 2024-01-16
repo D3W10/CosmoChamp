@@ -9,6 +9,7 @@
     },
     "scripts": {
         "dev": "concurrently \"npm run svelte:dev\" \"npm run nodemon\"",
+        "dev-multi": "concurrently \"npm run svelte:dev\" \"npm run nodemon\" \"npm run nodemon\"",
         "start": "npm run compile && electron .",
         "nodemon": "nodemon",
         "svelte:dev": "cd svelte && npm run dev",
