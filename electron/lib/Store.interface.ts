@@ -5,4 +5,5 @@ export interface IStore {
 
 export interface IStoreSettings {
     theme: number;
+    playerName: string;
 }

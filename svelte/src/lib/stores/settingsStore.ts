@@ -10,7 +10,7 @@ export const settings = (() => {
     function onUpdate(property: string, value: any) {
         update((n) => {
             if (n)
-                n[property as keyof IStoreSettings] = value;
+                n[property as keyof IStoreSettings] = value as never;
 
             return n;
         });

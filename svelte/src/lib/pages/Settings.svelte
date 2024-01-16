@@ -6,7 +6,10 @@
     import { settings } from "$lib/stores/settingsStore";
     import Icon from "$lib/components/Icon.svelte";
     import ComboBox from "$lib/components/ComboBox.svelte";
+    import Input from "$lib/components/Input.svelte";
     import Button from "$lib/components/Button.svelte";
+
+    let playerName: string = $settings?.playerName!;
 </script>
 
 <div class="w-full h-full p-16" in:fly={$transition.in} out:fly={$transition.out}>
@@ -21,6 +24,10 @@
         <div class="h-8 flex justify-between">
             <p class="flex items-center">Theme</p>
             <ComboBox className="w-32" items={["Light", "Midnight", "Cosmo", "Starlight", "Sun", "Milky Way"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
+        </div>
+        <div class="h-8 flex justify-between">
+            <p class="flex items-center">Player Name</p>
+            <Input className="w-40" type="text" placeholder="Guest" maxlength={15} bind:value={playerName} on:input={() => settings.update("playerName", playerName.trim() || "Guest")} />
         </div>
         <div class="h-8 flex justify-between">
             <p class="flex items-center">Rules</p>
