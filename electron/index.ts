@@ -22,7 +22,8 @@ const appConfig = new Store<IStore>({
             theme: 0,
             playerName: "Guest"
         }
-    }
+    },
+    encryptionKey: "CosmoChamp"
 });
 
 logger.log(`Starting ${packageData.displayName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
@@ -80,7 +81,7 @@ ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
 
 ipcMain.on("MinimizeWindow", () => BrowserWindow.getFocusedWindow()!.minimize());
 
-ipcMain.on("GetSetting", (_event, key: string) => _event.returnValue = appConfig.get(key));
+ipcMain.on("GetSetting", (event, key: string) => event.returnValue = appConfig.get(key));
 
 ipcMain.on("SetSetting", (_event, key: string, value: any) => appConfig.set(key, value));
 
