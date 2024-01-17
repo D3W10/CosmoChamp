@@ -6,25 +6,32 @@
     import { game } from "$lib/stores/gameStore";
     import { settings } from "$lib/stores/settingsStore";
     import { transition } from "$lib/stores/transitionStore";
+    import { drawCard, drawDeck } from "$lib/deck";
+    import type { Card } from "$lib/models/Card.interface";
 
     let start = false, opponentHover = -1;
-    let cards: HTMLImageElement[] = new Array(7);
+    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7);
 
-    setTimeout(() => {
-        start = true;
-    }, 1000);
+    setTimeout(() => start = true, 1000);
 
     $app?.updateReceiveCallback(receiveMessage);
+
+    if ($game?.host) {
+        cards = drawDeck();
+        $app?.sendMessage("DCK " + drawDeck().map((card) => card.id).join(";"));
+    }
 
     function receiveMessage(message: string) {
         let args = message.split(" ");
 
         if (args[0] == "HVR")
             opponentHover = +args[1];
+        else if (args[0] == "DCK" && !$game?.host)
+            cards = args[1].split(";").map((id) => { return { id: id }});
     }
 
     function checkHoverState() {
-        if (!cards.some((card) => card.matches(":hover")))
+        if (!cardsElmts.some((card) => card.matches(":hover")))
             $app?.sendMessage("HVR -1");
     }
 </script>
@@ -71,13 +78,10 @@
                 <span class="flex text-shade/50">0<img class="w-6 mx-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points">points</span>
             </div>
             <div class="flex -mb-20">
-                <img bind:this={cards[0]} class="z-[0] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 0")} on:pointerleave={checkHoverState} />
-                <img bind:this={cards[1]} class="-ml-10 z-[1] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, delay: 100, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 1")} on:pointerleave={checkHoverState} />
-                <img bind:this={cards[2]} class="-ml-10 z-[2] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, delay: 200, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 2")} on:pointerleave={checkHoverState} />
-                <img bind:this={cards[3]} class="-ml-10 z-[3] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, delay: 300, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 3")} on:pointerleave={checkHoverState} />
-                <img bind:this={cards[4]} class="-ml-10 z-[4] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, delay: 400, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 4")} on:pointerleave={checkHoverState} />
-                <img bind:this={cards[5]} class="-ml-10 z-[5] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, delay: 500, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 5")} on:pointerleave={checkHoverState} />
-                <img bind:this={cards[6]} class="-ml-10 z-[6] hover:-translate-y-5 player-card" src="./cards/space.png" alt="" in:fly={{ duration: 800, y: 150, delay: 600, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR 6")} on:pointerleave={checkHoverState} />
+                    {#each cards as card, i}
+                        <img bind:this={cardsElmts[i]} class={(i != 0 ? "-ml-10 " : "") + `hover:-translate-y-5 player-card`} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} style={`z-index: ${i};`} in:fly={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR " + i)} on:pointerleave={checkHoverState} />
+                    {/each}
+                </div>
             </div>
         </div>
     {/if}
