@@ -33,8 +33,8 @@
                 <span>15</span>
             </div>
             <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                <img class="w-32 bg-secondary rounded-lg" src="./cards/slot.png" alt="Enemy Card Slot" />
-                <img class="w-32 bg-secondary rounded-lg" src="./cards/slot.png" alt="My Card Slot" />
+                <div class="w-32 bg-secondary rounded-lg aspect-card" />
+                <div class="w-32 bg-secondary rounded-lg aspect-card" />
             </div>
             <div class="sides flex flex-col justify-center items-center space-y-3" in:fade={{ delay: 300, duration: 800 }}>
                 <div class="flex space-x-3">

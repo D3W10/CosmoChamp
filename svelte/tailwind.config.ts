@@ -6,9 +6,8 @@ export default {
     ],
     theme: {
         extend: {
-            spacing: {
-                "112": "30rem",
-                "125": "31.25rem"
+            aspectRatio: {
+                "card": "1024 / 1593",
             },
             colors: {
                 primary: "theme(colors.indigo.600)",
@@ -19,6 +18,10 @@ export default {
                 secondary: "var(--color-secondary)",
                 tertiary: "var(--color-tertiary)",
                 shade: "rgb(var(--color-shade) / <alpha-value>)"
+            },
+            spacing: {
+                "112": "30rem",
+                "125": "31.25rem"
             },
             transitionTimingFunction: {
                 "leap-out": "cubic-bezier(0.3, 0.6, 0.45, 1)",
