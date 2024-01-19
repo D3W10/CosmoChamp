@@ -82,8 +82,10 @@
 
     function onReady() {
         if ($game?.host && didReady && opponentReady) {
-            $app?.sendMessage("STR");
-            page.set({ current: "game", back: false });
+            setTimeout(() => {
+                $app?.sendMessage("STR");
+                page.set({ current: "game", back: false });
+            }, 100);
         }
     }
 </script>
