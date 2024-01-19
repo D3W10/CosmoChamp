@@ -15,7 +15,7 @@
 
     function setup() {
         try {
-            let themeTranslation = { 0: "light", 1: "midnight", 2: "cosmo", 3: "starlight", 4: "sun", 5: "milkyway" };
+            let themeTranslation = { 0: "midnight", 1: "light", 2: "cosmo", 3: "starlight", 4: "sun", 5: "milkyway" };
 
             document.documentElement.setAttribute("data-theme", themeTranslation[$settings?.theme as keyof typeof themeTranslation]);
         }
