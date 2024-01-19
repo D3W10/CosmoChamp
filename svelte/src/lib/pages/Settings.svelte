@@ -27,7 +27,7 @@
         </div>
         <div class="h-8 flex justify-between">
             <p class="flex items-center">Player Name</p>
-            <Input className="w-40" type="text" placeholder="Guest" maxlength={15} bind:value={playerName} on:input={() => settings.update("playerName", playerName.trim() || "Guest")} />
+            <Input className="w-40" type="text" placeholder="Guest" maxlength={10} bind:value={playerName} on:input={() => settings.update("playerName", playerName.trim() || "Guest")} />
         </div>
         <div class="h-8 flex justify-between">
             <p class="flex items-center">Rules</p>
