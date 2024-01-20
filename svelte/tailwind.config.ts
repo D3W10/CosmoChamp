@@ -10,13 +10,11 @@ export default {
                 "card": "1024 / 1593",
             },
             colors: {
-                primary: "theme(colors.indigo.600)",
-                "primary-dark": "theme(colors.indigo.800)",
-                "primary-light": "theme(colors.indigo.500)",
-                foreground: "var(--color-foreground)",
-                background: "var(--color-background)",
-                secondary: "var(--color-secondary)",
-                tertiary: "var(--color-tertiary)",
+                primary: "rgb(var(--color-primary) / <alpha-value>)",
+                foreground: "rgb(var(--color-foreground) / <alpha-value>)",
+                background: "rgb(var(--color-background) / <alpha-value>)",
+                secondary: "rgb(var(--color-secondary) / <alpha-value>)",
+                tertiary: "rgb(var(--color-tertiary) / <alpha-value>)",
                 shade: "rgb(var(--color-shade) / <alpha-value>)"
             },
             spacing: {
