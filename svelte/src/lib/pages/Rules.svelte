@@ -72,18 +72,18 @@
             playerAnnounced = true;
             gameAnnounced = true;
         }
-        else if (args[0] == "RDY") {
+        else if (args[0] == "READY") {
             opponentReady = true;
             onReady();
         }
-        else if (args[0] == "STR")
+        else if (args[0] == "START")
             page.set({ current: "game", back: false });
     }
 
     function onReady() {
         if ($game?.host && didReady && opponentReady) {
             setTimeout(() => {
-                $app?.sendMessage("STR");
+                $app?.sendMessage("START");
                 page.set({ current: "game", back: false });
             }, 100);
         }
@@ -128,7 +128,7 @@
                     </div>
                 {:else}
                     <div class="w-full absolute flex flex-col justify-center items-center" in:fade={{ duration: 1000, delay: 800, easing: cubicOut }}>
-                        <Button className="w-36 text-base" disabled={didReady} on:click|once={() => { $app?.sendMessage("RDY"); didReady = true; onReady(); }}>Ready</Button>
+                        <Button className="w-36 text-base" disabled={didReady} on:click|once={() => { $app?.sendMessage("READY"); didReady = true; onReady(); }}>Ready</Button>
                     </div>
                 {/if}
             </div>

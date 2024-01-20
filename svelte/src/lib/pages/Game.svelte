@@ -18,21 +18,21 @@
 
     if ($game?.host) {
         cards = drawDeck();
-        $app?.sendMessage("DCK " + drawDeck().map((card) => card.id).join(";"));
+        $app?.sendMessage("DECK " + drawDeck().map((card) => card.id).join(";"));
     }
 
     function receiveMessage(message: string) {
         let args = message.split(" ");
 
-        if (args[0] == "HVR")
+        if (args[0] == "HOVER")
             opponentHover = +args[1];
-        else if (args[0] == "DCK" && !$game?.host)
+        else if (args[0] == "DECK" && !$game?.host)
             cards = args[1].split(";").map((id) => { return { id: id }});
     }
 
     function checkHoverState() {
         if (!cardsElmts.some((card) => card.matches(":hover")))
-            $app?.sendMessage("HVR -1");
+            $app?.sendMessage("HOVER -1");
     }
 </script>
 
@@ -79,7 +79,7 @@
             </div>
             <div class="flex -mb-20">
                     {#each cards as card, i}
-                        <img bind:this={cardsElmts[i]} class={(i != 0 ? "-ml-10 " : "") + `hover:-translate-y-5 player-card`} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} style={`z-index: ${i};`} in:fly={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HVR " + i)} on:pointerleave={checkHoverState} />
+                        <img bind:this={cardsElmts[i]} class={(i != 0 ? "-ml-10 " : "") + `hover:-translate-y-5 player-card`} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} style={`z-index: ${i};`} in:fly={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:pointerenter={() => $app?.sendMessage("HOVER " + i)} on:pointerleave={checkHoverState} />
                     {/each}
                 </div>
             </div>
