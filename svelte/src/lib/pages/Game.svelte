@@ -18,7 +18,7 @@
 
     if ($game?.host) {
         cards = drawDeck();
-        $app?.sendMessage("DECK " + drawDeck().map((card) => card.id).join(";"));
+        $app?.sendMessage(`DECK ${drawDeck().map((card) => card.id).join(";")}`);
     }
 
     function receiveMessage(message: string) {
@@ -36,7 +36,7 @@
     }
 </script>
 
-<div class="w-full h-full flex flex-col" in:fly={$transition.in} out:fly={$transition.out}>
+<div class="w-full h-full" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     {#if start}
         <div class="px-6 flex justify-between items-start">
             <div class="flex -mt-20">

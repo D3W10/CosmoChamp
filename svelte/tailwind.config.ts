@@ -22,9 +22,9 @@ export default {
                 "125": "31.25rem"
             },
             transitionTimingFunction: {
-                "leap-out": "cubic-bezier(0.3, 0.6, 0.45, 1)",
-                "bang-out": "cubic-bezier(0.15, 0.4, 0.2, 1)",
-                "bang-in": "cubic-bezier(0.8, 0, 0.85, 0.6)"
+                "cubic-out": "cubic-bezier(0.33, 1, 0.68, 1)",
+                "quint-out": "cubic-bezier(0.22, 1, 0.36, 1)",
+                "quint-in": "cubic-bezier(0.64, 0, 0.78, 0)"
             }
         }
     },

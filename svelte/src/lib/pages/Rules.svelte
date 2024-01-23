@@ -90,7 +90,7 @@
     }
 </script>
 
-<div class="w-full h-full flex flex-col" in:fly={$transition.in} out:fly={$transition.out}>
+<div class="w-full h-full flex flex-col" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     <div class="h-full flex">
         <button class="w-1/5 flex justify-center items-center opacity-5 transition-opacity hover:opacity-70">
             <Icon name="chevron" className="w-1/2 fill-current rotate-90" />
@@ -136,8 +136,8 @@
                 {#if playerAnnounced}
                     <div in:fade={{ duration: 1000, easing: cubicOut }}>
                         <p>{$game.opponent}</p>
-                        <div class={"flex justify-end items-center " + (!opponentReady ? "text-shade/50" : "text-green-500")}>
-                            <div class={"w-4 h-4 mr-2 rounded-full " + (!opponentReady ? "bg-shade/20" : "bg-green-500")}></div>
+                        <div class={`flex justify-end items-center ${!opponentReady ? "text-shade/50" : "text-green-500"}`}>
+                            <div class={`w-4 h-4 mr-2 rounded-full ${!opponentReady ? "bg-shade/20" : "bg-green-500"}`} />
                             <p class="flex items-center text-sm">{!opponentReady ? "Not Ready" : "Ready"}</p>
                         </div>
                     </div>
