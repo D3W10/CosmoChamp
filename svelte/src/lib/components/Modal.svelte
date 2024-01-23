@@ -1,5 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
+    import { settings } from "../stores/settingsStore";
     import Button from "./Button.svelte";
 
     export let show: boolean;
@@ -25,7 +26,7 @@
     }
 </script>
 
-<dialog class={"w-[26rem] transition-all duration-[400ms] ease-bang-out scale-50 opacity-0 " + (show ? "open" : "closed")} bind:this={dialog} on:close={() => (show = false)}>
+<dialog class={`w-[26rem] transition-all duration-[400ms] ease-bang-out scale-50 opacity-0 ${show ? "open" : "closed"} ${$settings?.reduceMotion ? "reduced" : ""}`} bind:this={dialog} on:close={() => (show = false)}>
     <div class="p-5 flex flex-col space-y-5" role="alertdialog">
         {#if title != ""}
             <h1 class="text-2xl font-semibold">{title}</h1>
@@ -47,6 +48,10 @@
 
     dialog::backdrop {
         @apply opacity-0 transition-opacity duration-[400ms] ease-bang-out;
+    }
+
+    dialog.reduced::backdrop {
+        @apply duration-[100ms];
     }
 
     dialog.open::backdrop {

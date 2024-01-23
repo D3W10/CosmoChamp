@@ -5,5 +5,6 @@ export interface IStore {
 
 export interface IStoreSettings {
     theme: number;
+    reduceMotion: boolean;
     playerName: string;
 }

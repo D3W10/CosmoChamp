@@ -20,6 +20,7 @@ const appConfig = new Store<IStore>({
         lastRunVersion: app.getVersion(),
         settings: {
             theme: 0,
+            reduceMotion: false,
             playerName: "Guest"
         }
     },
