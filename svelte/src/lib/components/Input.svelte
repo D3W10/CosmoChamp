@@ -34,7 +34,7 @@
     }
 </script>
 
-<div class={"bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary " + (error ? "ring-2 ring-inset ring-red-600 focus-within:ring-red-600 " : "") + className}>
+    <div class={`bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset ${!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} ${className}`}>
     {#if type == "text"}
         <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} on:input />
     {:else if type == "number"}

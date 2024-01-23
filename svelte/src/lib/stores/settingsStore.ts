@@ -15,7 +15,7 @@ export const settings = (() => {
             return n;
         });
 
-        window.app.setSetting("settings." + property, value);
+        window.app.setSetting(`settings.${property}`, value);
     }
 
     return {

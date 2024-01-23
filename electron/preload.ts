@@ -121,7 +121,7 @@ export function updateReceiveCallback(callback: (message: string) => unknown) {
 }
 
 ipcRenderer.on("SendMessage", (_event, message: string) => {
-    pLog("Msg: " + message);
+    pLog(`Msg: ${message}`);
     receiveMessage(message);
 });
 

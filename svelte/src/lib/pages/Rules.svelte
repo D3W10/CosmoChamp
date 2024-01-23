@@ -32,7 +32,7 @@
             let status = await $app?.connectClient($game?.ip!, $game?.port!);
 
             if (status == "CONNECTED") {
-                $app?.sendMessage("HEY " + $settings?.playerName);
+                $app?.sendMessage(`HEY ${$settings?.playerName}`);
             }
             else if (status == "ECONNREFUSED") {
                 modalMessage = "It appears there's no room hosted on the specified IP address and port. Please check those and try again.";
@@ -50,7 +50,7 @@
         let args = message.split(" ");
 
         if (args[0] == "HEY" && $game?.host) {
-            $app?.sendMessage("HEY " + $game.mode + " " + $game.goal + " " + $settings?.playerName);
+            $app?.sendMessage(`HEY ${$game.mode} ${$game.goal} ${$settings?.playerName}`);
 
             game.update((g) => {
                 if (g) g.opponent = args.slice(1, args.length).join(" ");

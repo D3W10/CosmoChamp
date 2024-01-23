@@ -27,7 +27,7 @@ const appConfig = new Store<IStore>({
 });
 
 logger.log(`Starting ${packageData.displayName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
-logger.log("Running on Electron " + process.versions.electron + " and NodeJS " + process.versions.node);
+logger.log(`Running on Electron ${process.versions.electron} and NodeJS ${process.versions.node}`);
 
 if (isDebug)
     logger.log("\x1b[35mDEBUG mode enabled!\x1b[0m");
@@ -50,7 +50,7 @@ async function createWindow() {
         }
     });
 
-    window.loadURL(!isDev ? "file:///" + path.join(__dirname, "www", "index.html") : "http://localhost:5173/");
+    window.loadURL(!isDev ? `file:///${path.join(__dirname, "www", "index.html")}` : "http://localhost:5173/");
     window.once("ready-to-show", () => window.show());
    //updaterInfo.initAutoUpdater(autoUpdater, mainWindow.window);
 }

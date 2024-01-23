@@ -10,15 +10,15 @@ class Logger {
     }
 
     log(msg: string) {
-        logger.info(this.toString() + " - " + msg);
+        logger.info(`${this.toString()} - ${msg}`);
     }
 
     warn(msg: string) {
-        logger.warn(this.toString() + " - " + msg);
+        logger.warn(`${this.toString()} - ${msg}`);
     }
 
     error(msg: string) {
-        logger.error(this.toString() + " - " + msg);
+        logger.error(`${this.toString()} - ${msg}`);
     }
 
     toString() {
