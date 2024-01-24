@@ -124,7 +124,7 @@
                 {#if !playerAnnounced}
                     <div class="w-full absolute flex flex-col justify-center items-center space-y-4" out:fade={{ duration: 1000, easing: cubicOut }}>
                         <span class="animate-pulse">{$game.host ? "Waiting for second player" : "Connecting to the host"}</span>
-                        <ProgressBar />
+                        <ProgressBar indeterminate />
                     </div>
                 {:else}
                     <div class="w-full absolute flex flex-col justify-center items-center" in:fade={{ duration: 1000, delay: 800, easing: cubicOut }}>
