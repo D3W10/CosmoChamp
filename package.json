@@ -1,6 +1,6 @@
 {
     "name": "cosmochamp",
-    "displayName": "CosmoChamp",
+    "productName": "CosmoChamp",
     "version": "1.0.0",
     "description": "Unleash the power of the cosmos elements!",
     "author": {
@@ -15,8 +15,8 @@
         "svelte:dev": "cd svelte && npm run dev",
         "svelte:build": "cd svelte && npm run build",
         "compile": "tsc",
-        "out:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish never",
-        "publish:win": "npm run svelte:build && npm run compile && electron-builder build --win --publish always",
+        "out:win": "npm run svelte:build && npm run compile && electron-builder build --win --config ./build/build.js --publish never",
+        "publish:win": "npm run svelte:build && npm run compile && electron-builder build --win --config ./build/build.js --publish always",
         "check-updates": "npx npm-check-updates",
         "check-updates:minor": "npx npm-check-updates --target minor",
         "check-updates:patch": "npx npm-check-updates --target patch"

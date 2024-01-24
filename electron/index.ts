@@ -11,7 +11,7 @@ import { IStore } from "./lib/Store.interface";
 require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
-const isDev: boolean = process.env.NODE_ENV != "production", isDebug = process.env.DEBUG == undefined ? true : process.env.DEBUG.match(/true/gi) == null && !process.argv.includes("DEBUG");
+const isDev: boolean = !app.isPackaged, isDebug = isDev || process.env.DEBUG != undefined && process.env.DEBUG.match(/true/gi) != null || process.argv.includes("DEBUG");
 const packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
 const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), rLogger = new Logger("Renderer", 36), messenger = new Messenger(logger);
 
@@ -27,15 +27,17 @@ const appConfig = new Store<IStore>({
     encryptionKey: "CosmoChamp"
 });
 
-logger.log(`Starting ${packageData.displayName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
+logger.log(`Starting ${packageData.productName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
 logger.log(`Running on Electron ${process.versions.electron} and NodeJS ${process.versions.node}`);
 
+if (isDev)
+    logger.log("\x1b[33mDevelopment mode!\x1b[0m");
 if (isDebug)
-    logger.log("\x1b[35mDEBUG mode enabled!\x1b[0m");
+    logger.log("\x1b[35mDebug mode enabled!\x1b[0m");
 
 async function createWindow() {
     window = new BrowserWindow({
-        title: packageData.displayName,
+        title: packageData.productName,
         width: 1000,
         height: 600,
         frame: false,
@@ -44,9 +46,9 @@ async function createWindow() {
         fullscreenable: false,
         maximizable: false,
         show: true,
-        icon: !isDev ? path.join(__dirname, "./www/logo.png") : path.join(__dirname, "../svelte/static/logo.png"),
+        icon: !isDev ? path.join(__dirname, "./dist/www/logo.png") : path.join(__dirname, "../svelte/static/logo.png"),
         webPreferences: {
-            devTools: isDev,
+            devTools: isDebug,
             preload: path.join(__dirname, "preload.js")
         }
     });
@@ -90,7 +92,7 @@ ipcMain.on("ResetSettings", () => appConfig.clear());
 
 ipcMain.on("GetAppInfo", (event) => {
     event.returnValue = {
-        name: packageData.displayName,
+        name: packageData.productName,
         version: packageData.version
     }
 });
