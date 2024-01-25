@@ -10,7 +10,7 @@
 
     let gameModes = ["Normal", "Vanilla", "Inferno" ];
     let showCreateModal = false, showJoinModal = false;
-    let ipValue: string, portValue: number, modeValue: number, goalValue: number;
+    let ipValue: string, portValue: number, modeValue: number, goalValue: number = 15;
 
     function onCreateRoom() {
         game.set({ host: true, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: gameModes[modeValue], goal: goalValue });
@@ -62,7 +62,7 @@
         </div>
         <div class="w-1/2 space-y-1">
             <span class="ml-0.5 text-sm">Winning Goal <img class="w-5 ml-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
-            <Input type="wheel" min={15} max={50} step={5} bind:value={goalValue} />
+            <Input type="wheel" min={5} max={50} step={5} bind:value={goalValue} />
         </div>
     </div>
 </Modal>
@@ -70,7 +70,7 @@
     <div class="flex space-x-4">
         <div class="w-3/4 space-y-1">
             <span class="ml-0.5 text-sm">IP Address</span>
-            <Input type="ip" placeholder="127.0.0.1" maxlength={15} bind:value={ipValue} />
+            <Input type="ip" placeholder="127.0.0.1" bind:value={ipValue} />
         </div>
         <div class="w-1/4 space-y-1">
             <span class="ml-0.5 text-sm">Port</span>

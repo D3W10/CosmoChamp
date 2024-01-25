@@ -92,7 +92,7 @@
 
 <div class="w-full h-full flex flex-col" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     <div class="h-full flex">
-        <button class="w-1/5 flex justify-center items-center opacity-5 transition-opacity hover:opacity-70">
+        <button class="w-1/5 flex justify-center items-center opacity-30 disabled:opacity-5 transition-opacity hover:opacity-70 disabled:hover:opacity-5" disabled>
             <Icon name="chevron" className="w-1/2 fill-current rotate-90" />
         </button>
         <div class="w-full relative">
@@ -106,7 +106,7 @@
                 
             </div>
         </div>
-        <button class="w-1/5 flex justify-center items-center opacity-30 transition-opacity hover:opacity-70">
+        <button class="w-1/5 flex justify-center items-center opacity-30 disabled:opacity-5 transition-opacity hover:opacity-70 disabled:hover:opacity-5">
             <Icon name="chevron" className="w-1/2 fill-current -rotate-90" />
         </button>
     </div>
