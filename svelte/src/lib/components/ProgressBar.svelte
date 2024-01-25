@@ -2,6 +2,7 @@
     import { tweened } from "svelte/motion";
     import { cubicOut } from "svelte/easing";
 
+    export let className = "";
     export let value = 0;
     export let indeterminate = false;
 
@@ -13,7 +14,7 @@
     $: progress.set(value);
 </script>
 
-<div class={`w-full h-1 relative bg-shade/5 rounded-full overflow-hidden ${indeterminate ? "indeterminate" : ""}`}>
+<div class={`w-full h-1 relative bg-shade/5 rounded-full overflow-hidden ${indeterminate ? "indeterminate" : ""} ${className}`}>
     {#if !indeterminate}
         <div class="h-full bg-primary rounded-full" style="width: {$progress}%;" />
     {/if}

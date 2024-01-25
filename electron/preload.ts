@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-let receiveMessage: (message: string) => unknown;
+let wReady = false, cfuStatus: (available: boolean) => unknown, cfuProgress: (percent: number) => unknown, winReady: () => unknown, receiveMessage: (message: string) => unknown;
 const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
 const pWarn = (msg: string) => ipcRenderer.send("LoggerPreload", "warn", msg);
 const pError = (msg: string) => ipcRenderer.send("LoggerPreload", "error", msg);
@@ -45,6 +45,13 @@ export function closeWindow() {
 export function minimizeWindow() {
     ipcRenderer.send("MinimizeWindow");
     pLog("Window Minimized");
+}
+
+/**
+ * Closes the splash window and unhides the main one
+ */
+export function openMain() {
+    ipcRenderer.send("OpenMain");
 }
 
 /**
@@ -112,7 +119,36 @@ export function sendMessage(message: string) {
 }
 
 /**
- * Updates the callback function reference to where messages should be sent
+ * Updates the callback function reference to where the updater status should be sent
+ * 
+ * @param callback The function to receive the status
+ */
+export function updateCfuStatusCallback(callback: (available: boolean) => unknown) {
+    cfuStatus = callback;
+}
+
+/**
+ * Updates the callback function reference to where the update progress should be sent
+ * 
+ * @param callback The function to receive the progress
+ */
+export function updateCfuProgressCallback(callback: (percent: number) => unknown) {
+    cfuProgress = callback;
+}
+
+/**
+ * Updates the callback function reference to where the main window status should be sent
+ * 
+ * @param callback The function to receive the window status
+ */
+export function updateReadyCallback(callback: () => unknown) {
+    winReady = callback;
+    if (wReady)
+        callback();
+}
+
+/**
+ * Updates the callback function reference to where the messages should be sent
  * 
  * @param callback The function to receive the messages
  */
@@ -120,7 +156,18 @@ export function updateReceiveCallback(callback: (message: string) => unknown) {
     receiveMessage = callback;
 }
 
-ipcRenderer.on("SendMessage", (_event, message: string) => {
+ipcRenderer.on("CFUStatus", (_, available: boolean) => cfuStatus(available));
+
+ipcRenderer.on("CFUProgress", (_, percent: number) => cfuProgress(percent));
+
+ipcRenderer.on("WindowReady", () => {
+    if (winReady)
+        winReady();
+    else
+        wReady = true;
+});
+
+ipcRenderer.on("SendMessage", (_, message: string) => {
     pLog(`Msg: ${message}`);
     receiveMessage(message);
 });
@@ -131,6 +178,7 @@ contextBridge.exposeInMainWorld("app", {
     error,
     closeWindow,
     minimizeWindow,
+    openMain,
     getSetting,
     setSetting,
     resetSettings,
@@ -138,5 +186,8 @@ contextBridge.exposeInMainWorld("app", {
     createServer,
     connectClient,
     sendMessage,
+    updateCfuStatusCallback,
+    updateCfuProgressCallback,
+    updateReadyCallback,
     updateReceiveCallback
 });

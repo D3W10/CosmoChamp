@@ -9,6 +9,10 @@ class Logger {
         this.color = `\x1b[${color}m`;
     }
 
+    info(msg: string) {
+        this.log(msg);
+    }
+
     log(msg: string) {
         logger.info(`${this.toString()} - ${msg}`);
     }

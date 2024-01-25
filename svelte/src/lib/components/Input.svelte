@@ -3,7 +3,7 @@
     import { spring } from "svelte/motion";
     import Icon from "./Icon.svelte";
 
-    export let className  = "";
+    export let className = "";
     export let type: "text" | "number" | "ip" | "wheel" | "switch";
     export let value: any = null;
     export let placeholder = "";

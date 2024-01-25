@@ -11,7 +11,7 @@ import { IStore } from "./lib/Store.interface";
 require("electron-reload")(__dirname);
 
 var window: BrowserWindow, splash: BrowserWindow;
-const isDev: boolean = !app.isPackaged, isDebug = isDev || process.env.DEBUG != undefined && process.env.DEBUG.match(/true/gi) != null || process.argv.includes("DEBUG");
+const isDev: boolean = !app.isPackaged, isDebug = isDev || process.env.DEBUG != undefined && process.env.DEBUG.match(/true/gi) != null || process.argv.includes("-debug");
 const packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
 const logger = new Logger("Main", 34), pLogger = new Logger("Preload", 32), rLogger = new Logger("Renderer", 36), messenger = new Messenger(logger);
 
@@ -29,11 +29,13 @@ const appConfig = new Store<IStore>({
 
 logger.log(`Starting ${packageData.productName} ${packageData.version} on ${process.platform == "win32" ? "Windows" : "macOS"} ${os.release()}`);
 logger.log(`Running on Electron ${process.versions.electron} and NodeJS ${process.versions.node}`);
+autoUpdater.logger = logger;
+autoUpdater.disableWebInstaller = true;
 
 if (isDev)
-    logger.log("\x1b[33mDevelopment mode!\x1b[0m");
+    logger.log("\x1b[33mDevelopment mode\x1b[0m");
 if (isDebug)
-    logger.log("\x1b[35mDebug mode enabled!\x1b[0m");
+    logger.log("\x1b[35mDebug mode enabled\x1b[0m");
 
 async function createWindow() {
     window = new BrowserWindow({
@@ -45,7 +47,7 @@ async function createWindow() {
         fullscreen: false,
         fullscreenable: false,
         maximizable: false,
-        show: true,
+        show: false,
         icon: !isDev ? path.join(__dirname, "./dist/www/logo.png") : path.join(__dirname, "../svelte/static/logo.png"),
         webPreferences: {
             devTools: isDebug,
@@ -54,16 +56,50 @@ async function createWindow() {
     });
 
     window.loadURL(!isDev ? `file:///${path.join(__dirname, "www", "index.html")}` : "http://localhost:5173/");
-    window.once("ready-to-show", () => window.show());
-   //updaterInfo.initAutoUpdater(autoUpdater, mainWindow.window);
+    window.once("ready-to-show", () => splash.webContents.send("WindowReady"));
+
+    splash = new BrowserWindow({
+        title: packageData.productName,
+        width: 450,
+        height: 300,
+        frame: false,
+        resizable: false,
+        fullscreen: false,
+        fullscreenable: false,
+        maximizable: false,
+        show: false,
+        icon: !isDev ? path.join(__dirname, "./dist/www/logo.png") : path.join(__dirname, "../svelte/static/logo.png"),
+        webPreferences: {
+            devTools: isDebug,
+            preload: path.join(__dirname, "preload.js")
+        }
+    });
+
+    splash.loadURL(!isDev ? `file:///${path.join(__dirname, "www", "splash.html")}` : "http://localhost:5173/splash/");
+    splash.once("ready-to-show", () => splash.show());
 }
 
-app.whenReady().then(() => createWindow());
+app.whenReady().then(() => {
+    createWindow();
+    autoUpdater.checkForUpdates();
+});
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin")
         app.quit();
 });
+
+//#region Updater
+
+autoUpdater.on("update-available", () => splash.webContents.send("CFUStatus", true));
+
+autoUpdater.on("update-not-available", () => splash.webContents.send("CFUStatus", false));
+
+autoUpdater.on("download-progress", (info) => splash.webContents.send("CFUProgress", info.percent));
+
+autoUpdater.on("update-downloaded", () => autoUpdater.quitAndInstall());
+
+//#endregion
 
 //#region Preload Events
 
@@ -83,6 +119,11 @@ function log(logger: Logger, type: "info" | "warn" | "error", msg: string) {
 ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
 
 ipcMain.on("MinimizeWindow", () => BrowserWindow.getFocusedWindow()!.minimize());
+
+ipcMain.on("OpenMain", () => {
+    splash.close();
+    window.show();
+});
 
 ipcMain.on("GetSetting", (event, key: string) => event.returnValue = appConfig.get(key));
 
