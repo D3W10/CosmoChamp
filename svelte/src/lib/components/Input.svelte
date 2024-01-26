@@ -58,10 +58,10 @@
                     </div>
                 </div>
                 <div class="h-8 px-1.5 flex flex-col justify-center">
-                    <button class="rounded-sm overflow-hidden" on:click={() => value = Math.min(Math.max(value + step, min), max)}>
+                    <button class="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == max} on:click={() => value = Math.min(Math.max(value + step, min), max)}>
                         <Icon name="chevron" className="h-4 -mb-1 fill-current -rotate-180" />
                     </button>
-                    <button class="rounded-sm overflow-hidden" on:click={() => value = Math.min(Math.max(value - step, min), max)}>
+                    <button class="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == min} on:click={() => value = Math.min(Math.max(value - step, min), max)}>
                         <Icon name="chevron" className="h-4 -mt-1 fill-current" />
                     </button>
                 </div>

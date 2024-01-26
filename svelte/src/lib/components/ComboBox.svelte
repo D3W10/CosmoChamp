@@ -15,16 +15,18 @@
     $: selectedItem = items[selected];
 
     function itemSelected(index: number) {
-        selected = index;
+        if (selected != index) {
+            selected = index;
 
-        dispatch("change", { selected: index });
+            dispatch("change", { selected: index });
+        }
     }
 </script>
 
 <button class={`block relative rounded-md z-10 ${className}`} role="combobox" aria-controls="comboboxItems" aria-expanded={open} on:click={() => open = !open}>
     <div class="px-2 py-1.5 flex justify-between items-center bg-tertiary text-left rounded-md">
         <span class="text-sm">{selectedItem}</span>
-        <Icon name="chevron" className={`w-5 h-5 ml-2 fill-current transition-transform duration-500 ease-quint-out ${!open ? closedCss : openCss}`} />
+        <Icon name="chevron" className={`w-5 h-5 ml-2 fill-current transition-transform duration-[400ms] ease-quint-out ${!open ? closedCss : openCss}`} />
     </div>
     {#if open}
         <div class={`w-full absolute ${!listReverse ? "top-6" : "bottom-6"} bg-tertiary rounded-md overflow-hidden -z-10`} transition:slide={$transition.comboFlow}>

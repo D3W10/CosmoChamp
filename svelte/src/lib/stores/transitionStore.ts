@@ -10,7 +10,7 @@ export const transition = derived([page, settings], ($values) => {
     return {
         pageIn: { duration: duration, delay: duration, x: offset * -1, easing: cubicOut },
         pageOut: { duration: duration, x: offset, easing: cubicIn },
-        comboFlow: { duration: 500, easing: quintOut },
+        comboFlow: { duration: 400, easing: quintOut },
         nameFlyIn: (rev: boolean) => { return { duration: 2000, x: (!$values[1]?.reduceMotion ? 410 : 205) * (!rev ? 1 : -1), easing: quintOut, opacity: (!$values[1]?.reduceMotion ? 1 : 0) }},
         nameFlyOut: (rev: boolean) => { return { duration: 2000, x: (!$values[1]?.reduceMotion ? 500 : 250) * (!rev ? 1 : -1), easing: quintIn, opacity: (!$values[1]?.reduceMotion ? 1 : 0) }}
     };
