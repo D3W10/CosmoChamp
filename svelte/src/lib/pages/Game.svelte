@@ -7,6 +7,7 @@
     import { settings } from "$lib/stores/settingsStore";
     import { transition } from "$lib/stores/transitionStore";
     import { drawCard, drawDeck } from "$lib/deck";
+    import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
     let versus = false, start = false, opponentHover = -1;
@@ -43,7 +44,7 @@
     {#if versus}
         <div class="w-full h-full flex flex-col justify-center items-center space-y-20">
             <div class="w-1/3 flex justify-around" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }}>
-                <span class="text-2xl">{$game?.mode}</span>
+                <span class="text-2xl">{gameModes[$game ? $game.mode : 0].name}</span>
                 <span class="flex text-shade/50 text-2xl">{$game?.goal}<img class="w-8 mx-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
             </div>
             <div class="w-[115%] h-1/2 flex items-center space-x-0.5">

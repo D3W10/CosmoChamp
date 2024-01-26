@@ -7,18 +7,18 @@
     import Modal from "$lib/components/Modal.svelte";
     import Input from "$lib/components/Input.svelte";
     import ComboBox from "$lib/components/ComboBox.svelte";
+    import { gameModes } from "$lib/models/GameModes.object";
 
-    let gameModes = ["Normal", "Vanilla", "Inferno" ];
     let showCreateModal = false, showJoinModal = false;
     let ipValue: string, portValue: number, modeValue: number, goalValue: number = 15;
 
     function onCreateRoom() {
-        game.set({ host: true, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: gameModes[modeValue], goal: goalValue });
+        game.set({ host: true, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue });
         page.set({ current: "rules", back: false });
     }
 
     function onJoinRoom() {
-        game.set({ host: false, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: gameModes[modeValue], goal: goalValue });
+        game.set({ host: false, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue });
         page.set({ current: "rules", back: false });
     }
 </script>
@@ -58,7 +58,7 @@
     <div class="flex space-x-4">
         <div class="w-1/2 space-y-1">
             <span class="ml-0.5 text-sm">Game Mode</span>
-            <ComboBox className="w-full" items={gameModes} listClassName="h-[3.75rem]" bind:selected={modeValue} />
+            <ComboBox className="w-full" items={gameModes.map((e) => e.name)} listClassName="h-[3.75rem]" bind:selected={modeValue} />
         </div>
         <div class="w-1/2 space-y-1">
             <span class="ml-0.5 text-sm">Winning Goal <img class="w-5 ml-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>

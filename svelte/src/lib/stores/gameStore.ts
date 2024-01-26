@@ -4,7 +4,7 @@ interface IGameStore {
     host: boolean;
     ip: string;
     port: number;
-    mode: string;
+    mode: 0 | 1 | 2;
     goal: number;
     opponent?: string;
 }
