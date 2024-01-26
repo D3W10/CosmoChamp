@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-let wReady = false, cfuStatus: (available: boolean) => unknown, cfuProgress: (percent: number) => unknown, winReady: () => unknown, receiveMessage: (message: string) => unknown;
+let wReady = false, winReady: () => unknown, cfuProgress: (percent: number) => unknown, receiveMessage: (message: string) => unknown;
 const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
 const pWarn = (msg: string) => ipcRenderer.send("LoggerPreload", "warn", msg);
 const pError = (msg: string) => ipcRenderer.send("LoggerPreload", "error", msg);
@@ -29,6 +29,19 @@ export function warn(msg: string) {
  */
 export function error(msg: string) {
     ipcRenderer.send("LoggerRenderer", "error", msg);
+}
+
+/**
+ * Checks if there's an update available for the app passing the result to the statusCallback, if there's an update available the progressCallback is called with the percentage of the download
+ * 
+ * @param statusCallback The function to receive the update status
+ * @param progressCallback The function to receive the download progress
+ */
+export function checkForUpdates(statusCallback: (available: boolean) => unknown, progressCallback: (percent: number) => unknown) {
+    ipcRenderer.send("CheckForUpdates");
+
+    ipcRenderer.once("CFUStatus", (_, available: boolean) => statusCallback(available));
+    cfuProgress = progressCallback;
 }
 
 /**
@@ -119,24 +132,6 @@ export function sendMessage(message: string) {
 }
 
 /**
- * Updates the callback function reference to where the updater status should be sent
- * 
- * @param callback The function to receive the status
- */
-export function updateCfuStatusCallback(callback: (available: boolean) => unknown) {
-    cfuStatus = callback;
-}
-
-/**
- * Updates the callback function reference to where the update progress should be sent
- * 
- * @param callback The function to receive the progress
- */
-export function updateCfuProgressCallback(callback: (percent: number) => unknown) {
-    cfuProgress = callback;
-}
-
-/**
  * Updates the callback function reference to where the main window status should be sent
  * 
  * @param callback The function to receive the window status
@@ -156,8 +151,6 @@ export function updateReceiveCallback(callback: (message: string) => unknown) {
     receiveMessage = callback;
 }
 
-ipcRenderer.on("CFUStatus", (_, available: boolean) => cfuStatus(available));
-
 ipcRenderer.on("CFUProgress", (_, percent: number) => cfuProgress(percent));
 
 ipcRenderer.on("WindowReady", () => {
@@ -176,6 +169,7 @@ contextBridge.exposeInMainWorld("app", {
     log,
     warn,
     error,
+    checkForUpdates,
     closeWindow,
     minimizeWindow,
     openMain,
@@ -186,8 +180,6 @@ contextBridge.exposeInMainWorld("app", {
     createServer,
     connectClient,
     sendMessage,
-    updateCfuStatusCallback,
-    updateCfuProgressCallback,
     updateReadyCallback,
     updateReceiveCallback
 });

@@ -79,10 +79,7 @@ async function createWindow() {
     splash.once("ready-to-show", () => splash.show());
 }
 
-app.whenReady().then(() => {
-    createWindow();
-    autoUpdater.checkForUpdates();
-});
+app.whenReady().then(() => createWindow());
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin")
@@ -90,10 +87,6 @@ app.on("window-all-closed", () => {
 });
 
 //#region Updater
-
-autoUpdater.on("update-available", () => splash.webContents.send("CFUStatus", true));
-
-autoUpdater.on("update-not-available", () => splash.webContents.send("CFUStatus", false));
 
 autoUpdater.on("download-progress", (info) => splash.webContents.send("CFUProgress", info.percent));
 
@@ -115,6 +108,13 @@ function log(logger: Logger, type: "info" | "warn" | "error", msg: string) {
     else if (type == "error")
         logger.error(msg);
 }
+
+ipcMain.on("CheckForUpdates", async () => {
+    autoUpdater.checkForUpdates();
+    
+    autoUpdater.on("update-available", () => splash.webContents.send("CFUStatus", true));
+    autoUpdater.on("update-not-available", () => splash.webContents.send("CFUStatus", false));
+});
 
 ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
 

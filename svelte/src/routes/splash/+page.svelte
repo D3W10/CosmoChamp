@@ -9,23 +9,31 @@
     const DEFAULT_STATUS = "Starting";
     let start = false, status = DEFAULT_STATUS, dlPercent = 0, cfuReady = false, winReady = false;
 
-    $app?.updateCfuStatusCallback((available) => {
-        if (available)
-            status = "Updating";
-        else {
-            cfuReady = true;
-            onReady();
-        }
+    $app?.updateReadyCallback(() => {
+        winReady = true;
+        onReady();
     });
-    $app?.updateCfuProgressCallback((percent) => dlPercent = percent);
-    $app?.updateReadyCallback(() => { winReady = true; onReady(); });
+
+    function checkForUpdates() {
+        $app?.checkForUpdates((available) => {
+            if (available)
+                status = "Updating";
+            else {
+                cfuReady = true;
+                onReady();
+            }
+        }, (percent) => dlPercent = percent);
+    }
 
     function onReady() {
         if (cfuReady && winReady)
             $app?.openMain();
     }
 
-    onMount(() => { document.body.classList.add("bg-background"); start = true; });
+    onMount(() => {
+        document.body.classList.add("bg-background");
+        start = true;
+    });
 </script>
 
 <div class="w-full h-full flex flex-col items-center relative">
@@ -34,7 +42,7 @@
         <Blob className="w-4/5 absolute top-0 left-0 -z-10" color="#2c14ff" />
         <Blob className="w-2/3 absolute bottom-0 right-0 rotate-180 -z-10" color="#8c0dff" />
         {#if status != DEFAULT_STATUS}
-            <div class="w-1/3 mt-4 mr-4 absolute top-0 right-0" transition:fade={{ duration: 1000 }}>
+            <div class="w-1/3 mt-4 mr-4 absolute top-0 right-0" transition:fade={{ duration: 500 }}>
                 <ProgressBar bind:value={dlPercent} />
             </div>
         {/if}
@@ -42,6 +50,6 @@
             <img src="./logo.png" alt="Logo" class="w-1/5" />
             <h1 class="text-2xl font-semibold">CosmoChamp</h1>
         </div>
-        <p class="absolute bottom-4 text-shade/75 animate-pulse" in:fade={{ duration: 1000, delay: 500 }}>{status}</p>
+        <p class="absolute bottom-4 text-shade/75 animate-pulse" in:fade={{ duration: 1000, delay: 500 }} on:introend={checkForUpdates}>{status}</p>
     {/if}
 </div>
