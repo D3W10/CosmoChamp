@@ -7,8 +7,12 @@ const config = {
     kit: {
         adapter: adapter({
             pages: "../dist/www",
-            assets: "../dist/www",
-        })
+            assets: "../dist/www"
+        }),
+        alias: {
+            "$electron": "../electron",
+            "$electron/*": "../electron/*"
+        }
     }
 };
 
