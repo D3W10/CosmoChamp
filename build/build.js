@@ -39,6 +39,7 @@ module.exports = {
     nsis: {
         oneClick: false,
         perMachine: false,
+        selectPerMachineByDefault: true,
         allowToChangeInstallationDirectory: true,
         installerIcon: "./icon.ico",
         //installerSidebar: "./sidebar.bmp",

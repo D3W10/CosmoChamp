@@ -9,19 +9,19 @@ class Logger {
         this.color = `\x1b[${color}m`;
     }
 
-    info(msg: string) {
+    info(msg: any) {
         this.log(msg);
     }
 
-    log(msg: string) {
+    log(msg: any) {
         logger.info(`${this.toString()} - ${msg}`);
     }
 
-    warn(msg: string) {
+    warn(msg: any) {
         logger.warn(`${this.toString()} - ${msg}`);
     }
 
-    error(msg: string) {
+    error(msg: any) {
         logger.error(`${this.toString()} - ${msg}`);
     }
 

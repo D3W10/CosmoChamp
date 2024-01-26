@@ -109,11 +109,19 @@ function log(logger: Logger, type: "info" | "warn" | "error", msg: string) {
         logger.error(msg);
 }
 
-ipcMain.on("CheckForUpdates", async () => {
+ipcMain.on("CheckForUpdates", () => {
     autoUpdater.checkForUpdates();
+
+    if (isDev)
+        splash.webContents.send("CFUStatus", false);
     
-    autoUpdater.on("update-available", () => splash.webContents.send("CFUStatus", true));
-    autoUpdater.on("update-not-available", () => splash.webContents.send("CFUStatus", false));
+    autoUpdater.once("update-available", () => splash.webContents.send("CFUStatus", true));
+    autoUpdater.once("update-not-available", () => splash.webContents.send("CFUStatus", false));
+    autoUpdater.once("update-cancelled", () => splash.webContents.send("CFUStatus", false));
+    autoUpdater.once("error", (error) => {
+        logger.error(error.message);
+        splash.webContents.send("CFUStatus", false);
+    });
 });
 
 ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());

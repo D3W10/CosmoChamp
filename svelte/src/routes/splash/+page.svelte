@@ -7,10 +7,11 @@
     import ProgressBar from "$lib/components/ProgressBar.svelte";
 
     const DEFAULT_STATUS = "Starting";
-    let start = false, status = DEFAULT_STATUS, dlPercent = 0, cfuReady = false, winReady = false;
+    let start = false, status = DEFAULT_STATUS, dlPercent = 0, splashReady = false, winReady = false;
 
     $app?.updateReadyCallback(() => {
         winReady = true;
+        $app?.log("Main window ready");
         onReady();
     });
 
@@ -19,14 +20,15 @@
             if (available)
                 status = "Updating";
             else {
-                cfuReady = true;
+                splashReady = true;
+                $app?.log("Splash window ready");
                 onReady();
             }
         }, (percent) => dlPercent = percent);
     }
 
     function onReady() {
-        if (cfuReady && winReady)
+        if (splashReady && winReady)
             $app?.openMain();
     }
 
@@ -39,8 +41,8 @@
 <div class="w-full h-full flex flex-col items-center relative">
     {#if start}
         <div class="h-8 absolute top-0 left-0 right-0" style="-webkit-app-region: drag;" />
-        <Blob className="w-4/5 absolute top-0 left-0 -z-10" color="#2c14ff" />
-        <Blob className="w-2/3 absolute bottom-0 right-0 rotate-180 -z-10" color="#8c0dff" />
+        <Blob className="w-4/5 absolute top-0 left-0 -z-10" color="#3014ff" />
+        <Blob className="w-2/3 absolute bottom-0 right-0 rotate-180 -z-10" color="#b92dff" />
         {#if status != DEFAULT_STATUS}
             <div class="w-1/3 mt-4 mr-4 absolute top-0 right-0" transition:fade={{ duration: 500 }}>
                 <ProgressBar bind:value={dlPercent} />
