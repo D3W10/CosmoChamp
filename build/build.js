@@ -42,9 +42,9 @@ module.exports = {
         selectPerMachineByDefault: true,
         allowToChangeInstallationDirectory: true,
         installerIcon: "./icon.ico",
-        //installerSidebar: "./sidebar.bmp",
+        installerSidebar: "./installerSidebar.bmp",
         uninstallerIcon: "./icon.ico",
-        //uninstallerSidebar: "./sidebar.bmp",
+        uninstallerSidebar: "./uninstallerSidebar.bmp",
         uninstallDisplayName: "${productName}",
         license: "LICENSE",
         deleteAppDataOnUninstall: true
