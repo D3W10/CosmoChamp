@@ -7,6 +7,9 @@ class Logger {
     constructor(name: string, color: number) {
         this.name = name.toUpperCase();
         this.color = `\x1b[${color}m`;
+
+        logger.transports.file.fileName = "logs.log";
+        logger.transports.file.getFile().clear();
     }
 
     info(msg: any) {
@@ -18,15 +21,15 @@ class Logger {
     }
 
     warn(msg: any) {
-        logger.warn(`${this.toString()} - ${msg}`);
+        logger.warn(`${this.toString()} - \x1b[33m${msg}\x1b[0m`);
     }
 
     error(msg: any) {
-        logger.error(`${this.toString()} - ${msg}`);
+        logger.error(`${this.toString()} - \x1b[31m${msg}\x1b[0m`);
     }
 
     toString() {
-        return `${this.color}[${this.name}]\x1b[0m`;
+        return `[${this.color}${this.name}\x1b[0m]`;
     }
 }
 
