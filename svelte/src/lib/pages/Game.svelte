@@ -72,7 +72,7 @@
                     {/each}
                 </div>
                 <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }}>
-                    <span class="flex text-shade/50">0<img class="w-6 mx-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />points</span>
+                    <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /> points</span>
                 <span>{$game?.opponent}</span>
             </div>
         </div>
@@ -112,7 +112,7 @@
             <div class="px-6 flex justify-between items-end">
                 <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
                     <span>{$settings?.playerName}</span>
-                    <span class="flex text-shade/50">0<img class="w-6 mx-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />points</span>
+                    <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /> points</span>
                 </div>
                 <div class="flex -mb-20">
                     {#each cards as card, i}

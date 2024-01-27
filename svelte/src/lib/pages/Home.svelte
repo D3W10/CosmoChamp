@@ -25,7 +25,7 @@
 
 <div class="w-full h-full" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     <div class="w-full h-full flex flex-col justify-center items-center space-y-3">
-        <h1 class="w-125 text-2xl font-semibold">Welcome Champ 🚀</h1>
+        <h1 class="w-125 text-2xl font-semibold">Welcome Champ <Icon name="rocket" className="w-7 h-7 -mt-0.5 inline-block" /></h1>
         <div class="h-4/6 flex space-x-5">
             <button class="w-60 flex flex-col justify-center items-center relative bg-secondary rounded-xl space-y-2 overflow-hidden z-0 before:w-0 before:h-0 before:block before:absolute before:bg-shade/5 before:rounded-full before:transition-all before:duration-[400ms] before:ease-cubic-out before:-z-10 hover:before:w-112 hover:before:h-112" on:click={() => (showCreateModal = true)}>
                 <Icon name="create" className="w-12 h-12 drop-shadow-lg" />
@@ -61,7 +61,7 @@
             <ComboBox className="w-full" items={gameModes.map((e) => e.name)} listClassName="h-[3.75rem]" bind:selected={modeValue} />
         </div>
         <div class="w-1/2 space-y-1">
-            <span class="ml-0.5 text-sm">Winning Goal <img class="w-5 ml-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+            <span class="ml-0.5 text-sm">Winning Goal <img class="w-5 h-5 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
             <Input type="wheel" min={5} max={50} step={5} bind:value={goalValue} />
         </div>
     </div>

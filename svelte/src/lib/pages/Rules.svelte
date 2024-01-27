@@ -206,7 +206,7 @@
                 {#if gameAnnounced}
                     <div in:fade={{ duration: 1000, easing: cubicOut }}>
                         <p>{gameModes[selectedGameMode].name}</p>
-                        <p class="flex items-center text-shade/50 text-sm">{$game?.goal} <img class="w-5 h-5 ml-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></p>
+                        <p class="flex items-center text-shade/50 text-sm">{$game?.goal} <img class="w-5 h-5 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></p>
                     </div>
                 {/if}
             </div>
