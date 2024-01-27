@@ -1,35 +1,36 @@
-import * as logger from "electron-log";
+import log from "electron-log/main";
+
+log.transports.file.fileName = "logs.log";
+log.transports.file.getFile().clear();
+log.transports.console.format = "{h}:{i}:{s}.{ms}{scope} › {text}";
+log.transports.console.useStyles = true;
+log.transports.file.format = "[{y}-{m}-{d} {h}:{i}:{s}.{ms}] [{level}]{scope} › {text}";
 
 class Logger {
     private readonly name: string;
     private readonly color: string;
+    private readonly logger;
 
-    constructor(name: string, color: number) {
+    constructor(name: string, color: string) {
         this.name = name.toUpperCase();
-        this.color = `\x1b[${color}m`;
-
-        logger.transports.file.fileName = "logs.log";
-        logger.transports.file.getFile().clear();
+        this.color = color;
+        this.logger = log.scope(`%c${this.name}%c`);
     }
 
     info(msg: any) {
         this.log(msg);
     }
 
-    log(msg: any) {
-        logger.info(`${this.toString()} - ${msg}`);
+    log(msg: any, ...colors: string[]) {
+        this.logger.info(`color: ${this.color}`, "color: unset", msg, ...(colors.map((e) => `color: ${e}`)));
     }
 
-    warn(msg: any) {
-        logger.warn(`${this.toString()} - \x1b[33m${msg}\x1b[0m`);
+    warn(msg: any, ...colors: string[]) {
+        this.logger.warn(`color: ${this.color}`, "color: unset", `%c${msg}`, "color: yellow", ...(colors.map((e) => `color: ${e}`)));
     }
 
-    error(msg: any) {
-        logger.error(`${this.toString()} - \x1b[31m${msg}\x1b[0m`);
-    }
-
-    toString() {
-        return `[${this.color}${this.name}\x1b[0m]`;
+    error(msg: any, ...colors: string[]) {
+        this.logger.error(`color: ${this.color}`, "color: unset", `%c${msg}`, "color: red", ...(colors.map((e) => `color: ${e}`)));
     }
 }
 

@@ -2,8 +2,6 @@ import { contextBridge, ipcRenderer } from "electron";
 
 let wReady = false, winReady: () => unknown, cfuProgress: (percent: number) => unknown, receiveMessage: (message: string) => unknown, socketClose: () => unknown;
 const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
-const pWarn = (msg: string) => ipcRenderer.send("LoggerPreload", "warn", msg);
-const pError = (msg: string) => ipcRenderer.send("LoggerPreload", "error", msg);
 
 export interface AppInfo {
     name: string;
@@ -61,7 +59,7 @@ export function minimizeWindow() {
 }
 
 /**
- * Closes the splash window and unhides the main one
+ * Closes the splash window and reveals the main one
  */
 export function openMain() {
     ipcRenderer.send("OpenMain");

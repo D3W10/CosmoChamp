@@ -13,7 +13,7 @@ require("electron-reload")(__dirname);
 var window: BrowserWindow, splash: BrowserWindow;
 const isDev: boolean = !app.isPackaged, isDebug = isDev || process.env.DEBUG != undefined && process.env.DEBUG.match(/true/gi) != null || process.argv.includes("-debug");
 const packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
-const logger = new Logger("Main", 34), pLogger = new Logger("Prld", 32), rLogger = new Logger("Rndr", 36), messenger = new Messenger(logger);
+const logger = new Logger("Main", "blue"), pLogger = new Logger("Prld", "cyan"), rLogger = new Logger("Rndr", "green"), messenger = new Messenger(logger);
 
 const appConfig = new Store<IStore>({
     defaults: {
@@ -33,9 +33,9 @@ autoUpdater.logger = logger;
 autoUpdater.disableWebInstaller = true;
 
 if (isDev)
-    logger.log("\x1b[95mDevelopment mode\x1b[0m");
-if (isDebug)
-    logger.log("\x1b[35mDebug mode enabled\x1b[0m");
+    logger.log("%cDevelopment mode enabled", "magenta");
+else if (isDebug)
+    logger.log("%cDebug mode enabled", "cyan");
 
 async function createWindow() {
     window = new BrowserWindow({
