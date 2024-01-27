@@ -1,6 +1,22 @@
 <script lang="ts">
     import { app } from "$lib/stores/appStore";
     import { info } from "$lib/stores/infoStore";
+    import { page } from "$lib/stores/pageStore";
+    import Modal from "$lib/components/Modal.svelte";
+
+    let showModal = false;
+
+    function onRedButtonClick() {
+        if (!["rules", "game"].includes($page.current))
+            $app?.closeWindow();
+        else
+            showModal = true;
+    }
+
+    function onModalSubmit() {
+        $app?.closeConnection();
+        page.set({ current: "home", back: true });
+    }
 </script>
 
 <div class="w-full h-10 p-2 flex justify-between drag">
@@ -13,6 +29,9 @@
         <button class="w-4 h-4 flex justify-center items-center relative bg-tertiary rounded-full overflow-hidden before:w-0 before:h-0 before:absolute before:bg-red-500 before:rounded-full before:transition-all before:duration-[400ms] before:ease-cubic-out hover:before:w-9 hover:before:h-9 focus-visible:outline-red-500" on:click={onRedButtonClick}></button>
     </div>
 </div>
+<Modal bind:show={showModal} title="Leave to Lobby" button="Yes" cancelButton="No" on:submit={onModalSubmit}>
+    <p>Are you sure you want to leave this room and go back to the home page?</p>
+</Modal>
 
 <style lang="postcss">
     button {

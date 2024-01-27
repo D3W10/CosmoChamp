@@ -33,7 +33,6 @@
                     <ComboBox className="w-32" items={["Midnight", "Light", "Cosmo", "Starlight", "Milky Way"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
                 </div>
                 <div class="flex justify-between items-center">
-                    <!-- TODO: Reduce Motion -->
                     <div>
                         <p>Reduce Motion</p>
                         <p class="mt-1 text-foreground/70 text-sm font-normal">Reduces the motion of the animations</p>

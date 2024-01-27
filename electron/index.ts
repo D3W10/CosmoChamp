@@ -148,7 +148,7 @@ ipcMain.on("GetAppInfo", (event) => {
 
 ipcMain.handle("CreateServer", async (_event, ip: string, port: any) => {
     try {
-        return await messenger.createServer(ip, port, (message) => window.webContents.send("SendMessage", message));
+        return await messenger.createServer(ip, port, (message) => window.webContents.send("SendMessage", message), () => window.webContents.send("CloseConnection"));
     }
     catch (err) {
         return err;
@@ -157,7 +157,7 @@ ipcMain.handle("CreateServer", async (_event, ip: string, port: any) => {
 
 ipcMain.handle("ConnectClient", async (_event, ip: string, port: any) => {
     try {
-        return await messenger.connectClient(ip, port, (message) => window.webContents.send("SendMessage", message));
+        return await messenger.connectClient(ip, port, (message) => window.webContents.send("SendMessage", message), () => window.webContents.send("CloseConnection"));
     }
     catch (err) {
         return err;
@@ -165,5 +165,7 @@ ipcMain.handle("ConnectClient", async (_event, ip: string, port: any) => {
 });
 
 ipcMain.on("SendMessage", (_event, message: string) => messenger.send(message));
+
+ipcMain.on("CloseConnection", () => messenger.close());
 
 //#endregion

@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-let wReady = false, winReady: () => unknown, cfuProgress: (percent: number) => unknown, receiveMessage: (message: string) => unknown;
+let wReady = false, winReady: () => unknown, cfuProgress: (percent: number) => unknown, receiveMessage: (message: string) => unknown, socketClose: () => unknown;
 const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
 const pWarn = (msg: string) => ipcRenderer.send("LoggerPreload", "warn", msg);
 const pError = (msg: string) => ipcRenderer.send("LoggerPreload", "error", msg);
@@ -132,6 +132,13 @@ export function sendMessage(message: string) {
 }
 
 /**
+ * Closes the currently open connection
+ */
+export function closeConnection() {
+    return ipcRenderer.send("CloseConnection");
+}
+
+/**
  * Updates the callback function reference to where the main window status should be sent
  * 
  * @param callback The function to receive the window status
@@ -151,6 +158,15 @@ export function updateReceiveCallback(callback: (message: string) => unknown) {
     receiveMessage = callback;
 }
 
+/**
+ * Updates the callback function reference to where the connection close event should be sent
+ * 
+ * @param callback The function to call when the connection closes
+ */
+export function updateCloseCallback(callback: () => unknown) {
+    socketClose = callback;
+}
+
 ipcRenderer.on("CFUProgress", (_, percent: number) => cfuProgress(percent));
 
 ipcRenderer.on("WindowReady", () => {
@@ -161,9 +177,11 @@ ipcRenderer.on("WindowReady", () => {
 });
 
 ipcRenderer.on("SendMessage", (_, message: string) => {
-    pLog(`Msg: ${message}`);
+    pLog(`MESSAGE: ${message}`);
     receiveMessage(message);
 });
+
+ipcRenderer.on("CloseConnection", () => socketClose());
 
 contextBridge.exposeInMainWorld("app", {
     log,
@@ -180,6 +198,8 @@ contextBridge.exposeInMainWorld("app", {
     createServer,
     connectClient,
     sendMessage,
+    closeConnection,
     updateReadyCallback,
-    updateReceiveCallback
+    updateReceiveCallback,
+    updateCloseCallback
 });

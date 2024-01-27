@@ -31,8 +31,10 @@
         else {
             let status = await $app?.connectClient($game?.ip!, $game?.port!);
 
-            if (status == "CONNECTED")
+            if (status == "CONNECTED") {
                 $app?.sendMessage(`HEY ${$settings?.playerName}`);
+                $app?.updateCloseCallback(closeConnection);
+            }
             else if (status == "ECONNREFUSED") {
                 modalData = ["Unable to Connect", "It appears there's no room hosted on the specified IP address and port. Please check those and try again."];
                 showErrorModal = true;
@@ -63,20 +65,22 @@
             if (args[1] != $info?.version) {
                 modalData = ["Incompatible Room", "The room you're trying to join is running a different version of the game. Please try again with a different room.", args[1], $info?.version];;
                 showErrorModal = true;
-                return;
+
+                $app?.closeConnection();
             }
+            else {
+                game.update((g) => {
+                    if (g) {
+                        g.mode = +args[2] as (0 | 1 | 2);
+                        g.goal = +args[3];
+                        g.opponent = args.slice(4, args.length).join(" ");
+                    }
 
-            game.update((g) => {
-                if (g) {
-                    g.mode = +args[2] as (0 | 1 | 2);
-                    g.goal = +args[3];
-                    g.opponent = args.slice(4, args.length).join(" ");
-                }
-
-                return g;
-            });
-            playerAnnounced = true;
-            gameAnnounced = true;
+                    return g;
+                });
+                playerAnnounced = true;
+                gameAnnounced = true;
+            }
         }
         else if (args[0] == "READY") {
             opponentReady = true;
@@ -84,6 +88,18 @@
         }
         else if (args[0] == "START")
             page.set({ current: "game", back: false });
+    }
+
+    function closeConnection() {
+        if ($game?.host) {
+            playerAnnounced = false;
+            didReady = false;
+            opponentReady = false;
+        }
+        else {
+            modalData = ["Host disconnected", "The host of this room has disconnected. You will be sent to the home page."];
+            showErrorModal = true;
+        }
     }
 
     function onReady() {
@@ -235,7 +251,7 @@
         {:else}
             <div class="w-1/4 p-6 flex flex-col justify-start space-y-1">
                 <p>Game Mode</p>
-                <ComboBox className="w-full" items={Object.keys(gameModes)} listReverse={true} bind:selected={selectedGameMode} on:change={() => { page.set({ current: "rules", back: true }); currentPage = 0; currentPageIdx = 0; }} />
+                <ComboBox className="w-full" items={gameModes.map((e) => e.name)} listReverse={true} bind:selected={selectedGameMode} on:change={() => { page.set({ current: "rules", back: true }); currentPage = 0; currentPageIdx = 0; }} />
             </div>
             <div class="w-2/4" />
             <div class="w-1/4 p-6 flex justify-end items-center">
