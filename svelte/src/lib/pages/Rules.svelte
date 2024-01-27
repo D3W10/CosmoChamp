@@ -1,6 +1,5 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
-    import { cubicOut } from "svelte/easing";
     import { app } from "$lib/stores/appStore";
     import { info } from "$lib/stores/infoStore";
     import { page } from "$lib/stores/pageStore";
@@ -204,7 +203,7 @@
         {#if $game != null}
             <div class="w-1/4 p-6 space-y-1">
                 {#if gameAnnounced}
-                    <div in:fade={{ duration: 1000, easing: cubicOut }}>
+                    <div in:fade={{ duration: 500 }}>
                         <p>{gameModes[selectedGameMode].name}</p>
                         <p class="flex items-center text-shade/50 text-sm">{$game?.goal} <img class="w-5 h-5 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></p>
                     </div>
@@ -212,22 +211,22 @@
             </div>
             <div class="w-2/4 relative flex justify-center items-center">
                 {#if !playerAnnounced}
-                    <div class="w-full absolute flex flex-col justify-center items-center space-y-4" out:fade={{ duration: 1000, easing: cubicOut }}>
+                    <div class="w-full absolute flex flex-col justify-center items-center space-y-4" in:fade={{ duration: 500, delay: 500 }} out:fade={{ duration: 500 }}>
                         <span class="animate-pulse">{$game.host ? "Waiting for second player" : "Connecting to the host"}</span>
                         <ProgressBar indeterminate />
                     </div>
                 {:else}
-                    <div class="w-full absolute flex flex-col justify-center items-center" in:fade={{ duration: 1000, delay: 800, easing: cubicOut }}>
+                    <div class="w-full absolute flex flex-col justify-center items-center" in:fade={{ duration: 500, delay: 500 }} out:fade={{ duration: 500 }}>
                         <Button className="w-36 text-base" disabled={didReady} on:click|once={() => { $app?.sendMessage("READY"); didReady = true; onReady(); }}>Ready</Button>
                     </div>
                 {/if}
             </div>
             <div class="w-1/4 p-6 space-y-1 text-right">
                 {#if playerAnnounced}
-                    <div in:fade={{ duration: 1000, easing: cubicOut }}>
+                    <div transition:fade={{ duration: 500 }}>
                         <p>{$game.opponent}</p>
-                        <div class={`flex justify-end items-center ${!opponentReady ? "text-shade/50" : "text-green-500"}`}>
-                            <div class={`w-4 h-4 mr-2 rounded-full ${!opponentReady ? "bg-shade/20" : "bg-green-500"}`} />
+                        <div class={`flex justify-end items-center transition-colors ${!opponentReady ? "text-shade/50" : "text-green-500"}`}>
+                            <div class={`w-4 h-4 mr-2 rounded-full transition-colors ${!opponentReady ? "bg-shade/20" : "bg-green-500"}`} />
                             <p class="flex items-center text-sm">{!opponentReady ? "Not Ready" : "Ready"}</p>
                         </div>
                     </div>
