@@ -2,9 +2,9 @@
     import { onMount } from "svelte";
 
     export let className: string;
-    export let color = "white";
-    export let radius = 500;
-    export let segments = 12;
+    export let color: string = "white";
+    export let radius: number = 500;
+    export let segments: number = 12;
 
     let canvas: HTMLCanvasElement;
     const HALF_PI = Math.PI / 2;

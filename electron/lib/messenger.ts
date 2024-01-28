@@ -5,6 +5,8 @@ class Messenger {
     private readonly logger: Logger;
     socket: net.Socket | null;
     server: net.Server | null;
+    messageQueue: string[] = [];
+    isSending: boolean = false;
 
     constructor(logger: Logger) {
         this.logger = logger;
@@ -58,7 +60,29 @@ class Messenger {
     }
     
     public send(message: string) {
+        if(!this.isSending)
+            this.sendImmediately(message);
+        else
+            this.messageQueue.push(message);
+    }
+
+    private sendImmediately(message: string) {
+        this.isSending = true;
         this.socket?.write(message);
+        this.sendNextInQueue();
+    }
+
+    private sendNextInQueue() {
+        if(this.messageQueue.length > 0) {
+            const nextMessage = this.messageQueue.shift();
+
+            setTimeout(() => {
+                this.socket?.write(nextMessage!);
+                this.sendNextInQueue();
+            }, 50);
+        }
+        else
+            this.isSending = false;
     }
 
     public close() {

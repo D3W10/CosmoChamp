@@ -175,7 +175,7 @@ ipcRenderer.on("WindowReady", () => {
 });
 
 ipcRenderer.on("SendMessage", (_, message: string) => {
-    pLog(`MESSAGE: ${message}`);
+    pLog(`Message: ${message}`);
     receiveMessage(message);
 });
 

@@ -4,10 +4,10 @@
     import Button from "./Button.svelte";
 
     export let show: boolean;
-    export let title = "";
-    export let button = "Okay";
-    export let canCancel = true;
-    export let cancelButton = "Cancel";
+    export let title: string = "";
+    export let button: string = "Okay";
+    export let canCancel: boolean = true;
+    export let cancelButton: string = "Cancel";
 
     let dialog: HTMLDialogElement;
     const dispatch = createEventDispatcher();

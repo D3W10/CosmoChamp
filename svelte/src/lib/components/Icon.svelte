@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let className = "";
+    export let className: string = "";
     export let name: "create" | "join" | "settings" | "chevron" | "rocket" | "crown" | "stopwatch";
 </script>
 

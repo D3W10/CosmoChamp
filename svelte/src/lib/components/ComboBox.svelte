@@ -8,7 +8,7 @@
     export let items: string[];
     export let selected: number = 0;
     export let listClassName: string = "";
-    export let listReverse = false;
+    export let listReverse: boolean = false;
 
     let open = false, closedCss = !listReverse ? "" : "-rotate-180", openCss = !listReverse ? "-rotate-180" : "rotate-0";
     const dispatch = createEventDispatcher();

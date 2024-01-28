@@ -4,7 +4,7 @@
     import { page } from "$lib/stores/pageStore";
     import Modal from "$lib/components/Modal.svelte";
 
-    let showModal = false;
+    let showModal: boolean = false;
 
     function onRedButtonClick() {
         if (!["rules", "game"].includes($page.current))

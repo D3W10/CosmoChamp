@@ -3,14 +3,14 @@
     import { spring } from "svelte/motion";
     import Icon from "./Icon.svelte";
 
-    export let className = "";
+    export let className: string = "";
     export let type: "text" | "number" | "ip" | "wheel" | "switch";
     export let value: any = null;
-    export let placeholder = "";
+    export let placeholder: string = "";
     export let maxlength: number | undefined = undefined;
-    export let min = 0;
-    export let max = 10;
-    export let step = 1;
+    export let min: number = 0;
+    export let max: number = 10;
+    export let step: number = 1;
     
     let error = false, inputElm: HTMLInputElement;
     const displayed = spring(), dispatch = createEventDispatcher();

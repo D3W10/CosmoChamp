@@ -2,9 +2,9 @@
     import { tweened } from "svelte/motion";
     import { cubicOut } from "svelte/easing";
 
-    export let className = "";
-    export let value = 0;
-    export let indeterminate = false;
+    export let className: string = "";
+    export let value: number = 0;
+    export let indeterminate: boolean = false;
 
     const progress = tweened(0, {
         duration: 400,
