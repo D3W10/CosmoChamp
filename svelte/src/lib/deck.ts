@@ -1,11 +1,14 @@
 import type { Card } from "./models/Card.interface";
 
-let deck: Card[] = [], usedDeck: Card[] = [];
-let deckS: Card[] = [], usedDeckS: Card[] = [];
+let deck: Card[], usedDeck: Card[];
+let deckS: Card[], usedDeckS: Card[];
 
-generateDeck();
+export function generateDeck() {
+    deck = [];
+    usedDeck = [];
+    deckS = [];
+    usedDeckS = [];
 
-function generateDeck() {
     deck.push({ id: "fire1" } satisfies Card);
     deck.push({ id: "fire1" } satisfies Card);
     deck.push({ id: "fire2" } satisfies Card);
@@ -105,7 +108,7 @@ export function drawCard() {
 }
 
 export function drawSpecialCard() {
-    return deckS.pop() ?? (() => { reshuffleUsed(true); return deckS.pop()!; })();
+    return deckS.pop() ?? (() => { reshuffleUsed(true); return deckS.pop(); })();
 }
 
 export function drawDeck() {

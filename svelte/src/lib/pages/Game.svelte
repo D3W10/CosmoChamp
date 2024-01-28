@@ -1,24 +1,28 @@
 <script lang="ts">
-    import { crossfade, fade, fly } from "svelte/transition";
-    import { backOut, quintIn, quintOut } from "svelte/easing";
+    import { crossfade, fade, fly, scale } from "svelte/transition";
+    import { backOut, cubicIn } from "svelte/easing";
     import { app } from "$lib/stores/appStore";
     import { page } from "$lib/stores/pageStore";
     import { game } from "$lib/stores/gameStore";
     import { settings } from "$lib/stores/settingsStore";
     import { transition } from "$lib/stores/transitionStore";
-    import { drawCard, drawDeck } from "$lib/deck";
+    import { drawCard, drawDeck, generateDeck } from "$lib/deck";
     import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
-    let versus = false, start = false, opponentHover = -1;
+    let versus = false, show = false, start = false, opponentHover = -1;
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7);
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7);
+    let elementAnim: string = "energy", elementAnimShow = false;
+
+    const [send, receive] = crossfade({ duration: 500 });
 
     setTimeout(() => versus = true, 1000);
 
     $app?.updateReceiveCallback(receiveMessage);
 
     if ($game?.host) {
+        generateDeck();
         cards = drawDeck();
         $app?.sendMessage(`DECK ${drawDeck().map((card) => card.id).join(";")}`);
     }
@@ -31,11 +35,11 @@
         else if (args[0] == "DECK" && !$game?.host)
             cards = args[1].split(";").map((id) => { return { id: id }});
         else if (args[0] == "SELECT")
-            oSendState[+args[1]] = true;
+            oSendState[6 - +args[1]] = true;
     }
 
     function checkHoverState() {
-        if (!cardsElmts.some((card) => card.matches(":hover")))
+        if (!cardsElmts.some((card) => card && card.matches(":hover")))
             $app?.sendMessage("HOVER -1");
     }
 </script>
@@ -51,7 +55,7 @@
                 <div class="w-full h-full flex justify-center items-start pt-10 overflow-hidden -skew-x-[35deg]">
                     <p class="mr-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(true)} out:fly={$transition.nameFlyOut(false)} on:introend={() => versus = false}>{$game?.host ? $settings?.playerName : $game?.opponent}</p>
                 </div>
-                <div class="min-w-[1.5rem] max-w-[1.5rem] h-full flex justify-center items-center bg-shade/40 rounded-lg rotate-[35deg]" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }} on:outroend={() => start = true}>
+                <div class="min-w-[1.5rem] max-w-[1.5rem] h-full flex justify-center items-center bg-shade/40 rounded-lg rotate-[35deg]" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }} on:outroend={() => show = true}>
                     <p class="text-7xl font-semibold rotate-[-35deg]">VS</p>
                     <p class="absolute text-7xl font-semibold rotate-[-35deg] drop-shadow-glow animate-pulse">VS</p>
                 </div>
@@ -61,67 +65,91 @@
             </div>
         </div>
     {/if}
-    {#if start}
-        <div class="w-full h-full flex flex-col relative">
-            <div class="px-6 flex justify-between items-start">
-                <div class="flex -mt-20">
-                    {#each Array(7) as _, i}
-                        {#if !oSendState[i]}
-                            <img class={`${i != 0 ? "-ml-10" : ""} enemy-card ${opponentHover == 6 - i ? "translate-y-5" : ""}`} src="./cards/back.png" alt="Enemy Card" style={`z-index: ${i};`} in:fly|global={{ duration: 800, y: -100, delay: 600 - i * 100, easing: backOut }} out:receive={{ key: "oCard" }} />
-                        {/if}
-                    {/each}
+    {#if show}
+        <div class="w-full h-full relative">
+            {#if start}
+                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => start = false, 1000)}>
+                    <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }}>START</span>
                 </div>
-                <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }}>
-                    <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /> points</span>
-                <span>{$game?.opponent}</span>
-            </div>
-        </div>
-        <div class="h-full flex justify-center items-center space-x-28">
-            <div class="sides flex justify-center items-center" in:fade={{ delay: 300, duration: 800 }}>
-                <span class="text-6xl font-semibold">15</span>
-            </div>
-            <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                    <div class="w-32 bg-secondary rounded-lg aspect-card">
+            {/if}
+            {#if elementAnimShow}
+                <div class="w-full h-full flex justify-center items-center absolute z-10">
+                    <div class="min-w-[115%] h-[175%] rotate-[-30deg] space-y-3.5 bg-black/30" in:fade={{ duration: 250 }} out:fade={{ duration: 250, delay: 250 }}>
+                        {#each Array(13) as _, i}
+                            <div class="h-16 bg-contain" style={`background-image: url(./elements/${elementAnim}.png); animation: ${i % 2 == 0 ? "slide-right" : "slide-left"} 2s linear;`} />
+                        {/each}
+                    </div>
+                    <div class="w-full h-full flex justify-center items-center absolute bg-black/50" in:fade={{ duration: 250 }} out:fade={{ duration: 250, delay: 250 }} />
+                    <img class="w-52 absolute drop-shadow-2xl" src={`./elements/${elementAnim}.png`} alt={elementAnim.charAt(0).toUpperCase() + elementAnim.slice(1)} in:scale={{ duration: 500, opacity: 1 }} out:scale={{ duration: 500, start: 2.5, easing: cubicIn }} on:introend={() => setTimeout(() => elementAnimShow = false, 1000)} />
+                </div>
+            {/if}
+            <div class="w-full h-full absolute flex flex-col">
+                <div class="px-6 flex justify-between items-start">
+                    <div class="flex -mt-20">
                         {#each Array(7) as _, i}
-                            {#if oSendState[i]}
-                                <img src="./cards/back.png" alt="Enemy Card" in:send={{ key: "oCard" }} />
+                            {#if !oSendState[i]}
+                                <img class={`${i != 0 ? "-ml-10" : ""} enemy-card ${opponentHover == 6 - i ? "translate-y-5" : ""}`} src="./cards/back.png" alt="Enemy Card" style={`z-index: ${i};`} in:fly|global={{ duration: 800, y: -100, delay: 600 - i * 100, easing: backOut }} out:receive|global={{ key: "oCard" }} />
+                            {:else}
+                                <div class={`w-24 ${i != 0 ? "-ml-10 " : ""} aspect-card`} />
                             {/if}
                         {/each}
                     </div>
-                    <div class="w-32 bg-secondary rounded-lg aspect-card">
+                    <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
+                        <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+                        <span>{$game?.opponent}</span>
+                    </div>
+                </div>
+                <div class="h-full flex justify-center items-center space-x-28">
+                    <div class="sides flex justify-center items-center" in:fade={{ delay: 300, duration: 800 }}>
+                        <span class="text-6xl font-semibold">15</span>
+                    </div>
+                    <div class="flex space-x-6" in:fade={{ duration: 800 }}>
+                        <div class="w-32 flex bg-secondary rounded-lg aspect-card">
+                            {#each Array(7) as _, i}
+                                {#if oSendState[6 - i]}
+                                    <img src="./cards/back.png" alt="Enemy Card" in:send={{ key: "oCard" }} />
+                                {/if}
+                            {/each}
+                        </div>
+                        <div class="w-32 flex bg-secondary rounded-lg aspect-card">
+                            {#each cards as card, i}
+                                {#if pSendState[i]}
+                                    <button class="player-card" disabled in:send={{ key: "pCard" }}>
+                                        <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
+                                    </button>
+                                {/if}
+                            {/each}
+                        </div>
+                    </div>
+                    <div class="sides flex flex-col justify-center items-center space-y-3" in:fade={{ delay: 300, duration: 800 }}>
+                        <div class="flex space-x-3">
+                            <img class="w-16 h-16 opacity-10" src="./elements/energy.png" alt="Energy Element" />
+                            <img class="w-16 h-16 opacity-10" src="./elements/wind.png" alt="Wind Element" />
+                        </div>
+                        <div class="flex space-x-3">
+                            <img class="w-16 h-16 opacity-10" src="./elements/nature.png" alt="Nature Element" />
+                            <img class="w-16 h-16 opacity-10" src="./logo.png" alt="Space Element" />
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 flex justify-between items-end">
+                    <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
+                        <span>{$settings?.playerName}</span>
+                        <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+                    </div>
+                    <div class="flex -mb-20">
                         {#each cards as card, i}
-                            {#if pSendState[i]}
-                                <button class="player-card" disabled in:send={{ key: "pCard" }}>
-                                    <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
-                                </button>
-                            {/if}
+                            <div class={`max-w-32 ${i != 0 ? "-ml-10 " : ""} aspect-card`} style={`z-index: ${i};`}>
+                                {#if !pSendState[i]}
+                                    <button class={`player-card hover:-translate-y-5`} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => { pSendState[i] = true; $app?.sendMessage(`SELECT ${i}`) }} on:pointerenter={() => $app?.sendMessage(`HOVER ${i}`)} on:pointerleave={checkHoverState}>
+                                        <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
+                                    </button>
+                                {:else}
+                                    <div class={`w-32 pointer-events-none aspect-card`} />
+                                {/if}
+                            </div>
                         {/each}
                     </div>
-                </div>
-                <div class="sides flex flex-col justify-center items-center space-y-3" in:fade={{ delay: 300, duration: 800 }}>
-                    <div class="flex space-x-3">
-                        <img class="w-16 h-16 opacity-10" src="./elements/energy.png" alt="Energy Element" />
-                        <img class="w-16 h-16 opacity-10" src="./elements/wind.png" alt="Wind Element" />
-                    </div>
-                    <div class="flex space-x-3">
-                        <img class="w-16 h-16 opacity-10" src="./elements/nature.png" alt="Nature Element" />
-                        <img class="w-16 h-16 opacity-10" src="./logo.png" alt="Space Element" />
-                    </div>
-                </div>
-            </div>
-            <div class="px-6 flex justify-between items-end">
-                <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
-                    <span>{$settings?.playerName}</span>
-                    <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /> points</span>
-                </div>
-                <div class="flex -mb-20">
-                    {#each cards as card, i}
-                        {#if !pSendState[i]}
-                            <button class={`${i != 0 ? "-ml-10 " : ""} player-card hover:-translate-y-5`} style={`z-index: ${i};`} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive={{ key: "pCard" }} on:click={() => { pSendState[i] = true; $app?.sendMessage(`SELECT ${i}`) }} on:pointerenter={() => $app?.sendMessage(`HOVER ${i}`)} on:pointerleave={checkHoverState}>
-                                <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
-                            </button>
-                        {/if}
-                    {/each}
                 </div>
             </div>
         </div>
@@ -139,5 +167,25 @@
 
     .enemy-card {
         @apply w-24 bg-secondary rounded-md transition-transform aspect-card;
+    }
+
+    @keyframes -global-slide-right {
+        0% {
+            background-position-x: 0px
+        }
+
+        100% {
+            background-position-x: 128px
+        }
+    }
+
+    @keyframes -global-slide-left {
+        0% {
+            background-position-x: 0px
+        }
+
+        100% {
+            background-position-x: -128px
+        }
     }
 </style>
