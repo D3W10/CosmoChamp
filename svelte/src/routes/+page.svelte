@@ -7,6 +7,7 @@
     import Home from "$lib/pages/Home.svelte";
     import Rules from "$lib/pages/Rules.svelte";
     import Game from "$lib/pages/Game.svelte";
+    import Result from "$lib/pages/Result.svelte";
     import Settings from "$lib/pages/Settings.svelte";
 
     onMount(() => setup())
@@ -36,7 +37,7 @@
     {:else if $page.current == "game"}
         <Game />
     {:else if $page.current == "result"}
-        <Settings />
+        <Result />
     {:else if $page.current == "settings"}
         <Settings />
     {/if}
