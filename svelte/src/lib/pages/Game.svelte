@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { crossfade, fade, fly, scale } from "svelte/transition";
+    import { blur, crossfade, fade, fly, scale } from "svelte/transition";
     import { backOut, cubicIn } from "svelte/easing";
     import { app } from "$lib/stores/appStore";
     import { page } from "$lib/stores/pageStore";
@@ -14,6 +14,7 @@
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7);
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7);
     let elementAnim: string = "energy", elementAnimShow = false;
+    let time = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer = false;
 
     const [send, receive] = crossfade({ duration: 500 });
 
@@ -41,6 +42,24 @@
     function checkHoverState() {
         if (!cardsElmts.some((card) => card && card.matches(":hover")))
             $app?.sendMessage("HOVER -1");
+    }
+
+    function countDown() {
+        if (time > 0)
+            time--;
+        else {
+            runTimer = false;
+            clearInterval(timer);
+        }
+    }
+
+    $: {
+        if (runTimer) {
+            time = $game?.mode != 2 ? 15 : 3;
+            timer = setInterval(countDown, 1000);
+        }
+        else
+            clearInterval(timer);
     }
 </script>
 
@@ -100,8 +119,10 @@
                     </div>
                 </div>
                 <div class="h-full flex justify-center items-center space-x-28">
-                    <div class="sides flex justify-center items-center" in:fade={{ delay: 300, duration: 800 }}>
-                        <span class="text-6xl font-semibold">15</span>
+                    <div class="sides flex justify-center items-center relative" in:fade={{ delay: 300, duration: 800 }}>
+                        {#key time}
+                            <span class={`absolute text-6xl ${time <= 3 ? "text-red-500" : ""} font-semibold ${!runTimer ? "opacity-50" : ""} transition-opacity duration-200`} transition:blur={{ duration: 400 }}>{time}</span>
+                        {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
                         <div class="w-32 flex bg-secondary rounded-lg aspect-card">
