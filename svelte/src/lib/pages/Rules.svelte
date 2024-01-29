@@ -56,7 +56,7 @@
 
             game.update((g) => {
                 if (g)
-                    g.opponent = args.slice(1, args.length).join(" ");
+                    g.opponent.name = args.slice(1, args.length).join(" ");
 
                 return g;
             });
@@ -74,7 +74,7 @@
                     if (g) {
                         g.mode = +args[2] as (0 | 1 | 2);
                         g.goal = +args[3];
-                        g.opponent = args.slice(4, args.length).join(" ");
+                        g.opponent.name = args.slice(4, args.length).join(" ");
                     }
 
                     return g;
@@ -241,7 +241,7 @@
             <div class="w-1/4 p-6 space-y-1 text-right">
                 {#if playerAnnounced}
                     <div transition:fade={{ duration: 500 }}>
-                        <p>{$game.opponent}</p>
+                        <p>{$game.opponent.name}</p>
                         <div class={`flex justify-end items-center transition-colors ${!opponentReady ? "text-shade/50" : "text-green-500"}`}>
                             <div class={`w-4 h-4 mr-2 rounded-full transition-colors ${!opponentReady ? "bg-shade/20" : "bg-green-500"}`} />
                             <p class="flex items-center text-sm">{!opponentReady ? "Not Ready" : "Ready"}</p>

@@ -15,6 +15,7 @@
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7);
     let elementAnim: string = "energy", elementAnimShow = false;
     let time = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer = false;
+    let deckEnabled = false;
 
     const [send, receive] = crossfade({ duration: 500 });
 
@@ -40,17 +41,23 @@
     }
 
     function checkHoverState() {
-        if (!cardsElmts.some((card) => card && card.matches(":hover")))
+        if (deckEnabled && !cardsElmts.some((card) => card && card.matches(":hover")))
             $app?.sendMessage("HOVER -1");
     }
 
     function countDown() {
-        if (time > 0)
-            time--;
-        else {
+        if (--time == 0) {
+            if (!pSendState.includes(true))
+                cardsElmts[Math.floor(Math.random() * 7)].parentElement?.click();
+
             runTimer = false;
             clearInterval(timer);
         }
+    }
+
+    function startRound() {
+        runTimer = true;
+        deckEnabled = true;
     }
 
     $: {
@@ -72,14 +79,14 @@
             </div>
             <div class="w-[115%] h-1/2 flex items-center space-x-0.5">
                 <div class="w-full h-full flex justify-center items-start pt-10 overflow-hidden -skew-x-[35deg]">
-                    <p class="mr-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(true)} out:fly={$transition.nameFlyOut(false)} on:introend={() => versus = false}>{$game?.host ? $settings?.playerName : $game?.opponent}</p>
+                    <p class="mr-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(true)} out:fly={$transition.nameFlyOut(false)} on:introend={() => versus = false}>{$game?.host ? $settings?.playerName : $game?.opponent.name}</p>
                 </div>
                 <div class="min-w-[1.5rem] max-w-[1.5rem] h-full flex justify-center items-center bg-shade/40 rounded-lg rotate-[35deg]" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }} on:outroend={() => show = true}>
                     <p class="text-7xl font-semibold rotate-[-35deg]">VS</p>
                     <p class="absolute text-7xl font-semibold rotate-[-35deg] drop-shadow-glow animate-pulse">VS</p>
                 </div>
                 <div class="w-full h-full flex justify-center items-end pb-10 overflow-hidden -skew-x-[35deg]">
-                    <p class="ml-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(false)} out:fly={$transition.nameFlyOut(true)}>{!$game?.host ? $settings?.playerName : $game?.opponent}</p>
+                    <p class="ml-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(false)} out:fly={$transition.nameFlyOut(true)}>{!$game?.host ? $settings?.playerName : $game?.opponent.name}</p>
                 </div>
             </div>
         </div>
@@ -87,7 +94,7 @@
     {#if show}
         <div class="w-full h-full relative">
             {#if start}
-                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => start = false, 1000)}>
+                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => start = false, 1000)} on:outroend={() => { if ($game) $game.stats.startTime = new Date(); startRound(); }}>
                     <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }}>START</span>
                 </div>
             {/if}
@@ -114,8 +121,10 @@
                         {/each}
                     </div>
                     <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
-                        <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
-                        <span>{$game?.opponent}</span>
+                        <span class="flex text-shade/50">{$game?.opponent.points} <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+                        {@debug $game}
+                        <span>{$game?.opponent.name}</span>
+                        <button on:click={() => startRound()}>CSS</button>
                     </div>
                 </div>
                 <div class="h-full flex justify-center items-center space-x-28">
@@ -156,13 +165,13 @@
                 <div class="px-6 flex justify-between items-end">
                     <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
                         <span>{$settings?.playerName}</span>
-                        <span class="flex text-shade/50">0 <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+                        <span class="flex text-shade/50">{$game?.stats.points} <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
                     </div>
                     <div class="flex -mb-20">
                         {#each cards as card, i}
                             <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
                                 {#if !pSendState[i]}
-                                    <button class={`player-card hover:-translate-y-5`} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => { pSendState[i] = true; $app?.sendMessage(`SELECT ${i}`) }} on:pointerenter={() => $app?.sendMessage(`HOVER ${i}`)} on:pointerleave={checkHoverState}>
+                                    <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => { pSendState[i] = true; $app?.sendMessage(`SELECT ${i}`) }} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
                                         <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
                                     </button>
                                 {/if}

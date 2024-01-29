@@ -11,14 +11,15 @@
 
     let showCreateModal = false, showJoinModal = false;
     let ipValue: string, portValue: number, modeValue: number, goalValue: number = 15;
+    let defaultGameOpts = { opponent: { name: "", points: 0 }, stats: { roundCount: 0, points: 0, startTime: new Date() }};
 
     function onCreateRoom() {
-        game.set({ host: true, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue });
+        game.set({ host: true, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue, ...defaultGameOpts });
         page.set({ current: "rules", back: false });
     }
 
     function onJoinRoom() {
-        game.set({ host: false, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue });
+        game.set({ host: false, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue, ...defaultGameOpts });
         page.set({ current: "rules", back: false });
     }
 </script>

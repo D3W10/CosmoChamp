@@ -6,7 +6,15 @@ interface IGameStore {
     port: number;
     mode: 0 | 1 | 2;
     goal: number;
-    opponent?: string;
+    opponent: {
+        name: string;
+        points: number
+    };
+    stats: {
+        roundCount: number;
+        points: number;
+        startTime: Date;
+    };
 }
 
 export const game = writable<IGameStore | null>(null);
