@@ -160,13 +160,11 @@
                     </div>
                     <div class="flex -mb-20">
                         {#each cards as card, i}
-                            <div class={`max-w-32 ${i != 0 ? "-ml-10 " : ""} aspect-card`} style={`z-index: ${i};`}>
+                            <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
                                 {#if !pSendState[i]}
                                     <button class={`player-card hover:-translate-y-5`} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => { pSendState[i] = true; $app?.sendMessage(`SELECT ${i}`) }} on:pointerenter={() => $app?.sendMessage(`HOVER ${i}`)} on:pointerleave={checkHoverState}>
                                         <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
                                     </button>
-                                {:else}
-                                    <div class={`w-32 pointer-events-none aspect-card`} />
                                 {/if}
                             </div>
                         {/each}
