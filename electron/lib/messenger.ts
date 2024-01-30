@@ -5,8 +5,6 @@ class Messenger {
     private readonly logger: Logger;
     socket: net.Socket | null;
     server: net.Server | null;
-    messageQueue: string[] = [];
-    isSending: boolean = false;
 
     constructor(logger: Logger) {
         this.logger = logger;
@@ -27,7 +25,7 @@ class Messenger {
                 this.logger.log("Client joined");
                 this.socket = s;
 
-                this.socket.on("data", (data: Buffer) => dataCallback(data.toString("utf-8")));
+                this.socket.on("data", (data: Buffer) => this.sendCleaned(data.toString("utf-8"), dataCallback));
 
                 this.socket.on("close", () => {
                     this.logger.log("Client left");
@@ -48,7 +46,7 @@ class Messenger {
                 resolve("CONNECTED");
             });
     
-            this.socket.on("data", (data: Buffer) => dataCallback(data.toString("utf-8")));
+            this.socket.on("data", (data: Buffer) => this.sendCleaned(data.toString("utf-8"), dataCallback));
 
             this.socket.on("error", (e: any) => reject(e.code));
 
@@ -60,29 +58,14 @@ class Messenger {
     }
     
     public send(message: string) {
-        if(!this.isSending)
-            this.sendImmediately(message);
-        else
-            this.messageQueue.push(message);
+        this.socket?.write(message + "///");
     }
 
-    private sendImmediately(message: string) {
-        this.isSending = true;
-        this.socket?.write(message);
-        this.sendNextInQueue();
-    }
-
-    private sendNextInQueue() {
-        if(this.messageQueue.length > 0) {
-            const nextMessage = this.messageQueue.shift();
-
-            setTimeout(() => {
-                this.socket?.write(nextMessage!);
-                this.sendNextInQueue();
-            }, 50);
-        }
-        else
-            this.isSending = false;
+    private sendCleaned(message: string, callback: (data: string) => unknown) {
+        message.split("///").forEach((value) => {
+            if (value.length > 0)
+                callback(value);
+        });
     }
 
     public close() {
