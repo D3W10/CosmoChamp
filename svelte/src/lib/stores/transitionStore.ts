@@ -15,3 +15,11 @@ export const transition = derived([page, settings], ($values) => {
         nameFlyOut: (rev: boolean) => { return { duration: 2000, x: (!$values[1]?.reduceMotion ? 500 : 250) * (!rev ? 1 : -1), easing: quintIn, opacity: (!$values[1]?.reduceMotion ? 1 : 0) }}
     };
 });
+
+export function flip(node: HTMLElement, { y = 180, duration = 400, easing = cubicOut }) {
+    return {
+        duration,
+        easing,
+        css: (t: number, u: number) => `transform: rotateY(${u * y}deg)`
+    }
+}

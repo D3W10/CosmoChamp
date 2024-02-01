@@ -5,17 +5,17 @@
     import { page } from "$lib/stores/pageStore";
     import { game } from "$lib/stores/gameStore";
     import { settings } from "$lib/stores/settingsStore";
-    import { transition } from "$lib/stores/transitionStore";
+    import { transition, flip } from "$lib/stores/transitionStore";
     import { drawCard, drawDeck, generateDeck } from "$lib/deck";
     import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
-    let versus = false, show = false, start = false, opponentHover = -1;
-    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7);
+    let versus: boolean = false, show: boolean = false, start: boolean = false, opponentHover: number = -1;
+    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=\w)(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7);
-    let elementAnim: string = "energy", elementAnimShow = false;
-    let time = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer = false;
-    let deckEnabled = false;
+    let elementAnim: string = "energy", elementAnimShow: boolean = false;
+    let time: number = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer: boolean = false;
+    let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: string = "U";
 
     const [send, receive] = crossfade({ duration: 500 });
 
@@ -36,8 +36,22 @@
             opponentHover = +args[1];
         else if (args[0] == "DECK" && !$game?.host)
             cards = args[1].split(";").map((id) => { return { id: id }});
-        else if (args[0] == "SELECT")
+        else if (args[0] == "SELECT") {
             oSendState[6 - +args[1]] = true;
+            sendReveal();
+        }
+        else if (args[0] == "REVEAL") {
+            opponentCard = args[1];
+
+            setTimeout(() => {
+                opponentShow = true;
+
+                if ($game?.host)
+                    evaluateRound();
+            }, 2500);
+        }
+        else if (args[0] == "RESULT")
+            setTimeout(() => winner = args[1], 1000);
     }
 
     function checkHoverState() {
@@ -58,6 +72,39 @@
     function startRound() {
         runTimer = true;
         deckEnabled = true;
+    }
+
+    function cardSelect(index: number) {
+        deckEnabled = false;
+        pSendState[index] = true;
+        $app?.sendMessage(`SELECT ${index}`);
+        sendReveal();
+    }
+
+    function sendReveal() {
+        if (pSendState.includes(true) && oSendState.includes(true)) {
+            runTimer = false;
+
+            $app?.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id}`);
+        }
+    }
+
+    function evaluateRound() {
+        let pCard = cards[pSendState.findIndex((v) => v)].id.split(cardRegex)[0] as keyof typeof wins, pPower = +cards[pSendState.findIndex((v) => v)].id.split(cardRegex)[1];
+        let oCard = opponentCard.split(cardRegex)[0] as keyof typeof wins, oPower = +opponentCard.split(cardRegex)[1];
+        let wins = { fire: "snow", snow: "water", water: "fire" }, tempWinner = "T" as keyof typeof conversor, conversor = { P: "O", O: "P", T: "T"};
+
+        if (wins[pCard] == oCard)
+            tempWinner = "P";
+        else if (wins[oCard] == pCard)
+            tempWinner = "O";
+        else if (pPower > oPower)
+            tempWinner = "P";
+        else if (pPower < oPower)
+            tempWinner = "O";
+
+        $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
+        setTimeout(() => winner = tempWinner, 1000);
     }
 
     $: {
@@ -113,18 +160,16 @@
                 <div class="px-6 flex justify-between items-start">
                     <div class="flex -mt-20">
                         {#each Array(7) as _, i}
-                            {#if !oSendState[i]}
-                                <img class={`${i != 0 ? "-ml-10" : ""} enemy-card ${opponentHover == 6 - i ? "translate-y-5" : ""}`} src="./cards/back.png" alt="Enemy Card" style={`z-index: ${i};`} in:fly|global={{ duration: 800, y: -100, delay: 600 - i * 100, easing: backOut }} out:receive|global={{ key: "oCard" }} />
-                            {:else}
-                                <div class={`w-24 ${i != 0 ? "-ml-10 " : ""} aspect-card`} />
-                            {/if}
+                            <div class={`min-w-24 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
+                                {#if !oSendState[i]}
+                                    <img class={`opponent-card ${opponentHover == 6 - i ? "translate-y-5" : ""}`} src="./cards/back.png" alt="Opponent Card" in:fly|global={{ duration: 800, y: -100, delay: 600 - i * 100, easing: backOut }} out:receive|global={{ key: "oCard" }} />
+                                {/if}
+                            </div>
                         {/each}
                     </div>
                     <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
                         <span class="flex text-shade/50">{$game?.opponent.points} <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
-                        {@debug $game}
                         <span>{$game?.opponent.name}</span>
-                        <button on:click={() => startRound()}>CSS</button>
                     </div>
                 </div>
                 <div class="h-full flex justify-center items-center space-x-28">
@@ -134,18 +179,24 @@
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class="w-32 flex bg-secondary rounded-lg aspect-card">
-                            {#each Array(7) as _, i}
-                                {#if oSendState[6 - i]}
-                                    <img src="./cards/back.png" alt="Enemy Card" in:send={{ key: "oCard" }} />
-                                {/if}
-                            {/each}
+                        <div class="w-32 flex bg-secondary rounded-lg aspect-card" style={winner[0] == "O" ? "animation: flash 2s;" : ""}>
+                            {#if !opponentShow}
+                                <div out:flip={{ duration: 400 }}>
+                                    {#each Array(7) as _, i}
+                                        {#if oSendState[6 - i]}
+                                            <img src="./cards/back.png" alt="Opponent Card" in:send={{ key: "oCard" }} />
+                                        {/if}
+                                    {/each}
+                                </div>
+                            {:else}
+                                <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} />
+                            {/if}
                         </div>
-                        <div class="w-32 flex bg-secondary rounded-lg aspect-card">
+                        <div class="w-32 flex bg-secondary rounded-lg aspect-card" style={winner[0] == "P" ? "animation: flash 2s;" : ""}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }}>
-                                        <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
+                                        <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                     </button>
                                 {/if}
                             {/each}
@@ -171,8 +222,8 @@
                         {#each cards as card, i}
                             <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
                                 {#if !pSendState[i]}
-                                    <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => { pSendState[i] = true; $app?.sendMessage(`SELECT ${i}`) }} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
-                                        <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(/(?<=\w)(?=\d)/g, " ")} />
+                                    <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
+                                        <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                     </button>
                                 {/if}
                             </div>
@@ -193,7 +244,7 @@
         @apply w-32 bg-secondary rounded-lg transition-transform aspect-card;
     }
 
-    .enemy-card {
+    .opponent-card {
         @apply w-24 bg-secondary rounded-md transition-transform aspect-card;
     }
 
@@ -214,6 +265,36 @@
 
         100% {
             background-position-x: -128px
+        }
+    }
+
+    @keyframes -global-flash {
+        0% {
+            filter: unset;
+        }
+
+        15% {
+            filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 4px #22c55e)
+        }
+
+        30% {
+            filter: unset;
+        }
+
+        45% {
+            filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 4px #22c55e)
+        }
+
+        60% {
+            filter: unset;
+        }
+
+        75% {
+            filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 4px #22c55e)
+        }
+
+        90% {
+            filter: unset;
         }
     }
 </style>

@@ -11,21 +11,21 @@ export interface AppInfo {
 /**
  * Logs a message to the console
  */
-export function log(msg: string) {
+export function log(msg: any) {
     ipcRenderer.send("LoggerRenderer", "info", msg);
 }
 
 /**
  * Logs a warning message to the console
  */
-export function warn(msg: string) {
+export function warn(msg: any) {
     ipcRenderer.send("LoggerRenderer", "warn", msg);
 }
 
 /**
  * Logs an error message to the console
  */
-export function error(msg: string) {
+export function error(msg: any) {
     ipcRenderer.send("LoggerRenderer", "error", msg);
 }
 
