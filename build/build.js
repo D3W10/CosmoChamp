@@ -57,11 +57,9 @@ module.exports = {
                 "x64"
             ]
         },
+        icon: "../svelte/static/logo.png",
         type: "distribution",
-        hardenedRuntime: true,
-        entitlements: "assets/entitlements.mac.plist",
-        entitlementsInherit: "assets/entitlements.mac.plist",
-        gatekeeperAssess: false
+        hardenedRuntime: false
     },
     dmg: {
         contents: [
