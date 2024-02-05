@@ -2,6 +2,7 @@
     import { fly } from "svelte/transition";
     import { info } from "$lib/stores/infoStore";
     import { page } from "$lib/stores/pageStore";
+    import { game } from "$lib/stores/gameStore";
     import { transition } from "$lib/stores/transitionStore";
     import { settings } from "$lib/stores/settingsStore";
     import Icon from "$lib/components/Icon.svelte";
@@ -57,7 +58,7 @@
                         <p>Rules</p>
                         <p class="mt-1 text-foreground/70 text-sm font-normal">Check the game rules</p>
                     </div>
-                    <Button on:click={() => page.set({ current: "rules", back: false })}>Check Rules</Button>
+                    <Button on:click={() => { game.set(null); page.set({ current: "rules", back: false }); }}>Check Rules</Button>
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { app } from "$lib/stores/appStore";
     import { info } from "$lib/stores/infoStore";
+    import { game } from "$lib/stores/gameStore";
     import { page } from "$lib/stores/pageStore";
     import Modal from "$lib/components/Modal.svelte";
 
@@ -16,6 +17,8 @@
     function onModalSubmit() {
         $app?.closeConnection();
         page.set({ current: "home", back: true });
+
+        setTimeout(() => game.set(null), 500);
     }
 </script>
 

@@ -7,21 +7,32 @@
     import { settings } from "$lib/stores/settingsStore";
     import { transition, flip } from "$lib/stores/transitionStore";
     import { drawCard, drawDeck, generateDeck } from "$lib/deck";
+    import Modal from "$lib/components/Modal.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
     let versus: boolean = false, show: boolean = false, start: boolean = false, opponentHover: number = -1;
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
-    let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7);
+    let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false;
     let time: number = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer: boolean = false;
-    let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: string = "U";
+    let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
 
     const [send, receive] = crossfade({ duration: 500 });
+
+    type WinChar = "P" | "O" | "T" | "U";
 
     setTimeout(() => versus = true, 1000);
 
     $app?.updateReceiveCallback(receiveMessage);
+    $app?.updateCloseCallback(() => {
+        showErrorModal = true;
+        runTimer = false;
+        deckEnabled = false;
+
+        if ($game)
+            $game.stats.endTime = new Date();
+    });
 
     if ($game?.host) {
         generateDeck();
@@ -51,7 +62,15 @@
             }, 2000);
         }
         else if (args[0] == "RESULT")
-            setTimeout(() => winner = args[1], 1500);
+            setTimeout(() => setWinner(args[1] as WinChar), 1500);
+        else if (args[0] == "CARD") {
+            cards[pSendState.findIndex((v) => v)] = { id: args[1] };
+            pSendState = pSendState.fill(false);
+            oSendState = oSendState.fill(false);
+            opponentShow = false;
+            winner = "U";
+            setTimeout(startRound, 500);
+        }
     }
 
     function checkHoverState() {
@@ -78,6 +97,7 @@
         deckEnabled = false;
         pSendState[index] = true;
         $app?.sendMessage(`SELECT ${index}`);
+        $app?.sendMessage(`HOVER -1`);
         sendReveal();
     }
 
@@ -92,7 +112,7 @@
     function evaluateRound() {
         let pCard = cards[pSendState.findIndex((v) => v)].id.split(cardRegex)[0] as keyof typeof wins, pPower = +cards[pSendState.findIndex((v) => v)].id.split(cardRegex)[1];
         let oCard = opponentCard.split(cardRegex)[0] as keyof typeof wins, oPower = +opponentCard.split(cardRegex)[1];
-        let wins = { fire: "snow", snow: "water", water: "fire" }, tempWinner = "T" as keyof typeof conversor, conversor = { P: "O", O: "P", T: "T"};
+        let wins = { fire: "snow", snow: "water", water: "fire" }, tempWinner: WinChar = "T" as keyof typeof conversor, conversor = { P: "O", O: "P", T: "T"};
 
         if (wins[pCard] == oCard)
             tempWinner = "P";
@@ -104,7 +124,23 @@
             tempWinner = "O";
 
         $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
-        setTimeout(() => winner = tempWinner, 1500);
+        setTimeout(() => setWinner(tempWinner), 1500);
+    }
+
+    function setWinner(winChar: WinChar) {
+        winner = winChar;
+
+        if ($game && winChar == "P")
+            $game.stats.points++;
+        else if ($game && winChar == "O")
+            $game.opponent.points++;
+
+        setTimeout(() => {
+            if ($game?.host) {
+                receiveMessage(`CARD ${drawCard().id}`);
+                $app?.sendMessage(`CARD ${drawCard().id}`);
+            }
+        }, 2500);
     }
 
     $: {
@@ -168,7 +204,15 @@
                         {/each}
                     </div>
                     <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
-                        <span class="flex text-shade/50">{$game?.opponent.points} <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+                        <div class="flex relative text-shade/50">
+                            {#key $game?.opponent.points}
+                                <span transition:blur={{ duration: 400 }}>{$game?.opponent.points}</span>
+                            {/key}
+                            <div class="">
+                                <img class="w-6 h-6 -mt-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />
+                                <img class="h-10 absolute" src="./point.png" alt="Cosmo Points" />
+                            </div>
+                        </div>
                         <span>{$game?.opponent.name}</span>
                     </div>
                 </div>
@@ -189,13 +233,13 @@
                                     {/each}
                                 </div>
                             {:else}
-                                <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} />
+                                <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
                         <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
-                                    <button class="player-card" disabled in:send={{ key: "pCard" }}>
+                                    <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400}}>
                                         <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                     </button>
                                 {/if}
@@ -234,6 +278,9 @@
         </div>
     {/if}
 </div>
+<Modal bind:show={showErrorModal} title="Opponent Disconnected" canCancel={false} on:submit={() => page.set({ current: "result", back: false })}>
+    <p>Your opponent has disconnected from the game and will be considered to have given up. You will be sent to the game results page.</p>
+</Modal>
 
 <style lang="postcss">
     .sides {

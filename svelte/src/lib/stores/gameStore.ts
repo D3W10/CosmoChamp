@@ -14,6 +14,7 @@ interface IGameStore {
         roundCount: number;
         points: number;
         startTime: Date;
+        endTime: Date;
     };
 }
 

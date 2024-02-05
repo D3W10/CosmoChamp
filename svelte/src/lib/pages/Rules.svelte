@@ -13,9 +13,9 @@
     import Modal from "$lib/components/Modal.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
 
-    let gameAnnounced = $game?.host, playerAnnounced = false, didReady = false, opponentReady = false;
-    let currentPage = 0, currentPageIdx = 0, selectedGameMode = $game ? $game?.mode : 0;
-    let showErrorModal = false, modalData: [string, string, string?, string?] = ["", ""];
+    let gameAnnounced: boolean | undefined = $game?.host, playerAnnounced: boolean = false, didReady: boolean = false, opponentReady: boolean = false;
+    let currentPage: number = 0, currentPageIdx: number = 0, selectedGameMode: number = $game ? $game?.mode : 0;
+    let showErrorModal: boolean = false, modalData: [string, string, string?, string?] = ["", ""];
 
     $app?.updateReceiveCallback(receiveMessage);
     $app?.updateCloseCallback(closeConnection);
