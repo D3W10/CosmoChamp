@@ -11,7 +11,7 @@
     import type { Card } from "$lib/models/Card.interface";
 
     let versus: boolean = false, show: boolean = false, start: boolean = false, opponentHover: number = -1;
-    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=\w)(?=\d)/g;
+    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7);
     let elementAnim: string = "energy", elementAnimShow: boolean = false;
     let time: number = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer: boolean = false;
@@ -48,10 +48,10 @@
 
                 if ($game?.host)
                     evaluateRound();
-            }, 2500);
+            }, 2000);
         }
         else if (args[0] == "RESULT")
-            setTimeout(() => winner = args[1], 1000);
+            setTimeout(() => winner = args[1], 1500);
     }
 
     function checkHoverState() {
@@ -104,7 +104,7 @@
             tempWinner = "O";
 
         $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
-        setTimeout(() => winner = tempWinner, 1000);
+        setTimeout(() => winner = tempWinner, 1500);
     }
 
     $: {
@@ -179,7 +179,7 @@
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class="w-32 flex bg-secondary rounded-lg aspect-card" style={winner[0] == "O" ? "animation: flash 2s;" : ""}>
+                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")}`}>
                             {#if !opponentShow}
                                 <div out:flip={{ duration: 400 }}>
                                     {#each Array(7) as _, i}
@@ -192,7 +192,7 @@
                                 <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class="w-32 flex bg-secondary rounded-lg aspect-card" style={winner[0] == "P" ? "animation: flash 2s;" : ""}>
+                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }}>
