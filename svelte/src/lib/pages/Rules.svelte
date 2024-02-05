@@ -18,6 +18,7 @@
     let showErrorModal = false, modalData: [string, string, string?, string?] = ["", ""];
 
     $app?.updateReceiveCallback(receiveMessage);
+    $app?.updateCloseCallback(closeConnection);
 
     (async () => {
         if ($game?.host) {
@@ -31,10 +32,8 @@
         else {
             let status = await $app?.connectClient($game?.ip!, $game?.port!);
 
-            if (status == "CONNECTED") {
+            if (status == "CONNECTED")
                 $app?.sendMessage(`HEY ${$settings?.playerName}`);
-                $app?.updateCloseCallback(closeConnection);
-            }
             else if (status == "ECONNREFUSED") {
                 modalData = ["Unable to Connect", "It appears there's no room hosted on the specified IP address and port. Please check those and try again."];
                 showErrorModal = true;
@@ -216,7 +215,7 @@
             <Icon name="chevron" className="w-1/2 fill-current -rotate-90" />
         </button>
     </div>
-    <div class="h-1/5 flex bg-secondary rounded-t-2xl">
+    <div class="h-1/5 max-h-1/5 flex bg-secondary rounded-t-2xl">
         {#if $game != null}
             <div class="w-1/4 p-6 space-y-1">
                 {#if gameAnnounced}
@@ -238,9 +237,14 @@
                     </div>
                 {/if}
             </div>
-            <div class="w-1/4 p-6 space-y-1 text-right">
-                {#if playerAnnounced}
-                    <div transition:fade={{ duration: 500 }}>
+            <div class="w-1/4 p-6 flex justify-end relative space-y-1 text-right">
+                {#if !playerAnnounced}
+                    <div class="absolute" in:fade={{ duration: 500, delay: 500 }} out:fade={{ duration: 500 }}>
+                        <p>Game Port</p>
+                        <p class="text-shade/50">{$game.port}</p>
+                    </div>
+                {:else}
+                    <div class="absolute" in:fade={{ duration: 500, delay: 500 }} out:fade={{ duration: 500 }}>
                         <p>{$game.opponent.name}</p>
                         <div class={`flex justify-end items-center transition-colors ${!opponentReady ? "text-shade/50" : "text-green-500"}`}>
                             <div class={`w-4 h-4 mr-2 rounded-full transition-colors ${!opponentReady ? "bg-shade/20" : "bg-green-500"}`} />
