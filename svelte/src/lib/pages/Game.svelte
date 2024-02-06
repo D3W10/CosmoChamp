@@ -14,7 +14,7 @@
     let versus: boolean = false, show: boolean = false, start: boolean = false, opponentHover: number = -1;
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false;
-    let elementAnim: string = "energy", elementAnimShow: boolean = false;
+    let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
     let time: number = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
 
@@ -130,10 +130,27 @@
     function setWinner(winChar: WinChar) {
         winner = winChar;
 
-        if ($game && winChar == "P")
-            $game.stats.points++;
-        else if ($game && winChar == "O")
-            $game.opponent.points++;
+        if (winChar == "P") {
+            cosmoP = true;
+
+            setTimeout(() => {
+                if ($game)
+                    $game.stats.points++;
+
+                cosmoP = false;
+            }, 800);
+        }
+            
+        else if (winChar == "O") {
+            cosmoO = true;
+
+            setTimeout(() => {
+                if ($game)
+                    $game.opponent.points++;
+
+                cosmoO = false;
+            }, 800);
+        }
 
         setTimeout(() => {
             if ($game?.host) {
@@ -146,6 +163,7 @@
     $: {
         if (runTimer) {
             time = $game?.mode != 2 ? 15 : 3;
+            clearInterval(timer);
             timer = setInterval(countDown, 1000);
         }
         else
@@ -204,13 +222,17 @@
                         {/each}
                     </div>
                     <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
-                        <div class="flex relative text-shade/50">
-                            {#key $game?.opponent.points}
-                                <span transition:blur={{ duration: 400 }}>{$game?.opponent.points}</span>
-                            {/key}
-                            <div class="">
+                        <div class="flex text-shade/50">
+                            <div class="min-w-5 relative">
+                                {#key $game?.opponent.points}
+                                    <span class="absolute right-0" transition:blur={{ duration: 400 }}>{$game?.opponent.points}</span>
+                                {/key}
+                            </div>
+                            <div class="relative">
                                 <img class="w-6 h-6 -mt-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />
-                                <img class="h-10 absolute" src="./point.png" alt="Cosmo Points" />
+                                {#if cosmoO}
+                                    <img class="w-6 h-6 -mt-0.5 absolute top-0" src="./point.png" alt="Cosmo Points" style="animation: receive-opponent 0.8s cubic-bezier(0.32, 0, 0.67, 0);" />
+                                {/if}
                             </div>
                         </div>
                         <span>{$game?.opponent.name}</span>
@@ -260,7 +282,19 @@
                 <div class="px-6 flex justify-between items-end">
                     <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
                         <span>{$settings?.playerName}</span>
-                        <span class="flex text-shade/50">{$game?.stats.points} <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></span>
+                        <div class="flex text-shade/50">
+                            <div class="min-w-5 relative">
+                                {#key $game?.stats.points}
+                                    <span class="absolute right-0" transition:blur={{ duration: 400 }}>{$game?.stats.points}</span>
+                                {/key}
+                            </div>
+                            <div class="relative">
+                                <img class="w-6 h-6 -mt-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />
+                                {#if cosmoP}
+                                    <img class="w-6 h-6 -mt-0.5 absolute top-0" src="./point.png" alt="Cosmo Points" style="animation: receive-player 0.8s cubic-bezier(0.32, 0, 0.67, 0);" />
+                                {/if}
+                            </div>
+                        </div>
                     </div>
                     <div class="flex -mb-20">
                         {#each cards as card, i}
@@ -315,33 +349,33 @@
         }
     }
 
-    @keyframes -global-flash {
+    @keyframes -global-receive-player {
         0% {
-            filter: unset;
+            opacity: 0;
+            transform: translateY(-50px);
         }
 
-        15% {
-            filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 4px #22c55e)
+        50% {
+            opacity: 1;
         }
 
-        30% {
-            filter: unset;
+        100% {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes -global-receive-opponent {
+        0% {
+            opacity: 0;
+            transform: translateY(50px);
         }
 
-        45% {
-            filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 4px #22c55e)
+        50% {
+            opacity: 1;
         }
 
-        60% {
-            filter: unset;
-        }
-
-        75% {
-            filter: drop-shadow(0 0 8px #22c55e) drop-shadow(0 0 4px #22c55e)
-        }
-
-        90% {
-            filter: unset;
+        100% {
+            transform: translateY(0);
         }
     }
 </style>
