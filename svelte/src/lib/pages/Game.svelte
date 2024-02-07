@@ -15,7 +15,7 @@
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
-    let time: number = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer: boolean = false;
+    let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
 
     const [send, receive] = crossfade({ duration: 500 });
@@ -175,7 +175,7 @@
 
     $: {
         if (runTimer) {
-            time = $game?.mode != 2 ? 15 : 3;
+            time = $game?.mode != 2 ? 15 : 5;
             clearInterval(timer);
             timer = setInterval(countDown, 1000);
         }

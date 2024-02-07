@@ -26,6 +26,8 @@
     - [System Requirements](#system-requirements)
     - [Installation](#installation)
 3. [Game Description](#game-description)
+    - [Game Modes](#game-modes)
+    - [Deck composition](#deck-composition)
 4. [Development](#development)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation-1)
