@@ -17,13 +17,13 @@
     }
 
     $: gameTime = $game ? ($game.stats.endTime.getTime() - $game.stats.startTime.getTime()) / 1000 : 0;
-    $: gameWon = $game && $game?.stats.points > $game?.opponent.points;
+    $: gameWon = $game && $game?.stats.points >= $game?.opponent.points;
     $: timeString = gameTime > 60 ? `${roundNumber(Math.floor(gameTime / 60))}:${roundNumber(Math.floor(gameTime % 60))}` : `${Math.floor(gameTime)} second${gameTime == 1 ? "" : "s"}`;
 </script>
 
 <div class="w-full h-full flex p-16" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     <div class="w-1/2 h-full flex flex-col">
-        <div class="mb-7 flex justify-between items-center">
+        <div class="mb-9 flex justify-between items-center">
             <h1 class="text-2xl font-semibold">{gameWon ? "Game won!" : "Game over"}</h1>
         </div>
         <div class="h-full flex flex-col justify-between">

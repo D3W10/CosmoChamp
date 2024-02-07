@@ -71,6 +71,14 @@
             winner = "U";
             setTimeout(startRound, 500);
         }
+        else if (args[0] == "END") {
+            if ($game)
+                $game.stats.endTime = new Date();
+
+            $app?.updateCloseCallback(() => {});
+            page.set({ current: "result", back: false })
+            setTimeout(() => $app?.closeConnection(), 500);
+        }
     }
 
     function checkHoverState() {
@@ -80,7 +88,7 @@
 
     function countDown() {
         if (--time == 0) {
-            if (!pSendState.includes(true))
+            if (!pSendState.includes(true) && cardsElmts[Math.floor(Math.random() * 7)])
                 cardsElmts[Math.floor(Math.random() * 7)].parentElement?.click();
 
             runTimer = false;
@@ -89,8 +97,14 @@
     }
 
     function startRound() {
-        runTimer = true;
-        deckEnabled = true;
+        if ($game?.host && ($game.stats.points >= $game.goal || $game.opponent.points >= $game.goal)) {
+            receiveMessage("END");
+            $app?.sendMessage("END");
+        }
+        else {
+            runTimer = true;
+            deckEnabled = true;
+        }
     }
 
     function cardSelect(index: number) {
@@ -140,7 +154,6 @@
                 cosmoP = false;
             }, 800);
         }
-            
         else if (winChar == "O") {
             cosmoO = true;
 
