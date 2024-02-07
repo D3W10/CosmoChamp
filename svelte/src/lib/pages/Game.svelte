@@ -100,9 +100,11 @@
     }
 
     function startRound() {
-        if ($game?.host && ($game.stats.points >= $game.goal || $game.opponent.points >= $game.goal)) {
-            receiveMessage("END");
-            $app?.sendMessage("END");
+        if ($game && ($game.stats.points >= $game.goal || $game.opponent.points >= $game.goal)) {
+            if ($game?.host) {
+                receiveMessage("END");
+                $app?.sendMessage("END");
+            }
         }
         else {
             runTimer = true;
