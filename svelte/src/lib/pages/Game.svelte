@@ -104,6 +104,9 @@
         else {
             runTimer = true;
             deckEnabled = true;
+
+            if ($game)
+                $game.stats.roundCount++;
         }
     }
 
