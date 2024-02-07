@@ -20,9 +20,10 @@
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
 
-    const MUSIC_VOLUME = 0.5 * ($settings.volume / 100);
+    const BG_VOLUME = 0.25 * ($settings.volume / 100), SFX_VOLUME = 0.75;
     const [send, receive] = crossfade({ duration: 500 });
-    const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: MUSIC_VOLUME });
+    const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: BG_VOLUME });
+    const sparkle = new Howl({ src: ["sounds/sparkle.mp3"], html5: true, volume: SFX_VOLUME });
 
     type WinChar = "P" | "O" | "T" | "U";
 
@@ -37,7 +38,7 @@
         if ($game)
             $game.stats.endTime = new Date();
     });
-    $close.set(wideSpace, MUSIC_VOLUME);
+    $close.set(wideSpace, BG_VOLUME);
 
     if ($game?.host) {
         generateDeck();
@@ -154,6 +155,7 @@
 
         if (winChar == "P") {
             cosmoP = true;
+            sparkle.play();
 
             setTimeout(() => {
                 if ($game)
