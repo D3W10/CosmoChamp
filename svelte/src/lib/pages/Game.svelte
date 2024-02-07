@@ -13,7 +13,7 @@
     import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
-    let versus: boolean = false, show: boolean = false, start: boolean = false, opponentHover: number = -1;
+    let versus: boolean = false, show: boolean = false, start: boolean = false, tie: boolean = false, opponentHover: number = -1;
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
@@ -170,6 +170,8 @@
                 cosmoO = false;
             }, 800);
         }
+        else if (winChar == "T")
+            tie = true;
 
         setTimeout(() => {
             if ($game?.host) {
@@ -235,6 +237,11 @@
                     <img class="w-52 absolute drop-shadow-2xl" src={`./elements/${elementAnim}.png`} alt={elementAnim.charAt(0).toUpperCase() + elementAnim.slice(1)} in:scale={{ duration: 500, opacity: 1 }} out:scale={{ duration: 500, start: 2.5, easing: cubicIn }} on:introend={() => setTimeout(() => elementAnimShow = false, 1000)} />
                 </div>
             {/if}
+            {#if tie}
+                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => tie = false, 1000)}>
+                    <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }}>TIE</span>
+                </div>
+            {/if}
             <div class="w-full h-full absolute flex flex-col">
                 <div class="px-6 flex justify-between items-start">
                     <div class="flex -mt-20">
@@ -270,7 +277,7 @@
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" || winner[0] == "T" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")}`}>
+                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")}`}>
                             {#if !opponentShow}
                                 <div out:flip={{ duration: 400 }}>
                                     {#each Array(7) as _, i}
@@ -283,7 +290,7 @@
                                 <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" || winner[0] == "T" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
+                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400 }}>
