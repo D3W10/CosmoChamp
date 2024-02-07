@@ -14,7 +14,7 @@
     export let step: number = 1;
     
     let error = false, inputElm: HTMLInputElement;
-    const displayed = spring(), dispatch = createEventDispatcher<{ input: { value: string } }>();
+    const displayed = spring(), dispatch = createEventDispatcher<{ input: { value: any } }>();
 
     $: {
         if (type == "wheel" && value === null)

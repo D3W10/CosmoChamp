@@ -18,7 +18,7 @@
         try {
             let themeTranslation = { 0: "midnight", 1: "light", 2: "cosmo", 3: "starlight", 4: "milkyway" };
 
-            document.documentElement.setAttribute("data-theme", themeTranslation[$settings?.theme as keyof typeof themeTranslation]);
+            document.documentElement.setAttribute("data-theme", themeTranslation[$settings.theme as keyof typeof themeTranslation]);
         }
         catch {}
     }

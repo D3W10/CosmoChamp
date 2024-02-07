@@ -20,7 +20,7 @@
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
 
-    const MUSIC_VOLUME = 0.5;
+    const MUSIC_VOLUME = 0.5 * ($settings.volume / 100);
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: MUSIC_VOLUME });
 
@@ -205,14 +205,14 @@
             </div>
             <div class="w-[115%] h-1/2 flex items-center space-x-0.5">
                 <div class="w-full h-full flex justify-center items-start pt-10 overflow-hidden -skew-x-[35deg]">
-                    <p class="mr-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(true)} out:fly={$transition.nameFlyOut(false)} on:introend={() => versus = false}>{$game?.host ? $settings?.playerName : $game?.opponent.name}</p>
+                    <p class="mr-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(true)} out:fly={$transition.nameFlyOut(false)} on:introend={() => versus = false}>{$game?.host ? $settings.playerName : $game?.opponent.name}</p>
                 </div>
                 <div class="min-w-[1.5rem] max-w-[1.5rem] h-full flex justify-center items-center bg-shade/40 rounded-lg rotate-[35deg]" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }} on:outroend={() => show = true}>
                     <p class="text-7xl font-semibold rotate-[-35deg]">VS</p>
                     <p class="absolute text-7xl font-semibold rotate-[-35deg] drop-shadow-glow animate-pulse">VS</p>
                 </div>
                 <div class="w-full h-full flex justify-center items-end pb-10 overflow-hidden -skew-x-[35deg]">
-                    <p class="ml-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(false)} out:fly={$transition.nameFlyOut(true)}>{!$game?.host ? $settings?.playerName : $game?.opponent.name}</p>
+                    <p class="ml-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(false)} out:fly={$transition.nameFlyOut(true)}>{!$game?.host ? $settings.playerName : $game?.opponent.name}</p>
                 </div>
             </div>
         </div>
@@ -306,7 +306,7 @@
                 </div>
                 <div class="px-6 flex justify-between items-end">
                     <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
-                        <span>{$settings?.playerName}</span>
+                        <span>{$settings.playerName}</span>
                         <div class="flex text-shade/50">
                             <div class="min-w-5 relative">
                                 {#key $game?.stats.points}

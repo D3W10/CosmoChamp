@@ -7,4 +7,5 @@ export interface IStoreSettings {
     theme: number;
     reduceMotion: boolean;
     playerName: string;
+    volume: number;
 }

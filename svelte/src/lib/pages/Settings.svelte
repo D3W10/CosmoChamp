@@ -9,8 +9,6 @@
     import Icon from "$lib/components/Icon.svelte";
     import ComboBox from "$lib/components/ComboBox.svelte";
     import Input from "$lib/components/Input.svelte";
-
-    let reduceMotion = $settings?.reduceMotion!, playerName: string = $settings?.playerName!;
 </script>
 
 <div class="w-full h-full flex flex-col" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
@@ -31,14 +29,14 @@
                         <p>Theme</p>
                         <p class="mt-0.5 text-foreground/70 text-sm font-normal">Change the game's theme</p>
                     </div>
-                    <ComboBox className="w-32" items={["Midnight", "Light", "Cosmo", "Starlight", "Milky Way"]} selected={$settings?.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
+                    <ComboBox className="w-32" items={["Midnight", "Light", "Cosmo", "Starlight", "Milky Way"]} selected={$settings.theme} on:change={(e) => settings.update("theme", e.detail.selected)} />
                 </div>
                 <div class="flex justify-between items-center">
                     <div>
                         <p>Reduce Motion</p>
                         <p class="mt-1 text-foreground/70 text-sm font-normal">Reduces the motion of the animations</p>
                     </div>
-                    <Input type="switch" bind:value={reduceMotion} on:input={() => settings.update("reduceMotion", reduceMotion)} />
+                    <Input type="switch" value={$settings.reduceMotion} on:input={(e) => settings.update("reduceMotion", e.detail.value)} />
                 </div>
             </div>
         </div>
@@ -51,7 +49,14 @@
                         <p>Player Name</p>
                         <p class="mt-1 text-foreground/70 text-sm font-normal">Set the player name displayed during game</p>
                     </div>
-                    <Input className="w-40" type="text" placeholder="Guest" maxlength={15} bind:value={playerName} on:input={() => settings.update("playerName", playerName.trim() || "Guest")} />
+                    <Input className="w-40" type="text" placeholder="Guest" maxlength={15} value={$settings.playerName} on:input={(e) => settings.update("playerName", e.detail.value.trim() || "Guest")} />
+                </div>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p>Volume</p>
+                        <p class="mt-1 text-foreground/70 text-sm font-normal">Set the game music volume</p>
+                    </div>
+                    <Input className="w-36" type="wheel" min={0} max={100} step={5} value={$settings.volume} on:input={(e) => settings.update("volume", e.detail.value)} />
                 </div>
                 <div class="flex justify-between items-center">
                     <div>
@@ -69,8 +74,8 @@
                 <div class="flex items-center space-x-4">
                     <img src="./logo.png" alt="Logo" class="w-16" />
                     <div class="flex flex-col">
-                        <p>{$info?.name}</p>
-                        <p class="text-foreground/70 text-sm">Version {$info?.version}</p>
+                        <p>{$info.name}</p>
+                        <p class="text-foreground/70 text-sm">Version {$info.version}</p>
                     </div>
                 </div>
             </div>
