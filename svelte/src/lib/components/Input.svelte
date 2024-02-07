@@ -14,7 +14,7 @@
     export let step: number = 1;
     
     let error = false, inputElm: HTMLInputElement;
-    const displayed = spring(), dispatch = createEventDispatcher();
+    const displayed = spring(), dispatch = createEventDispatcher<{ input: { value: string } }>();
 
     $: {
         if (type == "wheel" && value === null)
@@ -36,20 +36,24 @@
         else
             error = false;
     }
+
+    function triggerEvent() {
+        dispatch("input", { value });
+    }
 </script>
 
 {#if type == "switch"}
-    <Button type="invisible" className={`w-10 flex items-center p-1 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!value ? "bg-tertiary" : "bg-primary"}`} on:click={() => { value = !value; dispatch("input"); }}>
+    <Button type="invisible" className={`w-10 flex items-center p-1 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!value ? "bg-tertiary" : "bg-primary"}`} on:click={() => { value = !value; triggerEvent(); }}>
         <div class={`w-3.5 h-3.5 bg-white rounded-full transition-all ${value ? "ml-[1.125rem]" : ""}`} />
     </Button>
 {:else}
     <div class={`bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset ${!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} ${className}`}>
         {#if type == "text"}
-            <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} on:input />
+            <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} on:input={triggerEvent} />
         {:else if type == "number"}
-            <input type="number" placeholder={placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input />
+            <input type="number" placeholder={placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
         {:else if type == "ip"}
-            <input type="text" placeholder={placeholder} maxlength={15} bind:value bind:this={inputElm} on:input />
+            <input type="text" placeholder={placeholder} maxlength={15} bind:value bind:this={inputElm} on:input={triggerEvent} />
         {:else if type == "wheel"}
             <div class="flex">
                 <div class="w-full h-8 relative overflow-hidden">
@@ -59,10 +63,10 @@
                     </div>
                 </div>
                 <div class="h-8 px-1.5 flex flex-col justify-center">
-                    <Button type="invisible" className="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == max} on:click={() => value = Math.min(Math.max(value + step, min), max)}>
+                    <Button type="invisible" className="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == max} on:click={() => { value = Math.min(Math.max(value + step, min), max); triggerEvent(); }}>
                         <Icon name="chevron" className="h-4 -mb-1 fill-current -rotate-180" />
                     </Button>
-                    <Button type="invisible" className="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == min} on:click={() => value = Math.min(Math.max(value - step, min), max)}>
+                    <Button type="invisible" className="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == min} on:click={() => { value = Math.min(Math.max(value - step, min), max); triggerEvent(); }}>
                         <Icon name="chevron" className="h-4 -mt-1 fill-current" />
                     </Button>
                 </div>

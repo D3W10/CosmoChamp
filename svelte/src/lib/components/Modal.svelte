@@ -10,7 +10,7 @@
     export let cancelButton: string = "Cancel";
 
     let dialog: HTMLDialogElement;
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{ submit: undefined }>();
 
     $: {
         if (dialog && show)

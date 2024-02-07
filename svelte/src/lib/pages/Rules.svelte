@@ -51,7 +51,7 @@
         let args = message.split(" ");
 
         if (args[0] == "HEY" && $game?.host) {
-            $app?.sendMessage(`HEY ${$info?.version} ${$game.mode} ${$game.goal} ${$settings?.playerName}`);
+            $app?.sendMessage(`HEY ${$info.version} ${$game.mode} ${$game.goal} ${$settings?.playerName}`);
 
             game.update((g) => {
                 if (g)
@@ -62,8 +62,8 @@
             playerAnnounced = true;
         }
         else if (args[0] == "HEY" && !$game?.host) {
-            if (args[1] != $info?.version) {
-                modalData = ["Incompatible Room", "The room you're trying to join is running a different version of the game. Please try again with a different room.", args[1], $info?.version];;
+            if (args[1] != $info.version) {
+                modalData = ["Incompatible Room", "The room you're trying to join is running a different version of the game. Please try again with a different room.", args[1], $info.version];;
                 showErrorModal = true;
 
                 $app?.closeConnection();

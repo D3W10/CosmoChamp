@@ -7,7 +7,7 @@
     export let disabled: boolean = false;
     export let secondary: boolean = false;
 
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{ click: MouseEvent }>();
     const click = new Howl({ src: ["sounds/click.mp3"], html5: true, volume: 0.5 });
 
     function onClick(e: MouseEvent) {

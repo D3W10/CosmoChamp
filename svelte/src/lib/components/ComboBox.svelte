@@ -12,7 +12,7 @@
     export let listReverse: boolean = false;
 
     let open = false, closedCss = !listReverse ? "" : "-rotate-180", openCss = !listReverse ? "-rotate-180" : "rotate-0";
-    const dispatch = createEventDispatcher();
+    const dispatch = createEventDispatcher<{ change: { selected: number } }>();
     $: selectedItem = items[selected];
 
     function itemSelected(index: number) {

@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-    <title>{$info?.name}</title>
+    <title>{$info.name}</title>
 </svelte:head>
 
 <FrameBar />
