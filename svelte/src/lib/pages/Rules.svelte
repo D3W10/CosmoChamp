@@ -6,9 +6,9 @@
     import { game } from "$lib/stores/gameStore";
     import { transition } from "$lib/stores/transitionStore";
     import { settings } from "$lib/stores/settingsStore";
+    import Button from "$lib/components/Button.svelte";
     import Icon from "$lib/components/Icon.svelte";
     import ProgressBar from "$lib/components/ProgressBar.svelte";
-    import Button from "$lib/components/Button.svelte";
     import ComboBox from "$lib/components/ComboBox.svelte";
     import Modal from "$lib/components/Modal.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
@@ -124,9 +124,9 @@
 
 <div class="w-full h-full flex flex-col" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     <div class="h-full flex">
-        <button class="w-1/5 flex justify-center items-center opacity-30 disabled:opacity-5 transition-opacity duration-200 hover:opacity-70 disabled:hover:opacity-5" disabled={currentPage == gameModes[selectedGameMode].rules[0]} on:click={previousPage}>
+        <Button type="invisible" className="w-1/5 flex justify-center items-center opacity-30 disabled:opacity-5 transition-opacity duration-200 hover:opacity-70 disabled:hover:opacity-5" disabled={currentPage == gameModes[selectedGameMode].rules[0]} on:click={previousPage}>
             <Icon name="chevron" className="w-1/2 fill-current rotate-90" />
-        </button>
+        </Button>
         <div class="w-full max-h-[452px] text-lg">
             {#if currentPage == 0}
                 <div class="w-full h-full flex items-center space-x-14" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
@@ -211,9 +211,9 @@
                 </div>
             {/if}
         </div>
-        <button class="w-1/5 flex justify-center items-center opacity-30 disabled:opacity-5 transition-opacity duration-200 hover:opacity-70 disabled:hover:opacity-5" disabled={currentPage == gameModes[selectedGameMode].rules.slice(-1)[0]} on:click={nextPage}>
+        <Button type="invisible" className="w-1/5 flex justify-center items-center opacity-30 disabled:opacity-5 transition-opacity duration-200 hover:opacity-70 disabled:hover:opacity-5" disabled={currentPage == gameModes[selectedGameMode].rules.slice(-1)[0]} on:click={nextPage}>
             <Icon name="chevron" className="w-1/2 fill-current -rotate-90" />
-        </button>
+        </Button>
     </div>
     <div class="h-1/5 max-h-1/5 flex bg-secondary rounded-t-2xl">
         {#if $game != null}
@@ -260,10 +260,10 @@
             </div>
             <div class="w-2/4" />
             <div class="w-1/4 p-6 flex justify-end items-center">
-                <button class="h-fit flex items-center text-primary" on:click={() => page.set({ current: "settings", back: true })}>
+                <Button type="invisible" className="h-fit flex items-center text-primary" on:click={() => page.set({ current: "settings", back: true })}>
                     <Icon name="chevron" className="w-5 h-5 mr-1 fill-current rotate-90" />
                     Back
-                </button>
+                </Button>
             </div>
         {/if}
     </div>

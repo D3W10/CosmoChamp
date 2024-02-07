@@ -3,6 +3,7 @@
     import { info } from "$lib/stores/infoStore";
     import { game } from "$lib/stores/gameStore";
     import { page } from "$lib/stores/pageStore";
+    import { close } from "$lib/stores/closeStore";
     import Modal from "$lib/components/Modal.svelte";
 
     let showModal: boolean = false;
@@ -15,9 +16,9 @@
     }
 
     function onModalSubmit() {
-        $app?.closeConnection();
-        page.set({ current: "home", back: true });
+        $close.close();
 
+        page.set({ current: "home", back: true });
         setTimeout(() => game.set(null), 500);
     }
 </script>

@@ -2,6 +2,7 @@
     import { createEventDispatcher } from "svelte";
     import { slide } from "svelte/transition";
     import { transition } from "$lib/stores/transitionStore";
+    import Button from "./Button.svelte";
     import Icon from "./Icon.svelte";
 
     export let className: string = "";
@@ -23,7 +24,7 @@
     }
 </script>
 
-<button class={`block relative rounded-md z-10 ${className}`} role="combobox" aria-controls="comboboxItems" aria-expanded={open} on:click={() => open = !open}>
+<Button type="invisible" className={`block relative rounded-md z-10 ${className}`} on:click={() => open = !open}>
     <div class="px-2 py-1.5 flex justify-between items-center bg-tertiary text-left rounded-md">
         <span class="text-sm">{selectedItem}</span>
         <Icon name="chevron" className={`w-5 h-5 ml-2 fill-current transition-transform duration-[400ms] ease-quint-out ${!open ? closedCss : openCss}`} />
@@ -37,4 +38,4 @@
             </div>
         </div>
     {/if}
-</button>
+</Button>

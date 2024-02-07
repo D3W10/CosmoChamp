@@ -1,11 +1,13 @@
 <script lang="ts">
     import { blur, crossfade, fade, fly, scale } from "svelte/transition";
     import { backOut, cubicIn } from "svelte/easing";
+    import { Howl } from "howler";
     import { app } from "$lib/stores/appStore";
     import { page } from "$lib/stores/pageStore";
     import { game } from "$lib/stores/gameStore";
     import { settings } from "$lib/stores/settingsStore";
     import { transition, flip } from "$lib/stores/transitionStore";
+    import { close } from "$lib/stores/closeStore";
     import { drawCard, drawDeck, generateDeck } from "$lib/deck";
     import Modal from "$lib/components/Modal.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
@@ -18,7 +20,9 @@
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
 
+    const MUSIC_VOLUME = 0.5;
     const [send, receive] = crossfade({ duration: 500 });
+    const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: MUSIC_VOLUME });
 
     type WinChar = "P" | "O" | "T" | "U";
 
@@ -33,6 +37,7 @@
         if ($game)
             $game.stats.endTime = new Date();
     });
+    $close.set(wideSpace, MUSIC_VOLUME);
 
     if ($game?.host) {
         generateDeck();
@@ -75,9 +80,7 @@
             if ($game)
                 $game.stats.endTime = new Date();
 
-            $app?.updateCloseCallback(() => {});
-            page.set({ current: "result", back: false })
-            setTimeout(() => $app?.closeConnection(), 500);
+            goToResult();
         }
     }
 
@@ -176,6 +179,12 @@
         }, 2500);
     }
 
+    function goToResult() {
+        $close.close();
+
+        page.set({ current: "result", back: false });
+    }
+
     $: {
         if (runTimer) {
             time = $game?.mode != 2 ? 15 : 5;
@@ -211,7 +220,7 @@
     {#if show}
         <div class="w-full h-full relative">
             {#if start}
-                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => start = false, 1000)} on:outroend={() => { if ($game) $game.stats.startTime = new Date(); startRound(); }}>
+                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => start = false, 1000)} on:outroend={() => { if ($game) $game.stats.startTime = new Date(); startRound(); wideSpace.play(); }}>
                     <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }}>START</span>
                 </div>
             {/if}
@@ -257,11 +266,11 @@
                 <div class="h-full flex justify-center items-center space-x-28">
                     <div class="sides flex justify-center items-center relative" in:fade={{ delay: 300, duration: 800 }}>
                         {#key time}
-                            <span class={`absolute text-6xl ${time <= 3 ? "text-red-500" : ""} font-semibold ${!runTimer ? "opacity-50" : ""} transition-opacity duration-200`} transition:blur={{ duration: 400 }}>{time}</span>
+                            <span class={`absolute text-6xl ${time <= 3 ? "text-red-500" : ""} font-semibold ${!runTimer ? "opacity-50" : "opacity-100"} transition-opacity duration-200`} transition:blur={{ duration: 400 }}>{time}</span>
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")}`}>
+                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" || winner[0] == "T" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")}`}>
                             {#if !opponentShow}
                                 <div out:flip={{ duration: 400 }}>
                                     {#each Array(7) as _, i}
@@ -274,10 +283,10 @@
                                 <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
+                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" || winner[0] == "T" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
-                                    <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400}}>
+                                    <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400 }}>
                                         <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                     </button>
                                 {/if}
@@ -328,7 +337,7 @@
         </div>
     {/if}
 </div>
-<Modal bind:show={showErrorModal} title="Opponent Disconnected" canCancel={false} on:submit={() => page.set({ current: "result", back: false })}>
+<Modal bind:show={showErrorModal} title="Opponent Disconnected" canCancel={false} on:submit={goToResult}>
     <p>Your opponent has disconnected from the game and will be considered to have given up. You will be sent to the game results page.</p>
 </Modal>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { spring } from "svelte/motion";
+    import Button from "./Button.svelte";
     import Icon from "./Icon.svelte";
 
     export let className: string = "";
@@ -38,9 +39,9 @@
 </script>
 
 {#if type == "switch"}
-    <button class={`w-10 flex items-center p-1 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!value ? "bg-tertiary" : "bg-primary"}`} on:click={() => { value = !value; dispatch("input"); }}>
+    <Button type="invisible" className={`w-10 flex items-center p-1 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!value ? "bg-tertiary" : "bg-primary"}`} on:click={() => { value = !value; dispatch("input"); }}>
         <div class={`w-3.5 h-3.5 bg-white rounded-full transition-all ${value ? "ml-[1.125rem]" : ""}`} />
-    </button>
+    </Button>
 {:else}
     <div class={`bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset ${!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} ${className}`}>
         {#if type == "text"}
@@ -58,12 +59,12 @@
                     </div>
                 </div>
                 <div class="h-8 px-1.5 flex flex-col justify-center">
-                    <button class="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == max} on:click={() => value = Math.min(Math.max(value + step, min), max)}>
+                    <Button type="invisible" className="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == max} on:click={() => value = Math.min(Math.max(value + step, min), max)}>
                         <Icon name="chevron" className="h-4 -mb-1 fill-current -rotate-180" />
-                    </button>
-                    <button class="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == min} on:click={() => value = Math.min(Math.max(value - step, min), max)}>
+                    </Button>
+                    <Button type="invisible" className="rounded-sm overflow-hidden transition-opacity duration-200 disabled:opacity-50" disabled={value == min} on:click={() => value = Math.min(Math.max(value - step, min), max)}>
                         <Icon name="chevron" className="h-4 -mt-1 fill-current" />
-                    </button>
+                    </Button>
                 </div>
             </div>
         {/if}

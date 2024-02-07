@@ -5,10 +5,10 @@
     import { game } from "$lib/stores/gameStore";
     import { transition } from "$lib/stores/transitionStore";
     import { settings } from "$lib/stores/settingsStore";
+    import Button from "$lib/components/Button.svelte";
     import Icon from "$lib/components/Icon.svelte";
     import ComboBox from "$lib/components/ComboBox.svelte";
     import Input from "$lib/components/Input.svelte";
-    import Button from "$lib/components/Button.svelte";
 
     let reduceMotion = $settings?.reduceMotion!, playerName: string = $settings?.playerName!;
 </script>
@@ -16,10 +16,10 @@
 <div class="w-full h-full flex flex-col" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
     <div class="mb-7 px-16 pt-16 flex justify-between items-center">
         <h1 class="text-2xl font-semibold">Settings</h1>
-        <button class="h-fit flex items-center text-primary" on:click={() => page.set({ current: "home", back: true })}>
+        <Button type="invisible" className="h-fit flex items-center text-primary" on:click={() => page.set({ current: "home", back: true })}>
             <Icon name="chevron" className="w-5 h-5 mr-1 fill-current rotate-90" />
             Back
-        </button>
+        </Button>
     </div>
     <div class="h-full px-16 space-y-14 overflow-y-scroll">
         <div>

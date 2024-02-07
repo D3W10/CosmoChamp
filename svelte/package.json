@@ -9,10 +9,11 @@
         "check-updates:patch": "npx npm-check-updates --target patch"
     },
     "devDependencies": {
-        "@sveltejs/adapter-auto": "next",
         "@sveltejs/adapter-static": "^3.0.1",
         "@sveltejs/kit": "^2.4.3",
+        "@types/howler": "^2.2.11",
         "autoprefixer": "^10.4.17",
+        "howler": "^2.2.4",
         "postcss": "^8.4.33",
         "postcss-load-config": "^5.0.2",
         "svelte": "^4.2.9",

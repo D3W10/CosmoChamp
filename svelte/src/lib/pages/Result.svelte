@@ -18,7 +18,7 @@
 
     $: gameTime = $game ? ($game.stats.endTime.getTime() - $game.stats.startTime.getTime()) / 1000 : 0;
     $: gameWon = $game && $game?.stats.points >= $game?.opponent.points;
-    $: timeString = gameTime > 60 ? `${roundNumber(Math.floor(gameTime / 60))}:${roundNumber(Math.floor(gameTime % 60))}` : `${Math.floor(gameTime)} seconds}`;
+    $: timeString = gameTime > 60 ? `${roundNumber(Math.floor(gameTime / 60))}:${roundNumber(Math.floor(gameTime % 60))}` : `${Math.floor(gameTime)} seconds`;
 </script>
 
 <div class="w-full h-full flex p-16" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
@@ -29,20 +29,20 @@
         <div class="h-full flex flex-col justify-between">
             <div class="w-1/2 flex flex-col space-y-4">
                 <div class="flex items-center space-x-2">
-                    <img class="h-10" src="./point.png" alt="Cosmo Points" title="Cosmo points obtained" />
-                    <p class="text-xl">{$game?.stats.points} points</p>
+                    <img class="h-9" src="./point.png" alt="Cosmo Points" title="Cosmo points obtained" />
+                    <p class="text-lg">{$game?.stats.points} points</p>
                 </div>
                 <div class="flex items-center space-x-2">
                     <div title="Amount of rounds played">
-                        <Icon name="round" className="h-10" />
+                        <Icon name="round" className="h-9" />
                     </div>
-                    <p class="text-xl">{$game?.stats.roundCount} rounds</p>
+                    <p class="text-lg">{$game?.stats.roundCount} rounds</p>
                 </div>
                 <div class="flex items-center space-x-2">
                     <div title="Game duration">
-                        <Icon name="stopwatch" className="h-10" />
+                        <Icon name="stopwatch" className="h-9" />
                     </div>
-                    <p class="text-xl">{timeString}</p>
+                    <p class="text-lg">{timeString}</p>
                 </div>
             </div>
             <div>
