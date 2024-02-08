@@ -64,12 +64,12 @@ module.exports = {
     dmg: {
         contents: [
             {
-                x: 130,
-                y: 220
+                x: 190,
+                y: 175
             },
             {
-                x: 410,
-                y: 220,
+                x: 365,
+                y: 175,
                 type: "link",
                 path: "/Applications"
             }
