@@ -25,6 +25,7 @@
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
     const sparkle = new Howl({ src: ["sounds/sparkle.mp3"], html5: true, volume: $sound.sfxVolume });
     const wrong = new Howl({ src: ["sounds/wrong.mp3"], html5: true, volume: $sound.sfxVolume });
+    const tieSfx = new Howl({ src: ["sounds/tie.mp3"], html5: true, volume: $sound.sfxVolume });
 
     type WinChar = "P" | "O" | "T" | "U";
 
@@ -176,8 +177,10 @@
                 cosmoO = false;
             }, 800);
         }
-        else if (winChar == "T")
+        else if (winChar == "T") {
             tie = true;
+            tieSfx.play();
+        }
 
         setTimeout(() => {
             if ($game?.host) {
