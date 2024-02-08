@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import fs from "fs";
 import path from "path";
 import os from "os";
@@ -58,6 +58,21 @@ async function createWindow() {
 
     window.loadURL(!isDev ? `file:///${path.join(__dirname, "www", "index.html")}` : "http://localhost:5173/");
     window.once("ready-to-show", () => splash.webContents.send("WindowReady"));
+    window.webContents.setWindowOpenHandler(({ url }) => {
+        try {
+            let { protocol } = new URL(url);
+
+            if (protocol == "http:" || protocol == "https:") {
+                shell.openExternal(url);
+                return { action: "deny" };
+            }
+            else
+                return { action: "allow" };
+        }
+        catch {
+            return { action: "deny" };
+        }
+    });
 
     splash = new BrowserWindow({
         title: packageData.productName,
