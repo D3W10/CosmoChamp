@@ -1,10 +1,15 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
+    import { Howl } from "howler";
     import { page } from "$lib/stores/pageStore";
     import { game } from "$lib/stores/gameStore";
     import { transition } from "$lib/stores/transitionStore";
+    import { sound } from "$lib/stores/soundStore";
     import Icon from "$lib/components/Icon.svelte";
     import Button from "$lib/components/Button.svelte";
+
+    const tada = new Howl({ src: ["sounds/tada.mp3"], html5: true, volume: $sound.sfxVolume });
+    const mystic = new Howl({ src: ["sounds/mystic.mp3"], html5: true, volume: $sound.sfxVolume });
 
     function returnHome() {
         page.set({ current: "home", back: true });
@@ -19,6 +24,13 @@
     $: gameTime = $game ? ($game.stats.endTime.getTime() - $game.stats.startTime.getTime()) / 1000 : 0;
     $: gameWon = $game && $game?.stats.points >= $game?.opponent.points;
     $: timeString = gameTime > 60 ? `${roundNumber(Math.floor(gameTime / 60))}:${roundNumber(Math.floor(gameTime % 60))}` : `${Math.floor(gameTime)} seconds`;
+
+    setTimeout(() => {
+        if (gameWon)
+            tada.play();
+        else
+            mystic.play();
+    }, 500);
 </script>
 
 <div class="w-full h-full flex p-16" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>

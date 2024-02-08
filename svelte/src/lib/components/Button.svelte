@@ -1,6 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
     import { Howl } from "howler";
+    import { sound } from "$lib/stores/soundStore";
 
     export let type: "visible" | "invisible" = "visible";
     export let className: string = "";
@@ -8,7 +9,7 @@
     export let secondary: boolean = false;
 
     const dispatch = createEventDispatcher<{ click: MouseEvent }>();
-    const click = new Howl({ src: ["sounds/click.mp3"], html5: true, volume: 0.5 });
+    const click = new Howl({ src: ["sounds/click.mp3"], html5: true, volume: $sound.btnVolume });
 
     function onClick(e: MouseEvent) {
         click.play();

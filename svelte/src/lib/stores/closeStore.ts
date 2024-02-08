@@ -1,18 +1,18 @@
 import { derived } from "svelte/store";
 import { app } from "./appStore";
+import { sound } from "./soundStore";
 
-export const close = derived(app, ($app) => {
-    let music: Howl | undefined, volume: number = 100;
+export const close = derived([app, sound], ([$app, $sound]) => {
+    let music: Howl | undefined;
 
     return {
-        set: (msc: Howl, vlm: number) => {
+        set: (msc: Howl) => {
             music = msc;
-            volume = vlm;
         },
         close: () => {
             $app?.updateCloseCallback(() => {});
 
-            music?.fade(volume, 0, 500);
+            music?.fade($sound.bgVolume, 0, 500);
             music?.once("fade", () => music?.unload());
         
             setTimeout(() => $app?.closeConnection(), 1500); 
