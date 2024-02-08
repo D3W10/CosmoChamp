@@ -1,5 +1,8 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import { fly } from "svelte/transition";
+    import { app } from "$lib/stores/appStore";
+    import { info } from "$lib/stores/infoStore";
     import { page } from "$lib/stores/pageStore";
     import { transition } from "$lib/stores/transitionStore";
     import { game } from "$lib/stores/gameStore";
@@ -10,7 +13,7 @@
     import ComboBox from "$lib/components/ComboBox.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
 
-    let showCreateModal = false, showJoinModal = false;
+    let showCreateModal: boolean = false, showJoinModal: boolean = false, showChangesModal: boolean = false;
     let ipValue: string, portValue: number, modeValue: number, goalValue: number = 15;
     let defaultGameOpts = { opponent: { name: "", points: 0 }, stats: { roundCount: 0, points: 0, startTime: new Date(), endTime: new Date() } };
 
@@ -23,6 +26,20 @@
         game.set({ host: false, ip: ipValue || "127.0.0.1", port: portValue || 1515, mode: modeValue as (0 | 1 | 2), goal: goalValue, ...defaultGameOpts });
         page.set({ current: "rules", back: false });
     }
+
+    const changelogLoad = new Promise((resolve) => {
+        onMount(() => {
+            let content = $app?.getSetting("changelog");
+
+            if (content) {
+                resolve(content);
+                showChangesModal = true;
+                $app?.setSetting("changelog", null);
+            }
+            else
+                resolve("");
+        });
+    });
 </script>
 
 <div class="w-full h-full" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
@@ -80,3 +97,60 @@
         </div>
     </div>
 </Modal>
+<Modal bind:show={showChangesModal} title={`What's new on ${$info.version}`} button="Cosmical" canCancel={false}>
+    <div class="p-3 bg-tertiary rounded-xl font-normal space-y-4 changelog [overflow:overlay]">
+        {#await changelogLoad then changelog}
+            {@html changelog}
+        {/await}
+    </div>
+</Modal>
+
+<style lang="postcss">
+    .changelog :global(h3) {
+        @apply text-xl font-semibold;
+    }
+
+    .changelog :global(a) {
+        @apply relative font-semibold;
+    }
+
+    .changelog :global(a::before) {
+        @apply content-[""] w-full h-[95%] absolute border-b-2 border-primary;
+    }
+
+    .changelog :global(input[type="checkbox"]) {
+        @apply w-4 h-4 mr-2 bg-shade/15 rounded appearance-none;
+    }
+
+    .changelog :global(input[type="checkbox"]:checked) {
+        @apply bg-primary bg-check;
+    }
+
+    .changelog :global(ul), .changelog :global(ol) {
+        @apply space-y-1;
+    }
+
+    .changelog :global(ul:not(.contains-task-list)) {
+        @apply pl-2 list-disc list-inside;
+    }
+
+    .changelog :global(ol) {
+        @apply pl-2 list-decimal list-inside;
+    }
+
+    .changelog :global(ul.contains-task-list) {
+        @apply block;
+    }
+
+    .changelog :global(li.task-list-item) {
+        @apply flex items-center;
+    }
+
+    .changelog :global(code) {
+        @apply mx-0.5 p-0.5 bg-shade/15 rounded-md font-mono;
+    }
+
+    .changelog :global(blockquote) {
+        @apply ml-0.5 py-1 pl-2 bg-primary/30 rounded-sm border-l-4 border-primary;
+    }
+</style>

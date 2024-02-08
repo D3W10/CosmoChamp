@@ -17,7 +17,7 @@ const logger = new Logger("Main", "blue"), pLogger = new Logger("Prld", "cyan"),
 
 const appConfig = new Store<IStore>({
     defaults: {
-        lastRunVersion: app.getVersion(),
+        changelog: null,
         settings: {
             theme: 0,
             reduceMotion: false,
@@ -116,7 +116,10 @@ ipcMain.on("CheckForUpdates", () => {
     if (isDev)
         splash.webContents.send("CFUStatus", false);
     
-    autoUpdater.once("update-available", () => splash.webContents.send("CFUStatus", true));
+    autoUpdater.once("update-available", (e) => {
+        appConfig.set("changelog", e.releaseNotes);
+        splash.webContents.send("CFUStatus", true);
+    });
     autoUpdater.once("update-not-available", () => splash.webContents.send("CFUStatus", false));
     autoUpdater.once("update-cancelled", () => splash.webContents.send("CFUStatus", false));
     autoUpdater.once("error", (error) => {

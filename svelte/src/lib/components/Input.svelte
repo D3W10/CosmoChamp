@@ -5,13 +5,14 @@
     import Icon from "./Icon.svelte";
 
     export let className: string = "";
-    export let type: "text" | "number" | "ip" | "wheel" | "switch";
+    export let type: "text" | "number" | "checkbox" | "ip" | "wheel" | "switch";
     export let value: any = null;
     export let placeholder: string = "";
     export let maxlength: number | undefined = undefined;
     export let min: number = 0;
     export let max: number = 10;
     export let step: number = 1;
+    export let checked: boolean = false;
     
     let error = false, inputElm: HTMLInputElement;
     const displayed = spring(), dispatch = createEventDispatcher<{ input: { value: any } }>();
@@ -28,7 +29,7 @@
 
     $: {
         if (value !== null && value !== "") {
-            if ((type == "text" || type == "number") && inputElm != undefined)
+            if ((type == "text" || type == "number" || type == "checkbox") && inputElm != undefined)
                 error = !inputElm.checkValidity();
             else if (type == "ip")
                 error = !/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/g.test(value);
@@ -46,14 +47,16 @@
     <Button type="invisible" className={`w-10 flex items-center p-1 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${!value ? "bg-tertiary" : "bg-primary"}`} on:click={() => { value = !value; triggerEvent(); }}>
         <div class={`w-3.5 h-3.5 bg-white rounded-full transition-all ${value ? "ml-[1.125rem]" : ""}`} />
     </Button>
+{:else if type == "checkbox"}
+    <input class="w-4 h-4 bg-tertiary rounded appearance-none checked:bg-primary checked:bg-check focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary" type="checkbox" {placeholder} {checked} bind:value bind:this={inputElm} on:click={() => value = !value} on:input={triggerEvent} />
 {:else}
     <div class={`bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset ${!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} ${className}`}>
         {#if type == "text"}
-            <input type="text" placeholder={placeholder} {maxlength} bind:value bind:this={inputElm} on:input={triggerEvent} />
+            <input type="text" {placeholder} {maxlength} bind:value bind:this={inputElm} on:input={triggerEvent} />
         {:else if type == "number"}
-            <input type="number" placeholder={placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
+            <input type="number" {placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
         {:else if type == "ip"}
-            <input type="text" placeholder={placeholder} maxlength={15} bind:value bind:this={inputElm} on:input={triggerEvent} />
+            <input type="text" {placeholder} maxlength={15} bind:value bind:this={inputElm} on:input={triggerEvent} />
         {:else if type == "wheel"}
             <div class="flex">
                 <div class="w-full h-8 relative overflow-hidden">

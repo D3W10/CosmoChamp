@@ -1,5 +1,5 @@
 export interface IStore {
-    lastRunVersion: string;
+    changelog: string | null;
     settings: IStoreSettings;
 }
 
