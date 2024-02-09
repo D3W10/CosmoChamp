@@ -120,6 +120,13 @@ export function drawDeck() {
     return pDeck;
 }
 
+export function deliverUsedCard(card: Card, special: boolean = false) {
+    if (!special)
+        usedDeck.push(card);
+    else
+        usedDeckS.push(card);
+}
+
 function shuffle<T extends Array<unknown>>(array: T) {
     let idx = array.length, rand;
 

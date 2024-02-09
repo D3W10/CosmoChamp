@@ -9,17 +9,19 @@
     import { transition, flip } from "$lib/stores/transitionStore";
     import { close } from "$lib/stores/closeStore";
     import { sound } from "$lib/stores/soundStore";
-    import { drawCard, drawDeck, generateDeck } from "$lib/deck";
+    import { deliverUsedCard, drawCard, drawDeck, drawSpecialCard, generateDeck } from "$lib/deck";
+    import Icon from "$lib/components/Icon.svelte";
     import Modal from "$lib/components/Modal.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
     let versus: boolean = false, show: boolean = false, start: boolean = false, tie: boolean = false, opponentHover: number = -1;
-    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
+    let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), specialCards: Card[] = [], cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
-    let deckEnabled: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
+    let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
+    let specialSlot: Card | null = null, opponentSpecial: string | null = null, energySprite: boolean = false, windSprite: boolean = false, natureSprite: boolean = false, spaceSprite: boolean = false;
 
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
@@ -61,6 +63,7 @@
         }
         else if (args[0] == "REVEAL") {
             opponentCard = args[1];
+            opponentSpecial = args[2];
 
             setTimeout(() => {
                 opponentShow = true;
@@ -92,10 +95,16 @@
             $app?.sendMessage("HOVER -1");
     }
 
-    function countDown() {
+    async function countDown() {
         if (--time == 0) {
-            if (!pSendState.includes(true) && cardsElmts[Math.floor(Math.random() * 7)])
-                cardsElmts[Math.floor(Math.random() * 7)].parentElement?.click();
+            if (specialDeck) {
+                specialDeck = false;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+            }
+
+            let randomNum = Math.floor(Math.random() * 7);
+            if (!pSendState.includes(true) && cardsElmts[randomNum])
+                cardsElmts[randomNum].parentElement?.click();
 
             runTimer = false;
             clearInterval(timer);
@@ -130,7 +139,7 @@
         if (pSendState.includes(true) && oSendState.includes(true)) {
             runTimer = false;
 
-            $app?.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id}`);
+            $app?.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id}${$game?.mode == 0 && specialSlot != null ? " " + specialSlot.id : ""}`);
         }
     }
 
@@ -147,6 +156,13 @@
             tempWinner = "P";
         else if (pPower < oPower)
             tempWinner = "O";
+
+        deliverUsedCard(cards[pSendState.findIndex((v) => v)]);
+        deliverUsedCard({ id: opponentCard });
+        if (specialSlot)
+            deliverUsedCard(specialSlot, true);
+        if (opponentSpecial)
+            deliverUsedCard({ id: opponentSpecial }, true);
 
         $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
         setTimeout(() => setWinner(tempWinner), 1500);
@@ -262,7 +278,7 @@
                             </div>
                         {/each}
                     </div>
-                    <div class="mt-6 flex space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
+                    <div class="w-full mt-6 ml-4 flex justify-end space-x-6" in:fly={{ duration: 800, x: 300 }} on:introend={() => setTimeout(() => start = true, 1000)}>
                         <div class="flex text-shade/50">
                             <div class="min-w-5 relative">
                                 {#key $game?.opponent.points}
@@ -311,17 +327,27 @@
                     </div>
                     <div class="sides flex flex-col justify-center items-center space-y-3" in:fade={{ delay: 300, duration: 800 }}>
                         <div class="flex space-x-3">
-                            <img class="w-16 h-16 opacity-10" src="./elements/energy.png" alt="Energy Element" />
-                            <img class="w-16 h-16 opacity-10" src="./elements/wind.png" alt="Wind Element" />
+                            <img class={`w-16 h-16 ${!energySprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./elements/energy.png" alt="Energy Element" />
+                            <img class={`w-16 h-16 ${!windSprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./elements/wind.png" alt="Wind Element" />
                         </div>
                         <div class="flex space-x-3">
-                            <img class="w-16 h-16 opacity-10" src="./elements/nature.png" alt="Nature Element" />
-                            <img class="w-16 h-16 opacity-10" src="./logo.png" alt="Space Element" />
+                            <img class={`w-16 h-16 ${!natureSprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./elements/nature.png" alt="Nature Element" />
+                            <img class={`w-16 h-16 ${!spaceSprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./logo.png" alt="Space Element" />
                         </div>
                     </div>
                 </div>
                 <div class="px-6 flex justify-between items-end">
-                    <div class="mb-6 flex space-x-6" in:fly={{ duration: 800, x: -300 }}>
+                    <div class="w-full h-full mr-4 flex flex-col justify-between items-end" in:fly={{ duration: 800, x: -300 }}>
+                        <div class="w-10 h-10 mt-0.5 relative">
+                            {#if specialCards.length > 0 && deckEnabled && specialSlot == null}
+                                <button class={`w-full absolute ${!specialDeck ? "saturate-100" : "saturate-0"} transition duration-500`} transition:fade={{ duration: 200 }} on:click={() => { if (deckEnabled) specialDeck = !specialDeck; }}>
+                                    <Icon name="star" />
+                                </button>
+                            {:else}
+                                <div class="w-full absolute" />
+                            {/if}
+                        </div>
+                        <div class="w-full mb-6 flex space-x-6">
                         <span>{$settings.playerName}</span>
                         <div class="flex text-shade/50">
                             <div class="min-w-5 relative">
@@ -337,7 +363,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex -mb-20">
+                    </div>
+                    <div class="min-w-[656px] h-[120px] flex items-start relative">
+                        {#if !specialDeck}
+                            <div class="flex absolute" out:fade={{ duration: 200 }}>
                         {#each cards as card, i}
                             <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
                                 {#if !pSendState[i]}
@@ -347,6 +376,18 @@
                                 {/if}
                             </div>
                         {/each}
+                            </div>
+                        {:else}
+                            <div class="flex absolute" out:fade={{ duration: 200 }}>
+                                {#each specialCards as card, i}
+                                    <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
+                                        <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:click={(e) => { specialSlot = card; e.currentTarget.classList.add("fly"); setTimeout(() => specialDeck = false, 200); }}>
+                                            <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1)} />
+                                        </button>
+                                    </div>
+                                {/each}
+                            </div>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -363,11 +404,15 @@
     }
 
     .player-card {
-        @apply w-32 bg-secondary rounded-lg transition-transform aspect-card;
+        @apply w-32 bg-secondary rounded-lg transition aspect-card;
     }
 
     .opponent-card {
         @apply w-24 bg-secondary rounded-md transition-transform aspect-card;
+    }
+
+    .fly {
+        animation: fly 400ms ease-in forwards;
     }
 
     @keyframes -global-slide-right {
@@ -417,6 +462,18 @@
 
         100% {
             transform: translateY(0);
+        }
+    }
+
+    @keyframes -global-fly {
+        0% {
+            opacity: 1;
+            transform: translateY(-20px);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(-120px);
         }
     }
 </style>
