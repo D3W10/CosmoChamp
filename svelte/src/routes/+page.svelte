@@ -10,9 +10,8 @@
     import Result from "$lib/pages/Result.svelte";
     import Settings from "$lib/pages/Settings.svelte";
 
-    onMount(() => setup())
-
-    $: $settings, setup();
+    onMount(() => setup());
+    settings.subscribe(setup);
 
     function setup() {
         try {
