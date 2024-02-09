@@ -9,84 +9,21 @@ export function generateDeck() {
     deckS = [];
     usedDeckS = [];
 
-    deck.push({ id: "fire1" } satisfies Card);
-    deck.push({ id: "fire1" } satisfies Card);
-    deck.push({ id: "fire2" } satisfies Card);
-    deck.push({ id: "fire2" } satisfies Card);
-    deck.push({ id: "fire3" } satisfies Card);
-    deck.push({ id: "fire3" } satisfies Card);
-    deck.push({ id: "fire4" } satisfies Card);
-    deck.push({ id: "fire4" } satisfies Card);
-    deck.push({ id: "fire5" } satisfies Card);
-    deck.push({ id: "fire5" } satisfies Card);
-    deck.push({ id: "fire6" } satisfies Card);
-    deck.push({ id: "fire6" } satisfies Card);
-    deck.push({ id: "fire7" } satisfies Card);
-    deck.push({ id: "fire7" } satisfies Card);
-    deck.push({ id: "fire8" } satisfies Card);
-    deck.push({ id: "fire8" } satisfies Card);
-    deck.push({ id: "fire9" } satisfies Card);
-    deck.push({ id: "fire9" } satisfies Card);
-    deck.push({ id: "fire10" } satisfies Card);
+    ["fire", "water", "snow"].forEach((element) => {
+        for (let i = 1; i <= 9; i++) {
+            deck.push({ id: element + i } satisfies Card);
+            deck.push({ id: element + i } satisfies Card);
+        }
+        deck.push({ id: element + "10" } satisfies Card);
+    });
 
-    deck.push({ id: "water1" } satisfies Card);
-    deck.push({ id: "water1" } satisfies Card);
-    deck.push({ id: "water2" } satisfies Card);
-    deck.push({ id: "water2" } satisfies Card);
-    deck.push({ id: "water3" } satisfies Card);
-    deck.push({ id: "water3" } satisfies Card);
-    deck.push({ id: "water4" } satisfies Card);
-    deck.push({ id: "water4" } satisfies Card);
-    deck.push({ id: "water5" } satisfies Card);
-    deck.push({ id: "water5" } satisfies Card);
-    deck.push({ id: "water6" } satisfies Card);
-    deck.push({ id: "water6" } satisfies Card);
-    deck.push({ id: "water7" } satisfies Card);
-    deck.push({ id: "water7" } satisfies Card);
-    deck.push({ id: "water8" } satisfies Card);
-    deck.push({ id: "water8" } satisfies Card);
-    deck.push({ id: "water9" } satisfies Card);
-    deck.push({ id: "water9" } satisfies Card);
-    deck.push({ id: "water10" } satisfies Card);
+    ["energy", "wind", "nature"].forEach((special) => {
+        for (let i = 0; i < 5; i++)
+            deckS.push({ id: special } satisfies Card);
+    });
 
-    deck.push({ id: "snow1" } satisfies Card);
-    deck.push({ id: "snow1" } satisfies Card);
-    deck.push({ id: "snow2" } satisfies Card);
-    deck.push({ id: "snow2" } satisfies Card);
-    deck.push({ id: "snow3" } satisfies Card);
-    deck.push({ id: "snow3" } satisfies Card);
-    deck.push({ id: "snow4" } satisfies Card);
-    deck.push({ id: "snow4" } satisfies Card);
-    deck.push({ id: "snow5" } satisfies Card);
-    deck.push({ id: "snow5" } satisfies Card);
-    deck.push({ id: "snow6" } satisfies Card);
-    deck.push({ id: "snow6" } satisfies Card);
-    deck.push({ id: "snow7" } satisfies Card);
-    deck.push({ id: "snow7" } satisfies Card);
-    deck.push({ id: "snow8" } satisfies Card);
-    deck.push({ id: "snow8" } satisfies Card);
-    deck.push({ id: "snow9" } satisfies Card);
-    deck.push({ id: "snow9" } satisfies Card);
-    deck.push({ id: "snow10" } satisfies Card);
-
-    deckS.push({ id: "energy" } satisfies Card);
-    deckS.push({ id: "energy" } satisfies Card);
-    deckS.push({ id: "energy" } satisfies Card);
-    deckS.push({ id: "energy" } satisfies Card);
-    deckS.push({ id: "energy" } satisfies Card);
-    deckS.push({ id: "wind" } satisfies Card);
-    deckS.push({ id: "wind" } satisfies Card);
-    deckS.push({ id: "wind" } satisfies Card);
-    deckS.push({ id: "wind" } satisfies Card);
-    deckS.push({ id: "wind" } satisfies Card);
-    deckS.push({ id: "nature" } satisfies Card);
-    deckS.push({ id: "nature" } satisfies Card);
-    deckS.push({ id: "nature" } satisfies Card);
-    deckS.push({ id: "nature" } satisfies Card);
-    deckS.push({ id: "nature" } satisfies Card);
-
-    deckS.push({ id: "space" } satisfies Card);
-    deckS.push({ id: "space" } satisfies Card);
+    for (let i = 0; i < 2; i++)
+        deckS.push({ id: "space" } satisfies Card);
 
     deck = shuffle(deck);
     deckS = shuffle(deckS);
