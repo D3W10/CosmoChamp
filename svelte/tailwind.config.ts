@@ -21,7 +21,8 @@ export default {
                 shade: "rgb(var(--color-shade) / <alpha-value>)"
             },
             dropShadow: {
-                glow: ["0 0 8px rgba(79,70,229,1)", "-2px -2px 2px rgba(79,70,229,0.5)", "2px 2px 2px rgba(79,70,229,0.5)"]
+                glow: ["0 0 8px rgba(79,70,229,1)", "-2px -2px 2px rgba(79,70,229,0.5)", "2px 2px 2px rgba(79,70,229,0.5)"],
+                shine: ["0 0 8px rgba(255,255,255,1)", "-2px -2px 2px rgba(255,255,255,0.5)", "2px 2px 2px rgba(255,255,255,0.5)"]
             },
             spacing: {
                 "112": "30rem",

@@ -22,6 +22,7 @@
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
     let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
+    let playerGlow: boolean = false, opponentGlow: boolean = false, ogPlayerCard: string | null = null, ogOpponentCard: string | null = null;
 
     const firstTimeSpecial = $app?.getSetting("firstTimeSpecial") as boolean;
     const [send, receive] = crossfade({ duration: 500 });
@@ -134,6 +135,8 @@
             specialSlot = null;
             opponentSpecial = null;
             specialSprites = [false, false, false, false];
+            ogPlayerCard = null;
+            ogOpponentCard = null;
 
             if ($game)
                 $game.stats.roundCount++;
@@ -157,12 +160,58 @@
     }
 
     async function specialRampage() {
-        const playSpecialAnim = async (id: string, i: 0 | 1 | 2 | 3) => {
+        const playSpecialAnim = async (id: "energy" | "wind" | "nature" | "space", i: 0 | 1 | 2 | 3) => {
+            let pCard = cards[pSendState.findIndex((v) => v)].id;
+            let oCard = opponentCard;
+
             elementAnim = id;
             elementAnimShow = true;
             await $app?.sleep(2000);
             specialSprites[i] = true;
             await $app?.sleep(500);
+
+            if (id == "energy" && specialSlot?.id == "energy") {
+                ogOpponentCard = oCard;
+                opponentGlow = true;
+
+                let parts = oCard.split(cardRegex);
+                await $app?.sleep(1000);
+                opponentCard = parts[0] + Math.max(1, +parts[1] - 3);
+                opponentGlow = false;
+                await $app?.sleep(800);
+            }
+            if (id == "energy" && opponentSpecial == "energy") {
+                ogPlayerCard = pCard;
+                playerGlow = true;
+
+                let parts = pCard.split(cardRegex);
+                await $app?.sleep(1000);
+                cards[pSendState.findIndex((v) => v)].id = parts[0] + Math.max(1, +parts[1] - 3);
+                playerGlow = false;
+                await $app?.sleep(800);
+            }
+            if (id == "nature" && specialSlot?.id == "nature") {
+                if (ogPlayerCard)
+                    pCard = ogPlayerCard;
+                ogOpponentCard = oCard;
+                opponentGlow = true;
+
+                await $app?.sleep(1000);
+                opponentCard = pCard.split(cardRegex)[0] + oCard.split(cardRegex)[1];
+                opponentGlow = false;
+                await $app?.sleep(800);
+            }
+            if (id == "nature" && opponentSpecial == "nature") {
+                if (ogOpponentCard)
+                    oCard = ogOpponentCard;
+                ogPlayerCard = pCard;
+                playerGlow = true;
+
+                await $app?.sleep(1000);
+                cards[pSendState.findIndex((v) => v)].id = oCard.split(cardRegex)[0] + pCard.split(cardRegex)[1];
+                playerGlow = false;
+                await $app?.sleep(800);
+            }
         };
 
         if (specialSlot?.id == "energy" || opponentSpecial == "energy")
@@ -195,9 +244,9 @@
         deliverUsedCard(cards[pSendState.findIndex((v) => v)]);
         deliverUsedCard({ id: opponentCard });
         if (specialSlot)
-            deliverUsedCard(specialSlot, true);
+            deliverUsedCard(ogPlayerCard ? { id: ogPlayerCard } : specialSlot, true);
         if (opponentSpecial)
-            deliverUsedCard({ id: opponentSpecial }, true);
+            deliverUsedCard({ id: ogOpponentCard ? ogOpponentCard : opponentSpecial }, true);
 
         $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
         setWinner(tempWinner);
@@ -369,7 +418,7 @@
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")}`}>
+                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!opponentGlow ? "before:opacity-0 before:duration-300" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
                             {#if !opponentShow}
                                 <div out:flip={{ duration: 400 }}>
                                     {#each Array(7) as _, i}
@@ -382,7 +431,7 @@
                                 <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class={`w-32 flex bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")}`}>
+                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!playerGlow ? "before:opacity-0 before:duration-300" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400 }}>
