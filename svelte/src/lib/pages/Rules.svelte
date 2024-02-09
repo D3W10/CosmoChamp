@@ -171,7 +171,7 @@
                     <img src="./rules/graphSpecial.png" alt="Special Elements Graph" class="w-1/3" />
                     <div class="w-2/3 h-full flex flex-col justify-center space-y-8">
                         <p>During your game you will come across cards with special elements such as energy, wind, nature and space.</p>
-                        <p>Every time a round ends you have a 20% chance of getting one of these cards and you can use them along with a basic element when the time starts ticking.</p>
+                        <p>Every time a round ends you have a 25% chance of getting one of these cards and you can use them along with a basic element when the time starts ticking.</p>
                     </div>
                 </div>
             {:else if currentPage == 5}

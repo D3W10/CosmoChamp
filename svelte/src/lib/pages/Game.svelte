@@ -21,7 +21,7 @@
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
-    let specialSlot: Card | null = null, opponentSpecial: string | null = null, energySprite: boolean = false, windSprite: boolean = false, natureSprite: boolean = false, spaceSprite: boolean = false;
+    let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
 
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
@@ -63,17 +63,22 @@
         }
         else if (args[0] == "REVEAL") {
             opponentCard = args[1];
-            opponentSpecial = args[2];
+            opponentSCount = +args[2];
+            opponentSpecial = args[3];
 
             setTimeout(() => {
                 opponentShow = true;
 
-                if ($game?.host)
-                    evaluateRound();
+                setTimeout(async () => {
+                    await specialRampage();
+
+                    if ($game?.host)
+                        evaluateRound();
+                }, 1500);
             }, 2000);
         }
         else if (args[0] == "RESULT")
-            setTimeout(() => setWinner(args[1] as WinChar), 1500);
+            setWinner(args[1] as WinChar);
         else if (args[0] == "CARD") {
             cards[pSendState.findIndex((v) => v)] = { id: args[1] };
             pSendState = pSendState.fill(false);
@@ -82,6 +87,8 @@
             winner = "U";
             setTimeout(startRound, 500);
         }
+        else if (args[0] == "SCARD")
+            specialCards.push({ id: args[1] });
         else if (args[0] == "END") {
             if ($game)
                 $game.stats.endTime = new Date();
@@ -121,6 +128,9 @@
         else {
             runTimer = true;
             deckEnabled = true;
+            specialSlot = null;
+            opponentSpecial = null;
+            specialSprites = [false, false, false, false];
 
             if ($game)
                 $game.stats.roundCount++;
@@ -139,8 +149,27 @@
         if (pSendState.includes(true) && oSendState.includes(true)) {
             runTimer = false;
 
-            $app?.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id}${$game?.mode == 0 && specialSlot != null ? " " + specialSlot.id : ""}`);
+            $app?.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id} ${!$game?.host ? specialCards.length : 0}${$game?.mode == 0 && specialSlot != null ? " " + specialSlot.id : ""}`);
         }
+    }
+
+    async function specialRampage() {
+        const playSpecialAnim = async (id: string, i: 0 | 1 | 2 | 3) => {
+            elementAnim = id;
+            elementAnimShow = true;
+            await $app?.sleep(2000);
+            specialSprites[i] = true;
+            await $app?.sleep(500);
+        };
+
+        if (specialSlot?.id == "energy" || opponentSpecial == "energy")
+            await playSpecialAnim("energy", 0);
+        if (specialSlot?.id == "wind" || opponentSpecial == "wind")
+            await playSpecialAnim("wind", 1);
+        if (specialSlot?.id == "nature" || opponentSpecial == "nature")
+            await playSpecialAnim("nature", 2);
+        if (specialSlot?.id == "space" || opponentSpecial == "space")
+            await playSpecialAnim("space", 3);
     }
 
     function evaluateRound() {
@@ -165,7 +194,7 @@
             deliverUsedCard({ id: opponentSpecial }, true);
 
         $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
-        setTimeout(() => setWinner(tempWinner), 1500);
+        setWinner(tempWinner);
     }
 
     function setWinner(winChar: WinChar) {
@@ -202,6 +231,22 @@
             if ($game?.host) {
                 receiveMessage(`CARD ${drawCard().id}`);
                 $app?.sendMessage(`CARD ${drawCard().id}`);
+
+                if ($game.mode == 0) {
+                    if (Math.floor(Math.random() * 4) == 0 && specialCards.length < 7) {
+                        let newSCard = drawSpecialCard();
+
+                        if (newSCard)
+                            specialCards.push(newSCard);
+                    }
+
+                    if (Math.floor(Math.random() * 4) == 0 && opponentSCount < 7) {
+                        let newSCard = drawSpecialCard();
+
+                        if (newSCard)
+                            $app?.sendMessage(`SCARD ${newSCard.id}`);
+                    }
+                }
             }
         }, 2500);
     }
@@ -327,12 +372,12 @@
                     </div>
                     <div class="sides flex flex-col justify-center items-center space-y-3" in:fade={{ delay: 300, duration: 800 }}>
                         <div class="flex space-x-3">
-                            <img class={`w-16 h-16 ${!energySprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./elements/energy.png" alt="Energy Element" />
-                            <img class={`w-16 h-16 ${!windSprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./elements/wind.png" alt="Wind Element" />
+                            <img class={`w-16 h-16 ${!specialSprites[0] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/energy.png" alt="Energy Element" />
+                            <img class={`w-16 h-16 ${!specialSprites[1] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/wind.png" alt="Wind Element" />
                         </div>
                         <div class="flex space-x-3">
-                            <img class={`w-16 h-16 ${!natureSprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./elements/nature.png" alt="Nature Element" />
-                            <img class={`w-16 h-16 ${!spaceSprite ? "opacity-10" : "opacity-100"} transition-opacity duration-200`} src="./logo.png" alt="Space Element" />
+                            <img class={`w-16 h-16 ${!specialSprites[2] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/nature.png" alt="Nature Element" />
+                            <img class={`w-16 h-16 ${!specialSprites[3] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/space.png" alt="Space Element" />
                         </div>
                     </div>
                 </div>
@@ -348,40 +393,40 @@
                             {/if}
                         </div>
                         <div class="w-full mb-6 flex space-x-6">
-                        <span>{$settings.playerName}</span>
-                        <div class="flex text-shade/50">
-                            <div class="min-w-5 relative">
-                                {#key $game?.stats.points}
-                                    <span class="absolute right-0" transition:blur={{ duration: 400 }}>{$game?.stats.points}</span>
-                                {/key}
-                            </div>
-                            <div class="relative">
-                                <img class="w-6 h-6 -mt-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />
-                                {#if cosmoP}
-                                    <img class="w-6 h-6 -mt-0.5 absolute top-0" src="./point.png" alt="Cosmo Points" style="animation: receive-player 0.8s cubic-bezier(0.32, 0, 0.67, 0);" />
-                                {/if}
+                            <span>{$settings.playerName}</span>
+                            <div class="flex text-shade/50">
+                                <div class="min-w-5 relative">
+                                    {#key $game?.stats.points}
+                                        <span class="absolute right-0" transition:blur={{ duration: 400 }}>{$game?.stats.points}</span>
+                                    {/key}
+                                </div>
+                                <div class="relative">
+                                    <img class="w-6 h-6 -mt-0.5" src="./point.png" alt="Cosmo Points" title="Cosmo Points" />
+                                    {#if cosmoP}
+                                        <img class="w-6 h-6 -mt-0.5 absolute top-0" src="./point.png" alt="Cosmo Points" style="animation: receive-player 0.8s cubic-bezier(0.32, 0, 0.67, 0);" />
+                                    {/if}
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                     <div class="min-w-[656px] h-[120px] flex items-start relative">
                         {#if !specialDeck}
                             <div class="flex absolute" out:fade={{ duration: 200 }}>
-                        {#each cards as card, i}
-                            <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
-                                {#if !pSendState[i]}
-                                    <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
-                                        <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
-                                    </button>
-                                {/if}
-                            </div>
-                        {/each}
+                                {#each cards as card, i}
+                                    <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
+                                        {#if !pSendState[i]}
+                                            <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
+                                                <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
+                                            </button>
+                                        {/if}
+                                    </div>
+                                {/each}
                             </div>
                         {:else}
                             <div class="flex absolute" out:fade={{ duration: 200 }}>
                                 {#each specialCards as card, i}
                                     <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
-                                        <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:click={(e) => { specialSlot = card; e.currentTarget.classList.add("fly"); setTimeout(() => specialDeck = false, 200); }}>
+                                        <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:click={(e) => { specialSlot = card; e.currentTarget.classList.add("fly"); setTimeout(() => { specialDeck = false; specialCards.splice(i, 1) }, 200); }}>
                                             <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1)} />
                                         </button>
                                     </div>

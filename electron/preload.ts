@@ -137,6 +137,13 @@ export function closeConnection() {
 }
 
 /**
+ * Stops the program execution for the specified amount of time
+ */
+export async function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
  * Updates the callback function reference to where the main window status should be sent
  * 
  * @param callback The function to receive the window status
@@ -197,6 +204,7 @@ contextBridge.exposeInMainWorld("app", {
     connectClient,
     sendMessage,
     closeConnection,
+    sleep,
     updateReadyCallback,
     updateReceiveCallback,
     updateCloseCallback
