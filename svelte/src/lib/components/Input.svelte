@@ -5,7 +5,8 @@
     import Icon from "./Icon.svelte";
 
     export let className: string = "";
-    export let type: "text" | "number" | "checkbox" | "ip" | "wheel" | "switch";
+    export let innerClassName: string = "";
+    export let type: "text" | "number" | "checkbox" | "range" | "ip" | "wheel" | "switch";
     export let value: any = null;
     export let placeholder: string = "";
     export let maxlength: number | undefined = undefined;
@@ -18,7 +19,9 @@
     const displayed = spring(), dispatch = createEventDispatcher<{ input: { value: any } }>();
 
     $: {
-        if (type == "wheel" && value === null)
+        if (type == "range" && value === null)
+            value = min;
+        else if (type == "wheel" && value === null)
             value = min;
         else if (type == "switch" && value === null)
             value = false;
@@ -29,7 +32,7 @@
 
     $: {
         if (value !== null && value !== "") {
-            if ((type == "text" || type == "number" || type == "checkbox") && inputElm != undefined)
+            if ((type == "text" || type == "number" || type == "checkbox" || type == "range") && inputElm != undefined)
                 error = !inputElm.checkValidity();
             else if (type == "ip")
                 error = !/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/g.test(value);
@@ -49,6 +52,11 @@
     </Button>
 {:else if type == "checkbox"}
     <input class="w-4 h-4 bg-tertiary rounded appearance-none checked:bg-primary checked:bg-check focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary" type="checkbox" {placeholder} {checked} bind:value bind:this={inputElm} on:click={() => value = !value} on:input={triggerEvent} />
+{:else if type == "range"}
+    <div class={`flex items-center space-x-3 ${className}`}>
+        <input class="w-full h-2 p-0 bg-tertiary rounded-full appearance-none" type="range" {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
+        <input class={`w-10 p-0 text-right text-base ${innerClassName}`} type="text" bind:value on:input={triggerEvent} />
+    </div>
 {:else}
     <div class={`bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset ${!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} ${className}`}>
         {#if type == "text"}
@@ -77,3 +85,9 @@
         {/if}
     </div>
 {/if}
+
+<style type="text/postcss">
+    input[type="range"]::-webkit-slider-thumb {
+        @apply w-4 h-4 bg-primary rounded-full appearance-none cursor-ew-resize;
+    }
+</style>

@@ -4,7 +4,7 @@ import { settings } from "./settingsStore";
 export const sound = derived(settings, ($settings) => {
     return {
         bgVolume: 0.25 * ($settings.volume / 100),
-        sfxVolume: 0.2,
+        sfxVolume: 0.2 * ($settings.sfxVolume / 100),
         btnVolume: 0.5
     };
 });

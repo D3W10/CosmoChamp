@@ -23,7 +23,8 @@ const appConfig = new Store<IStore>({
             theme: 0,
             reduceMotion: false,
             playerName: "Guest",
-            volume: 100
+            volume: 100,
+            sfxVolume: 100
         }
     },
     encryptionKey: "CosmoChamp"

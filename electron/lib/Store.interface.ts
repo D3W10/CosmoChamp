@@ -9,4 +9,5 @@ export interface IStoreSettings {
     reduceMotion: boolean;
     playerName: string;
     volume: number;
+    sfxVolume: number;
 }

@@ -56,7 +56,14 @@
                         <p>Volume</p>
                         <p class="mt-1 text-foreground/70 text-sm font-normal">Set the game music volume</p>
                     </div>
-                    <Input className="w-36" type="wheel" min={0} max={100} step={5} value={$settings.volume} on:input={(e) => settings.update("volume", e.detail.value)} />
+                    <Input type="range" min={0} max={100} innerClassName="w-7" value={$settings.volume} on:input={(e) => settings.update("volume", e.detail.value)} />
+                </div>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p>Sound Effects Volume</p>
+                        <p class="mt-1 text-foreground/70 text-sm font-normal">Set the game sound effects volume</p>
+                    </div>
+                    <Input type="range" min={0} max={100} innerClassName="w-7" value={$settings.sfxVolume} on:input={(e) => settings.update("sfxVolume", e.detail.value)} />
                 </div>
                 <div class="flex justify-between items-center">
                     <div>
