@@ -1,5 +1,6 @@
 export interface IStore {
     changelog: string | null;
+    firstTimeSpecial: boolean;
     settings: IStoreSettings;
 }
 

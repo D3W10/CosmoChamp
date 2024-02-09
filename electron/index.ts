@@ -18,6 +18,7 @@ const logger = new Logger("Main", "blue"), pLogger = new Logger("Prld", "cyan"),
 const appConfig = new Store<IStore>({
     defaults: {
         changelog: null,
+        firstTimeSpecial: true,
         settings: {
             theme: 0,
             reduceMotion: false,

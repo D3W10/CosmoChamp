@@ -17,12 +17,13 @@
 
     let versus: boolean = false, show: boolean = false, start: boolean = false, tie: boolean = false, opponentHover: number = -1;
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), specialCards: Card[] = [], cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
-    let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false;
+    let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false, specialTooltip: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
     let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
     let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
 
+    const firstTimeSpecial = $app?.getSetting("firstTimeSpecial") as boolean;
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
     const sparkle = new Howl({ src: ["sounds/sparkle.mp3"], html5: true, volume: $sound.sfxVolume });
@@ -87,8 +88,10 @@
             winner = "U";
             setTimeout(startRound, 500);
         }
-        else if (args[0] == "SCARD")
+        else if (args[0] == "SCARD") {
             specialCards.push({ id: args[1] });
+            checkSpecialTooltipStatus();
+        }
         else if (args[0] == "END") {
             if ($game)
                 $game.stats.endTime = new Date();
@@ -177,6 +180,9 @@
         let oCard = opponentCard.split(cardRegex)[0] as keyof typeof wins, oPower = +opponentCard.split(cardRegex)[1];
         let wins = { fire: "snow", snow: "water", water: "fire" }, tempWinner: WinChar = "T" as keyof typeof conversor, conversor = { P: "O", O: "P", T: "T"};
 
+        if ((specialSlot?.id == "wind" && opponentSpecial != "wind") || (specialSlot?.id != "wind" && opponentSpecial == "wind"))
+            wins = { fire: "water", snow: "fire", water: "snow" };
+
         if (wins[pCard] == oCard)
             tempWinner = "P";
         else if (wins[oCard] == pCard)
@@ -205,7 +211,9 @@
             sparkle.play();
 
             setTimeout(() => {
-                if ($game)
+                if ($game && specialSlot?.id == "space")
+                    $game.stats.points += 3;
+                else if ($game)
                     $game.stats.points++;
 
                 cosmoP = false;
@@ -216,7 +224,9 @@
             wrong.play();
 
             setTimeout(() => {
-                if ($game)
+                if ($game && opponentSpecial == "space")
+                    $game.opponent.points += 3;
+                else if ($game)
                     $game.opponent.points++;
 
                 cosmoO = false;
@@ -238,6 +248,8 @@
 
                         if (newSCard)
                             specialCards.push(newSCard);
+
+                        checkSpecialTooltipStatus();
                     }
 
                     if (Math.floor(Math.random() * 4) == 0 && opponentSCount < 7) {
@@ -249,6 +261,16 @@
                 }
             }
         }, 2500);
+    }
+
+    function checkSpecialTooltipStatus() {
+        if (firstTimeSpecial) {
+            setTimeout(() => {
+                specialTooltip = true;
+                $app?.setSetting("firstTimeSpecial", false);
+                setTimeout(() => specialTooltip = false, 5000);
+            }, 1000);
+        }
     }
 
     function goToResult() {
@@ -384,6 +406,12 @@
                 <div class="px-6 flex justify-between items-end">
                     <div class="w-full h-full mr-4 flex flex-col justify-between items-end" in:fly={{ duration: 800, x: -300 }}>
                         <div class="w-10 h-10 mt-0.5 relative">
+                            {#if specialTooltip}
+                                <div class="w-64 -ml-32 mb-5 p-2 flex flex-col items-center absolute bottom-full left-1/2 bg-tertiary rounded-lg text-center text-sm space-y-2 z-0 before:w-5 before:h-5 before:block before:absolute before:-bottom-2 before:bg-tertiary before:rounded before:rotate-45 before:-z-10" transition:fly={{ duration: 400, y: 20 }}>
+                                    <p class="font-semibold">You got a special card!</p>
+                                    <p class="font-normal">You can only use a special card before playing a normal one.</p>
+                                </div>
+                            {/if}
                             {#if specialCards.length > 0 && deckEnabled && specialSlot == null}
                                 <button class={`w-full absolute ${!specialDeck ? "saturate-100" : "saturate-0"} transition duration-500`} transition:fade={{ duration: 200 }} on:click={() => { if (deckEnabled) specialDeck = !specialDeck; }}>
                                     <Icon name="star" />
