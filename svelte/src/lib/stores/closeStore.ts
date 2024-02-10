@@ -15,7 +15,7 @@ export const close = derived([app, sound], ([$app, $sound]) => {
             music?.fade($sound.bgVolume, 0, 500);
             music?.once("fade", () => music?.unload());
         
-            setTimeout(() => $app?.closeConnection(), 1500); 
+            setTimeout(() => $app?.closeConnection(), 500); 
         }
     }
 });
