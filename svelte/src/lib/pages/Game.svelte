@@ -1,6 +1,7 @@
 <script lang="ts">
     import { blur, crossfade, fade, fly, scale } from "svelte/transition";
     import { backOut, cubicIn } from "svelte/easing";
+    import { tweened } from "svelte/motion";
     import { Howl } from "howler";
     import { app } from "$lib/stores/appStore";
     import { page } from "$lib/stores/pageStore";
@@ -12,14 +13,15 @@
     import { deliverUsedCard, drawCard, drawDeck, drawSpecialCard, generateDeck } from "$lib/deck";
     import Icon from "$lib/components/Icon.svelte";
     import Modal from "$lib/components/Modal.svelte";
+    import SuperNova from "$lib/components/SuperNova.svelte";
     import { gameModes } from "$lib/models/GameModes.object";
     import type { Card } from "$lib/models/Card.interface";
 
-    let versus: boolean = false, show: boolean = false, start: boolean = false, tie: boolean = false, opponentHover: number = -1;
+    let versus: boolean = false, show: boolean = false, start: boolean = false, tie: boolean = false, final: boolean = false, opponentHover: number = -1;
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), specialCards: Card[] = [], cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false, specialTooltip: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
-    let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false;
+    let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false, finalRun: boolean = false, finalSwitch: boolean = false;
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
     let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
     let playerGlow: boolean = false, opponentGlow: boolean = false, ogPlayerCard: string | null = null, ogOpponentCard: string | null = null;
@@ -30,6 +32,12 @@
     const sparkle = new Howl({ src: ["sounds/sparkle.mp3"], html5: true, volume: $sound.sfxVolume });
     const wrong = new Howl({ src: ["sounds/wrong.mp3"], html5: true, volume: $sound.sfxVolume });
     const tieSfx = new Howl({ src: ["sounds/tie.mp3"], html5: true, volume: $sound.sfxVolume });
+    const special = new Howl({ src: ["sounds/special.mp3"], html5: true, volume: $sound.sfxVolume });
+
+    const finishSize = tweened(0, {
+        duration: 2000,
+        easing: cubicIn
+    });
 
     type WinChar = "P" | "O" | "T" | "U";
 
@@ -97,7 +105,9 @@
             if ($game)
                 $game.stats.endTime = new Date();
 
-            goToResult();
+            final = true;
+            setTimeout(() => finalRun = true, 500);
+            setTimeout(() => goToResult(), 9500);
         }
     }
 
@@ -166,6 +176,7 @@
 
             elementAnim = id;
             elementAnimShow = true;
+            special.play();
             await $app?.sleep(2000);
             specialSprites[i] = true;
             await $app?.sleep(500);
@@ -381,6 +392,18 @@
             {#if tie}
                 <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => tie = false, 1000)}>
                     <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }}>TIE</span>
+                </div>
+            {/if}
+            {#if final}
+                <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => tie = false, 1000)}>
+                    <div class="w-[var(--finish-size)] h-[var(--finish-size)] absolute border-primary rounded-full z-20" style={`--finish-size: ${$finishSize}vw; ${$finishSize != 0 ? "border-width: min(20vw, calc(var(--finish-size) / 2 + 2px));" : ""}`} />
+                    {#if !finalSwitch}
+                        <div class="absolute z-10">
+                            <SuperNova run={finalRun} points={$game?.goal ? $game?.goal : 15} height={window.innerHeight - 40} firstFrame={false} on:finish={() => { finishSize.set(200); setTimeout(() => finalSwitch = true, 1000); }} />
+                        </div>
+                    {:else}
+                        <span class="text-7xl font-semibold drop-shadow-glow">FINISH</span>
+                    {/if}
                 </div>
             {/if}
             <div class="w-full h-full absolute flex flex-col">
