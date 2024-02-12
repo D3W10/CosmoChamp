@@ -29,6 +29,9 @@
     const firstTimeSpecial = $app?.getSetting("firstTimeSpecial") as boolean;
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
+    const vs = new Howl({ src: ["sounds/vs.mp3"], html5: true, volume: $sound.sfxVolume });
+    const startSfx = new Howl({ src: ["sounds/start.mp3"], html5: true, volume: $sound.sfxVolume });
+    const flipSfx = new Howl({ src: ["sounds/flip.mp3"], html5: true, volume: $sound.sfxVolume });
     const sparkle = new Howl({ src: ["sounds/sparkle.mp3"], html5: true, volume: $sound.sfxVolume });
     const wrong = new Howl({ src: ["sounds/wrong.mp3"], html5: true, volume: $sound.sfxVolume });
     const tieSfx = new Howl({ src: ["sounds/tie.mp3"], html5: true, volume: $sound.sfxVolume });
@@ -366,7 +369,7 @@
                     <p class="absolute text-7xl font-semibold rotate-[-35deg] drop-shadow-glow animate-pulse">VS</p>
                 </div>
                 <div class="w-full h-full flex justify-center items-end pb-10 overflow-hidden -skew-x-[35deg]">
-                    <p class="ml-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(false)} out:fly={$transition.nameFlyOut(true)}>{!$game?.host ? $settings.playerName : $game?.opponent.name}</p>
+                    <p class="ml-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(false)} out:fly={$transition.nameFlyOut(true)} on:introstart={() => setTimeout(() => vs.play(), 500)}>{!$game?.host ? $settings.playerName : $game?.opponent.name}</p>
                 </div>
             </div>
         </div>
@@ -375,7 +378,7 @@
         <div class="w-full h-full relative">
             {#if start}
                 <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => start = false, 1000)} on:outroend={() => { if ($game) $game.stats.startTime = new Date(); startRound(); wideSpace.play(); }}>
-                    <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }}>START</span>
+                    <span class="text-7xl font-semibold drop-shadow-glow" in:fly={{ duration: 500, x: -620 }} out:fly={{ duration: 500, x: 620, easing: cubicIn }} on:introstart={() => setTimeout(() => startSfx.play(), 200)}>START</span>
                 </div>
             {/if}
             {#if elementAnimShow}
@@ -441,9 +444,9 @@
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!opponentGlow ? "before:opacity-0 before:duration-300" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
+                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!opponentGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
                             {#if !opponentShow}
-                                <div out:flip={{ duration: 400 }}>
+                                <div out:flip={{ duration: 400 }} on:outrostart={() => flipSfx.play()}>
                                     {#each Array(7) as _, i}
                                         {#if oSendState[6 - i]}
                                             <img src="./cards/back.png" alt="Opponent Card" in:send={{ key: "oCard" }} />
@@ -454,7 +457,7 @@
                                 <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!playerGlow ? "before:opacity-0 before:duration-300" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
+                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!playerGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400 }}>
