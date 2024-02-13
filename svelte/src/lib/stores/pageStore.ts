@@ -6,7 +6,7 @@ interface IPageStore {
     back: boolean;
 }
 
-const swoosh = new Howl({ src: ["sounds/swoosh.mp3"], html5: true, volume: 0.5 });
+const swoosh = new Howl({ src: ["sounds/swoosh.mp3"], html5: true, volume: 0.3 });
 
 export const page = (() => {
     const { subscribe, set } = writable<IPageStore>({ current: "home", back: false });

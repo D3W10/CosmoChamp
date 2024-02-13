@@ -30,12 +30,14 @@
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
     const vs = new Howl({ src: ["sounds/vs.mp3"], html5: true, volume: $sound.sfxVolume });
-    const startSfx = new Howl({ src: ["sounds/start.mp3"], html5: true, volume: $sound.sfxVolume });
     const flipSfx = new Howl({ src: ["sounds/flip.mp3"], html5: true, volume: $sound.sfxVolume });
+    const startSfx = new Howl({ src: ["sounds/start.mp3"], html5: true, volume: $sound.sfxVolume });
+    const timeSfx = new Howl({ src: ["sounds/time.mp3"], html5: true, volume: $sound.sfxVolume });
     const sparkle = new Howl({ src: ["sounds/sparkle.mp3"], html5: true, volume: $sound.sfxVolume });
     const wrong = new Howl({ src: ["sounds/wrong.mp3"], html5: true, volume: $sound.sfxVolume });
     const tieSfx = new Howl({ src: ["sounds/tie.mp3"], html5: true, volume: $sound.sfxVolume });
     const special = new Howl({ src: ["sounds/special.mp3"], html5: true, volume: $sound.sfxVolume });
+    const explode = new Howl({ src: ["sounds/explode.mp3"], html5: true, volume: $sound.sfxVolume });
 
     const finishSize = tweened(0, {
         duration: 2000,
@@ -133,6 +135,8 @@
             runTimer = false;
             clearInterval(timer);
         }
+        else if ([3, 2, 1].includes(time))
+            setTimeout(() => timeSfx.play(), 400);
     }
 
     function startRound() {
@@ -187,6 +191,7 @@
             if (id == "energy" && specialSlot?.id == "energy") {
                 ogOpponentCard = oCard;
                 opponentGlow = true;
+                explode.play();
 
                 let parts = oCard.split(cardRegex);
                 await $app?.sleep(1000);
@@ -197,6 +202,7 @@
             if (id == "energy" && opponentSpecial == "energy") {
                 ogPlayerCard = pCard;
                 playerGlow = true;
+                explode.play();
 
                 let parts = pCard.split(cardRegex);
                 await $app?.sleep(1000);
@@ -209,6 +215,7 @@
                     pCard = ogPlayerCard;
                 ogOpponentCard = oCard;
                 opponentGlow = true;
+                explode.play();
 
                 await $app?.sleep(1000);
                 opponentCard = pCard.split(cardRegex)[0] + oCard.split(cardRegex)[1];
@@ -220,6 +227,7 @@
                     oCard = ogOpponentCard;
                 ogPlayerCard = pCard;
                 playerGlow = true;
+                explode.play();
 
                 await $app?.sleep(1000);
                 cards[pSendState.findIndex((v) => v)].id = oCard.split(cardRegex)[0] + pCard.split(cardRegex)[1];
@@ -364,7 +372,7 @@
                 <div class="w-full h-full flex justify-center items-start pt-10 overflow-hidden -skew-x-[35deg]">
                     <p class="mr-12 text-shade/20 text-4xl font-semibold skew-x-[35deg] whitespace-nowrap" in:fly={$transition.nameFlyIn(true)} out:fly={$transition.nameFlyOut(false)} on:introend={() => versus = false}>{$game?.host ? $settings.playerName : $game?.opponent.name}</p>
                 </div>
-                <div class="min-w-[1.5rem] max-w-[1.5rem] h-full flex justify-center items-center bg-shade/40 rounded-lg rotate-[35deg]" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }} on:outroend={() => show = true}>
+                <div class="min-w-[1.5rem] max-w-[1.5rem] h-full flex justify-center items-center bg-shade/40 rounded-lg rotate-[35deg]" in:fade={{ duration: 1000 }} out:fade={{ duration: 1000, delay: 1500 }} on:outroend={() => { show = true; for (let i = 0; i < 7; i++) setTimeout(() => flipSfx.play(), 100 * i); }}>
                     <p class="text-7xl font-semibold rotate-[-35deg]">VS</p>
                     <p class="absolute text-7xl font-semibold rotate-[-35deg] drop-shadow-glow animate-pulse">VS</p>
                 </div>
@@ -402,7 +410,7 @@
                     <div class="w-[var(--finish-size)] h-[var(--finish-size)] absolute border-primary rounded-full z-20" style={`--finish-size: ${$finishSize}vw; ${$finishSize != 0 ? "border-width: min(20vw, calc(var(--finish-size) / 2 + 2px));" : ""}`} />
                     {#if !finalSwitch}
                         <div class="absolute z-10">
-                            <SuperNova run={finalRun} points={$game?.goal ? $game?.goal : 15} height={window.innerHeight - 40} firstFrame={false} on:finish={() => { finishSize.set(200); setTimeout(() => finalSwitch = true, 1000); }} />
+                            <SuperNova run={finalRun} points={$game?.goal ? $game?.goal : 15} height={window.innerHeight - 40} firstFrame={false} on:finish={() => { finishSize.set(200); setTimeout(() => finalSwitch = true, 1000); setTimeout(() => startSfx.play(), 1500) }} />
                         </div>
                     {:else}
                         <span class="text-7xl font-semibold drop-shadow-glow">FINISH</span>
