@@ -18,7 +18,6 @@
     let showErrorModal: boolean = false, modalData: [string, string, string?, string?] = ["", ""];
 
     $app?.updateReceiveCallback(receiveMessage);
-    $app?.updateCloseCallback(closeConnection);
 
     (async () => {
         if ($game?.host) {
@@ -28,12 +27,16 @@
                 modalData = ["Unable to Connect", "Looks like the specified port is already in use. Please try again with another port."];
                 showErrorModal = true;
             }
+            else
+                $app?.updateCloseCallback(closeConnection);
         }
         else {
             let status = await $app?.connectClient($game?.ip!, $game?.port!);
 
-            if (status == "CONNECTED")
+            if (status == "CONNECTED") {
                 $app?.sendMessage(`HEY ${$settings.playerName}`);
+                $app?.updateCloseCallback(closeConnection);
+            }
             else if (status == "ECONNREFUSED") {
                 modalData = ["Unable to Connect", "It appears there's no room hosted on the specified IP address and port. Please check those and try again."];
                 showErrorModal = true;
@@ -91,6 +94,8 @@
     }
 
     function closeConnection() {
+        console.log("aaa");
+        
         if ($game?.host) {
             playerAnnounced = false;
             didReady = false;
