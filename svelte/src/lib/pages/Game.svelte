@@ -38,6 +38,7 @@
     const tieSfx = new Howl({ src: ["sounds/tie.mp3"], html5: true, volume: $sound.sfxVolume });
     const special = new Howl({ src: ["sounds/special.mp3"], html5: true, volume: $sound.sfxVolume });
     const explode = new Howl({ src: ["sounds/explode.mp3"], html5: true, volume: $sound.sfxVolume });
+    const nova = new Howl({ src: ["sounds/nova.mp3"], html5: true, volume: $sound.sfxVolume });
 
     const finishSize = tweened(0, {
         duration: 2000,
@@ -110,6 +111,8 @@
             if ($game)
                 $game.stats.endTime = new Date();
 
+            wideSpace?.fade($sound.bgVolume, 0, 1000);
+            nova.play();
             final = true;
             setTimeout(() => finalRun = true, 500);
             setTimeout(() => goToResult(), 9500);
@@ -410,7 +413,7 @@
                     <div class="w-[var(--finish-size)] h-[var(--finish-size)] absolute border-primary rounded-full z-20" style={`--finish-size: ${$finishSize}vw; ${$finishSize != 0 ? "border-width: min(20vw, calc(var(--finish-size) / 2 + 2px));" : ""}`} />
                     {#if !finalSwitch}
                         <div class="absolute z-10">
-                            <SuperNova run={finalRun} points={$game?.goal ? $game?.goal : 15} height={window.innerHeight - 40} firstFrame={false} on:finish={() => { finishSize.set(200); setTimeout(() => finalSwitch = true, 1000); setTimeout(() => startSfx.play(), 1500) }} />
+                            <SuperNova run={finalRun} points={$game?.goal ? $game?.goal : 15} height={window.innerHeight - 40} firstFrame={false} on:finish={() => { finishSize.set(200); setTimeout(() => finalSwitch = true, 1000); setTimeout(() => startSfx.play(), 2000) }} />
                         </div>
                     {:else}
                         <span class="text-7xl font-semibold drop-shadow-glow">FINISH</span>
