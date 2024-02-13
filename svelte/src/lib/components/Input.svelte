@@ -44,6 +44,13 @@
     function triggerEvent() {
         dispatch("input", { value });
     }
+
+    function rangeCheck(e: Event & { currentTarget: EventTarget & HTMLInputElement; }) {
+        if (+e.currentTarget.value >= min && +e.currentTarget.value <= max) {
+            value = +e.currentTarget.value;
+            triggerEvent();
+        }
+    }
 </script>
 
 {#if type == "switch"}
@@ -55,7 +62,7 @@
 {:else if type == "range"}
     <div class={`flex items-center space-x-3 ${className}`}>
         <input class="w-full h-2 p-0 bg-tertiary rounded-full appearance-none" type="range" {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
-        <input class={`w-10 p-0 text-right text-base ${innerClassName}`} type="text" bind:value on:input={triggerEvent} />
+        <input class={`w-10 p-0 text-right text-base ${innerClassName}`} type="number" {value} on:input={rangeCheck} on:blur={(e) => e.currentTarget.value = value} />
     </div>
 {:else}
     <div class={`bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset ${!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} ${className}`}>
