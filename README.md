@@ -39,7 +39,7 @@
 
 ## About
 
-Wavely Sail is a web application that let's you download songs with fully customizable metadata such as title, artist, album, artwork and lyrics! Everything in a semi-automatic way.
+CosmoChamp is a luck based card game that can be played with friends in a local network environment. In order to play, both you and your friend need to download the game using the instructions below.
 
 <br />
 
