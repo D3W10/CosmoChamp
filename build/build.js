@@ -27,8 +27,7 @@ module.exports = {
         {
             provider: "github",
             owner: "D3W10",
-            repo: "CosmoChamp",
-            releaseType: "release"
+            repo: "CosmoChamp"
         }
     ],
     win: {
