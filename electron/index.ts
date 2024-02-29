@@ -65,6 +65,7 @@ async function createWindow() {
             let { protocol } = new URL(url);
 
             if (protocol == "http:" || protocol == "https:") {
+                logger.log(`Opening ${url}`);
                 shell.openExternal(url);
                 return { action: "deny" };
             }

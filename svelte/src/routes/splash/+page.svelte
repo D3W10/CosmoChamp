@@ -3,6 +3,7 @@
     import { fade, scale } from "svelte/transition";
     import { quintOut } from "svelte/easing";
     import { app } from "$lib/stores/appStore";
+    import { info } from "$lib/stores/infoStore";
     import Blob from "$lib/components/Blob.svelte";
     import ProgressBar from "$lib/components/ProgressBar.svelte";
 
@@ -50,7 +51,7 @@
         {/if}
         <div class="w-full h-full mb-6 flex flex-col justify-center items-center space-y-1" in:scale={{ duration: 1500, easing: quintOut }}>
             <img src="./logo.png" alt="Logo" class="w-1/5" />
-            <h1 class="text-2xl font-semibold">CosmoChamp</h1>
+            <h1 class="text-2xl font-semibold">{$info.name}</h1>
         </div>
         <p class="absolute bottom-4 text-shade/75 animate-pulse" in:fade={{ duration: 1000, delay: 500 }} on:introend={checkForUpdates}>{status}</p>
     {/if}
