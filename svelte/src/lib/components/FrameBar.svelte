@@ -9,7 +9,7 @@
     let showModal: boolean = false;
 
     function onRedButtonClick() {
-        if (!["rules", "game"].includes($page.current))
+        if ($game == null)
             $app?.closeWindow();
         else
             showModal = true;
