@@ -58,7 +58,7 @@
         <div class="w-3.5 h-3.5 bg-white rounded-full transition-all {value ? "ml-[1.125rem]" : ""}" />
     </Button>
 {:else if type == "checkbox"}
-    <input class="w-4 h-4 bg-tertiary rounded appearance-none checked:bg-primary checked:bg-check focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary" type="checkbox" {placeholder} {checked} bind:value bind:this={inputElm} on:click={() => value = !value} on:input={triggerEvent} />
+    <input class="w-auto h-4 bg-tertiary rounded appearance-none checked:bg-primary checked:bg-check checked:bg-no-repeat checked:bg-center focus-visible:outline focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary aspect-square transition-all {className}" type="checkbox" {placeholder} {checked} bind:value bind:this={inputElm} on:click={() => value = !value} on:input={triggerEvent} />
 {:else if type == "range"}
     <div class="flex items-center space-x-3 {className}">
         <input class="w-full h-2 p-0 bg-tertiary rounded-full appearance-none" type="range" {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
