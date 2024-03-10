@@ -396,11 +396,11 @@
                 <div class="w-full h-full flex justify-center items-center absolute z-10">
                     <div class="min-w-[115%] h-[175%] rotate-[-30deg] space-y-3.5 bg-black/30" in:fade={{ duration: 250 }} out:fade={{ duration: 250, delay: 250 }}>
                         {#each Array(13) as _, i}
-                            <div class="h-16 bg-contain" style={`background-image: url(./elements/${elementAnim}.png); animation: ${i % 2 == 0 ? "slide-right" : "slide-left"} 2s linear;`} />
+                            <div class="h-16 bg-contain" style="background-image: url(./elements/{elementAnim}.png); animation: {i % 2 == 0 ? "slide-right" : "slide-left"} 2s linear;" />
                         {/each}
                     </div>
                     <div class="w-full h-full flex justify-center items-center absolute bg-black/50" in:fade={{ duration: 250 }} out:fade={{ duration: 250, delay: 250 }} />
-                    <img class="w-52 absolute drop-shadow-2xl" src={`./elements/${elementAnim}.png`} alt={elementAnim.charAt(0).toUpperCase() + elementAnim.slice(1)} in:scale={{ duration: 500, opacity: 1 }} out:scale={{ duration: 500, start: 2.5, easing: cubicIn }} on:introend={() => setTimeout(() => elementAnimShow = false, 1000)} />
+                    <img class="w-52 absolute drop-shadow-2xl" src="./elements/{elementAnim}.png" alt={elementAnim.charAt(0).toUpperCase() + elementAnim.slice(1)} in:scale={{ duration: 500, opacity: 1 }} out:scale={{ duration: 500, start: 2.5, easing: cubicIn }} on:introend={() => setTimeout(() => elementAnimShow = false, 1000)} />
                 </div>
             {/if}
             {#if tie}
@@ -410,7 +410,7 @@
             {/if}
             {#if final}
                 <div class="w-full h-full flex justify-center items-center absolute bg-black/50 z-20" in:fade={{ duration: 500 }} out:fade={{ duration: 500, easing: cubicIn }} on:introend={() => setTimeout(() => tie = false, 1000)}>
-                    <div class="w-[var(--finish-size)] h-[var(--finish-size)] absolute border-primary rounded-full z-20" style={`--finish-size: ${$finishSize}vw; ${$finishSize != 0 ? "border-width: min(20vw, calc(var(--finish-size) / 2 + 2px));" : ""}`} />
+                    <div class="w-[var(--finish-size)] h-[var(--finish-size)] absolute border-primary rounded-full z-20" style="--finish-size: {$finishSize}vw; {$finishSize != 0 ? "border-width: min(20vw, calc(var(--finish-size) / 2 + 2px));" : ""}" />
                     {#if !finalSwitch}
                         <div class="absolute z-10">
                             <SuperNova run={finalRun} points={$game?.goal ? $game?.goal : 15} height={window.innerHeight - 40} firstFrame={false} on:finish={() => { finishSize.set(200); setTimeout(() => finalSwitch = true, 1000); setTimeout(() => startSfx.play(), 2000) }} />
@@ -424,9 +424,9 @@
                 <div class="px-6 flex justify-between items-start">
                     <div class="flex -mt-20">
                         {#each Array(7) as _, i}
-                            <div class={`min-w-24 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
+                            <div class="min-w-24 h-fit {i != 0 ? "-ml-10 " : ""} flex" style:z-index={i}>
                                 {#if !oSendState[i]}
-                                    <img class={`opponent-card ${opponentHover == 6 - i ? "translate-y-5" : ""}`} src="./cards/back.png" alt="Opponent Card" in:fly|global={{ duration: 800, y: -100, delay: 600 - i * 100, easing: backOut }} out:receive|global={{ key: "oCard" }} />
+                                    <img class="opponent-card {opponentHover == 6 - i ? "translate-y-5" : ""}" src="./cards/back.png" alt="Opponent Card" in:fly|global={{ duration: 800, y: -100, delay: 600 - i * 100, easing: backOut }} out:receive|global={{ key: "oCard" }} />
                                 {/if}
                             </div>
                         {/each}
@@ -451,11 +451,11 @@
                 <div class="h-full flex justify-center items-center space-x-28">
                     <div class="sides flex justify-center items-center relative" in:fade={{ delay: 300, duration: 800 }}>
                         {#key time}
-                            <span class={`absolute text-6xl ${time <= 3 ? "text-red-500" : ""} font-semibold ${!runTimer ? "opacity-50" : "opacity-100"} transition-opacity duration-200`} transition:blur={{ duration: 400 }}>{time}</span>
+                            <span class="absolute text-6xl {time <= 3 ? "text-red-500" : ""} font-semibold {!runTimer ? "opacity-50" : "opacity-100"} transition-opacity duration-200" transition:blur={{ duration: 400 }}>{time}</span>
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!opponentGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
+                        <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!opponentGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out">
                             {#if !opponentShow}
                                 <div out:flip={{ duration: 400 }} on:outrostart={() => flipSfx.play()}>
                                     {#each Array(7) as _, i}
@@ -465,14 +465,14 @@
                                     {/each}
                                 </div>
                             {:else}
-                                <img src={`./cards/${opponentCard}.png`} alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
+                                <img src="./cards/{opponentCard}.png" alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class={`w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card ${winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine ${!playerGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out`}>
+                        <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!playerGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out">
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400 }}>
-                                        <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
+                                        <img src="./cards/{card.id}.png" alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                     </button>
                                 {/if}
                             {/each}
@@ -480,12 +480,12 @@
                     </div>
                     <div class="sides flex flex-col justify-center items-center space-y-3" in:fade={{ delay: 300, duration: 800 }}>
                         <div class="flex space-x-3">
-                            <img class={`w-16 h-16 ${!specialSprites[0] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/energy.png" alt="Energy Element" />
-                            <img class={`w-16 h-16 ${!specialSprites[1] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/wind.png" alt="Wind Element" />
+                            <img class="w-16 h-16 {!specialSprites[0] ? "opacity-20" : "opacity-100"} transition-opacity duration-500" src="./elements/energy.png" alt="Energy Element" />
+                            <img class="w-16 h-16 {!specialSprites[1] ? "opacity-20" : "opacity-100"} transition-opacity duration-500" src="./elements/wind.png" alt="Wind Element" />
                         </div>
                         <div class="flex space-x-3">
-                            <img class={`w-16 h-16 ${!specialSprites[2] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/nature.png" alt="Nature Element" />
-                            <img class={`w-16 h-16 ${!specialSprites[3] ? "opacity-20" : "opacity-100"} transition-opacity duration-500`} src="./elements/space.png" alt="Space Element" />
+                            <img class="w-16 h-16 {!specialSprites[2] ? "opacity-20" : "opacity-100"} transition-opacity duration-500" src="./elements/nature.png" alt="Nature Element" />
+                            <img class="w-16 h-16 {!specialSprites[3] ? "opacity-20" : "opacity-100"} transition-opacity duration-500" src="./elements/space.png" alt="Space Element" />
                         </div>
                     </div>
                 </div>
@@ -499,7 +499,7 @@
                                 </div>
                             {/if}
                             {#if specialCards.length > 0 && deckEnabled && specialSlot == null}
-                                <button class={`w-full absolute ${!specialDeck ? "saturate-100" : "saturate-0"} transition duration-500`} transition:fade={{ duration: 200 }} on:click={() => { if (deckEnabled) specialDeck = !specialDeck; }}>
+                                <button class="w-full absolute {!specialDeck ? "saturate-100" : "saturate-0"} transition duration-500" transition:fade={{ duration: 200 }} on:click={() => { if (deckEnabled) specialDeck = !specialDeck; }}>
                                     <Icon name="star" />
                                 </button>
                             {:else}
@@ -527,10 +527,10 @@
                         {#if !specialDeck}
                             <div class="flex absolute" out:fade={{ duration: 200 }}>
                                 {#each cards as card, i}
-                                    <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
+                                    <div class="min-w-32 h-fit {i != 0 ? "-ml-10 " : ""} flex" style:z-index={i}>
                                         {#if !pSendState[i]}
-                                            <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
-                                                <img bind:this={cardsElmts[i]} src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
+                                            <button class="player-card hover:-translate-y-5 disabled:hover:-translate-y-0" disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
+                                                <img bind:this={cardsElmts[i]} src="./cards/{card.id}.png" alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                             </button>
                                         {/if}
                                     </div>
@@ -539,9 +539,9 @@
                         {:else}
                             <div class="flex absolute" out:fade={{ duration: 200 }}>
                                 {#each specialCards as card, i}
-                                    <div class={`min-w-32 h-fit ${i != 0 ? "-ml-10 " : ""} flex`} style={`z-index: ${i};`}>
-                                        <button class={`player-card hover:-translate-y-5 disabled:hover:-translate-y-0`} disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:click={(e) => { specialSlot = card; e.currentTarget.classList.add("fly"); setTimeout(() => { specialDeck = false; specialCards.splice(i, 1) }, 200); }}>
-                                            <img src={`./cards/${card.id}.png`} alt={card.id.charAt(0).toUpperCase() + card.id.slice(1)} />
+                                    <div class="min-w-32 h-fit {i != 0 ? "-ml-10 " : ""} flex" style:z-index={i}>
+                                        <button class="player-card hover:-translate-y-5 disabled:hover:-translate-y-0" disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} on:click={(e) => { specialSlot = card; e.currentTarget.classList.add("fly"); setTimeout(() => { specialDeck = false; specialCards.splice(i, 1) }, 200); }}>
+                                            <img src="./cards/{card.id}.png" alt={card.id.charAt(0).toUpperCase() + card.id.slice(1)} />
                                         </button>
                                     </div>
                                 {/each}

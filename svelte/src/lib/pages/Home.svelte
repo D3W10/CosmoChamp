@@ -97,7 +97,7 @@
         </div>
     </div>
 </Modal>
-<Modal bind:show={showChangesModal} title={`What's new on ${$info.version}`} button="Cosmical" canCancel={false}>
+<Modal bind:show={showChangesModal} title="What's new on {$info.version}" button="Cosmical" canCancel={false}>
     <div class="p-3 bg-tertiary rounded-xl font-normal space-y-4 changelog [overflow-y:overlay]">
         {#await changelogLoad then changelog}
             {@html changelog}

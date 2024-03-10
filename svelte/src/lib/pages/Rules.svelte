@@ -251,8 +251,8 @@
                 {:else}
                     <div class="absolute" in:fade={{ duration: 500, delay: 500 }} out:fade={{ duration: 500 }}>
                         <p>{$game.opponent.name}</p>
-                        <div class={`flex justify-end items-center transition-colors ${!opponentReady ? "text-shade/50" : "text-green-500"}`}>
-                            <div class={`w-4 h-4 mr-2 rounded-full transition-colors ${!opponentReady ? "bg-shade/20" : "bg-green-500"}`} />
+                        <div class="flex justify-end items-center transition-colors {!opponentReady ? "text-shade/50" : "text-green-500"}">
+                            <div class="w-4 h-4 mr-2 rounded-full transition-colors {!opponentReady ? "bg-shade/20" : "bg-green-500"}" />
                             <p class="flex items-center text-sm">{!opponentReady ? "Not Ready" : "Ready"}</p>
                         </div>
                     </div>

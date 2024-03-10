@@ -26,7 +26,7 @@
     }
 </script>
 
-<dialog class={`w-[26rem] max-h-112 transition-all ease-quint-out opacity-0 ${show ? "open" : "closed"} ${!$settings.reduceMotion ? "duration-[400ms] scale-50" : "duration-200 scale-75 reduced"} overflow-hidden`} bind:this={dialog} on:close={() => show = false}>
+<dialog class="w-[26rem] max-h-112 transition-all ease-quint-out opacity-0 {show ? "open" : "closed"} {!$settings.reduceMotion ? "duration-[400ms] scale-50" : "duration-200 scale-75 reduced"} overflow-hidden" bind:this={dialog} on:close={() => show = false}>
     <div class="max-h-112 p-5 flex flex-col space-y-5" role="alertdialog">
         {#if title != ""}
             <h1 class="text-2xl font-semibold">{title}</h1>
