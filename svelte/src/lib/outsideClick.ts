@@ -1,4 +1,6 @@
-export function outsideClick(node: HTMLElement) {
+import type { ActionReturn } from "svelte/action";
+
+export function outsideClick(node: HTMLElement): ActionReturn<undefined, { "on:outclick": (e: CustomEvent<undefined>) => void; }> {
     function handleClick(event: MouseEvent) {
         if (node && !node.contains(event.target as Node) && !event.defaultPrevented)
             node.dispatchEvent(new CustomEvent("outclick"));
