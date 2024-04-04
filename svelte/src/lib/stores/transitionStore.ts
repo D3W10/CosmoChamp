@@ -16,10 +16,11 @@ export const transition = derived([page, settings], ($values) => {
     };
 });
 
-export function flip(node: HTMLElement, { y = 180, duration = 400, easing = cubicOut }) {
+export function flip(node: HTMLElement, { y = 90, duration = 200, delay = 0, easing = cubicOut }) {
     return {
         duration,
         easing,
+        delay,
         css: (t: number, u: number) => `transform: rotateY(${u * y}deg)`
     }
 }

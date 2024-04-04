@@ -1,6 +1,6 @@
 <script lang="ts">
     import { blur, crossfade, fade, fly, scale } from "svelte/transition";
-    import { backOut, cubicIn } from "svelte/easing";
+    import { backOut, cubicIn, linear } from "svelte/easing";
     import { tweened } from "svelte/motion";
     import { Howl } from "howler";
     import { app } from "$lib/stores/appStore";
@@ -457,7 +457,7 @@
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
                         <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!opponentGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out">
                             {#if !opponentShow}
-                                <div out:flip={{ duration: 400 }} on:outrostart={() => flipSfx.play()}>
+                                <div class="absolute" out:flip={{ easing: linear }} on:outrostart={() => flipSfx.play()}>
                                     {#each Array(7) as _, i}
                                         {#if oSendState[6 - i]}
                                             <img src="./cards/back.png" alt="Opponent Card" in:send={{ key: "oCard" }} />
@@ -465,7 +465,7 @@
                                     {/each}
                                 </div>
                             {:else}
-                                <img src="./cards/{opponentCard}.png" alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ duration: 400 }} out:fade={{ duration: 400 }} />
+                                <img class="absolute" src="./cards/{opponentCard}.png" alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ delay: 200 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
                         <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!playerGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out">
@@ -568,10 +568,6 @@
 
     .opponent-card {
         @apply w-24 bg-secondary rounded-md transition-transform aspect-card;
-    }
-
-    .fly {
-        animation: fly 400ms ease-in forwards;
     }
 
     @keyframes -global-slide-right {
