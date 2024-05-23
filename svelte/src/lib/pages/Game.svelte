@@ -25,8 +25,8 @@
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
     let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
     let playerGlow: boolean = false, opponentGlow: boolean = false, ogPlayerCard: string | null = null, ogOpponentCard: string | null = null;
+    let firstTimeSpecial = $app?.getSetting("firstTimeSpecial") as boolean;
 
-    const firstTimeSpecial = $app?.getSetting("firstTimeSpecial") as boolean;
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
     const vs = new Howl({ src: ["sounds/vs.mp3"], html5: true, volume: $sound.sfxVolume });
@@ -341,6 +341,7 @@
         if (firstTimeSpecial) {
             setTimeout(() => {
                 specialTooltip = true;
+                firstTimeSpecial = false;
                 $app?.setSetting("firstTimeSpecial", false);
                 setTimeout(() => specialTooltip = false, 5000);
             }, 1000);
