@@ -8,7 +8,7 @@
 
     let showModal: boolean = false;
 
-    $app.updateCloseCallback(() => onRedButtonClick());
+    $app?.updateCloseCallback(() => onRedButtonClick());
 
     function onRedButtonClick() {
         if ($game == null)

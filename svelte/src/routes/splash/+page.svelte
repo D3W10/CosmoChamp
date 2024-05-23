@@ -10,7 +10,7 @@
     const DEFAULT_STATUS = "Starting";
     let start = false, status = DEFAULT_STATUS, dlPercent = 0, splashReady = false, winReady = false;
 
-    $app.updateReadyCallback(() => {
+    $app?.updateReadyCallback(() => {
         winReady = true;
         $app.log("Main window ready");
         onReady();
