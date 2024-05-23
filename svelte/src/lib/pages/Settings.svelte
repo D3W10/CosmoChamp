@@ -49,7 +49,7 @@
                         <p>Player Name</p>
                         <p class="mt-1 text-foreground/70 text-sm font-normal">Set the player name displayed during game</p>
                     </div>
-                    <Input className="w-40" type="text" placeholder="Guest" maxlength={15} value={$settings.playerName} on:input={(e) => settings.update("playerName", e.detail.value.trim() || "Guest")} />
+                    <Input className="w-40" type="text" placeholder="Guest" maxlength={15} value={$settings.playerName} on:input={(e) => settings.update("playerName", e.detail.value.trim())} on:blur={() => { if ($settings.playerName.length == 0) settings.update("playerName", "Guest"); }} />
                 </div>
                 <div class="flex justify-between items-center">
                     <div>

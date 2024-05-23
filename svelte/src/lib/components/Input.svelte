@@ -67,11 +67,11 @@
 {:else}
     <div class="bg-tertiary rounded-md transition-all duration-200 focus-visible:outline focus-within:ring-2 focus-within:ring-inset {!error ? "focus-within:ring-primary" : "ring-2 ring-inset ring-red-600 focus-within:ring-red-600"} {className}">
         {#if type == "text"}
-            <input type="text" {placeholder} {maxlength} bind:value bind:this={inputElm} on:input={triggerEvent} />
+            <input type="text" {placeholder} {maxlength} bind:value bind:this={inputElm} on:input={triggerEvent} on:blur />
         {:else if type == "number"}
-            <input type="number" {placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} />
+            <input type="number" {placeholder} {min} {max} {step} bind:value bind:this={inputElm} on:input={triggerEvent} on:blur />
         {:else if type == "ip"}
-            <input type="text" {placeholder} maxlength={15} bind:value bind:this={inputElm} on:input={triggerEvent} />
+            <input type="text" {placeholder} maxlength={15} bind:value bind:this={inputElm} on:input={triggerEvent} on:blur />
         {:else if type == "wheel"}
             <div class="flex">
                 <div class="w-full h-8 relative overflow-hidden">
