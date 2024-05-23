@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-let wReady = false, winReady: () => unknown, cfuProgress: (percent: number) => unknown, receiveMessage: (message: string) => unknown, socketClose: () => unknown;
+let wReady = false, winReady: () => unknown, winClose: () => unknown, cfuProgress: (percent: number) => unknown, receiveMessage: (message: string) => unknown, socketClose: () => unknown;
 const pLog = (msg: string) => ipcRenderer.send("LoggerPreload", "info", msg);
 
 export interface AppInfo {
@@ -99,6 +99,14 @@ export function getAppInfo() {
 }
 
 /**
+ * Obtains the platform the app is running on
+ * @returns The platform the app is running on
+ */
+export function getPlatform() {
+    return ipcRenderer.sendSync("GetPlatform") as NodeJS.Platform;
+}
+
+/**
  * Creates a server with the provided IP address and port number
  * 
  * @param ip The IP address to bind the server to
@@ -155,6 +163,15 @@ export function updateReadyCallback(callback: () => unknown) {
 }
 
 /**
+ * Updates the callback function reference to where the main window close event should be sent
+ * 
+ * @param callback The function to call when the window is about to close
+ */
+export function updateCloseCallback(callback: () => unknown) {
+    winClose = callback;
+}
+
+/**
  * Updates the callback function reference to where the messages should be sent
  * 
  * @param callback The function to receive the messages
@@ -168,7 +185,7 @@ export function updateReceiveCallback(callback: (message: string) => unknown) {
  * 
  * @param callback The function to call when the connection closes
  */
-export function updateCloseCallback(callback: () => unknown) {
+export function updateSocketCloseCallback(callback: () => unknown) {
     socketClose = callback;
 }
 
@@ -180,6 +197,8 @@ ipcRenderer.on("WindowReady", () => {
     else
         wReady = true;
 });
+
+ipcRenderer.on("WindowClose", () => winClose());
 
 ipcRenderer.on("SendMessage", (_, message: string) => {
     pLog(`Message: ${message}`);
@@ -200,12 +219,14 @@ contextBridge.exposeInMainWorld("app", {
     setSetting,
     resetSettings,
     getAppInfo,
+    getPlatform,
     createServer,
     connectClient,
     sendMessage,
     closeConnection,
     sleep,
     updateReadyCallback,
+    updateCloseCallback,
     updateReceiveCallback,
-    updateCloseCallback
+    updateSocketCloseCallback
 });

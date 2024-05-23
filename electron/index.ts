@@ -10,7 +10,7 @@ import { IStore } from "./lib/Store.interface";
 
 require("electron-reload")(__dirname);
 
-var window: BrowserWindow, splash: BrowserWindow;
+var window: BrowserWindow, splash: BrowserWindow, closeLock: boolean = true;
 const isDev: boolean = !app.isPackaged, isDebug = isDev || process.env.DEBUG != undefined && process.env.DEBUG.match(/true/gi) != null || process.argv.includes("-debug");
 const packageData = JSON.parse(fs.readFileSync(path.join(__dirname, "/../package.json"), "utf8"));
 const logger = new Logger("Main", "blue"), pLogger = new Logger("Prld", "cyan"), rLogger = new Logger("Rndr", "green"), messenger = new Messenger(logger);
@@ -52,6 +52,8 @@ async function createWindow() {
         maximizable: false,
         show: false,
         icon: !isDev ? path.join(__dirname, "./dist/www/logo.png") : path.join(__dirname, "../svelte/static/logo.png"),
+        titleBarStyle: "hiddenInset",
+        trafficLightPosition: { x: 12, y: 12 },
         webPreferences: {
             devTools: isDebug,
             preload: path.join(__dirname, "preload.js")
@@ -60,6 +62,15 @@ async function createWindow() {
 
     window.loadURL(!isDev ? `file:///${path.join(__dirname, "www", "index.html")}` : "http://localhost:5173/");
     window.once("ready-to-show", () => splash.webContents.send("WindowReady"));
+    if (process.platform == "darwin") {
+        window.on("close", (e) => {
+            if (closeLock) {
+                e.preventDefault();
+                window.webContents.send("WindowClose");
+            }
+        });
+    }
+
     window.webContents.setWindowOpenHandler(({ url }) => {
         try {
             let { protocol } = new URL(url);
@@ -146,7 +157,10 @@ ipcMain.on("CheckForUpdates", () => {
     });
 });
 
-ipcMain.on("CloseWindow", () => BrowserWindow.getFocusedWindow()!.close());
+ipcMain.on("CloseWindow", () => {
+    closeLock = false;
+    BrowserWindow.getFocusedWindow()!.close();
+});
 
 ipcMain.on("MinimizeWindow", () => BrowserWindow.getFocusedWindow()!.minimize());
 
@@ -167,6 +181,8 @@ ipcMain.on("GetAppInfo", (event) => {
         version: packageData.version
     }
 });
+
+ipcMain.on("GetPlatform", (event) => event.returnValue = process.platform);
 
 ipcMain.handle("CreateServer", async (_event, ip: string, port: any) => {
     try {

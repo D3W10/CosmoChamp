@@ -28,14 +28,14 @@
                 showErrorModal = true;
             }
             else
-                $app?.updateCloseCallback(closeConnection);
+                $app?.updateSocketCloseCallback(closeConnection);
         }
         else {
             let status = await $app?.connectClient($game?.ip!, $game?.port!);
 
             if (status == "CONNECTED") {
                 $app?.sendMessage(`HEY ${$settings.playerName}`);
-                $app?.updateCloseCallback(closeConnection);
+                $app?.updateSocketCloseCallback(closeConnection);
             }
             else if (status == "ECONNREFUSED") {
                 modalData = ["Unable to Connect", "It appears there's no room hosted on the specified IP address and port. Please check those and try again."];

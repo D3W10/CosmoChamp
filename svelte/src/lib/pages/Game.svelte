@@ -50,7 +50,7 @@
     setTimeout(() => versus = true, 1000);
 
     $app?.updateReceiveCallback(receiveMessage);
-    $app?.updateCloseCallback(() => {
+    $app?.updateSocketCloseCallback(() => {
         showErrorModal = true;
         runTimer = false;
         deckEnabled = false;
