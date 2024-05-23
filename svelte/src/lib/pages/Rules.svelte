@@ -14,7 +14,7 @@
     import { gameModes } from "$lib/models/GameModes.object";
 
     let gameAnnounced: boolean | undefined = $game?.host, playerAnnounced: boolean = false, didReady: boolean = false, opponentReady: boolean = false;
-    let currentPage: number = 0, currentPageIdx: number = 0, selectedGameMode: number = $game ? $game?.mode : 0;
+    let currentPage: number = 0, currentPageIdx: number = 0, selectedGameMode: 0 | 1 | 2 = $game ? $game?.mode : 0;
     let showErrorModal: boolean = false, modalData: [string, string, string?, string?] = ["", ""];
 
     $app?.updateReceiveCallback(receiveMessage);
@@ -74,7 +74,7 @@
             else {
                 game.update((g) => {
                     if (g) {
-                        g.mode = +args[2] as (0 | 1 | 2);
+                        g.mode = selectedGameMode = +args[2] as (0 | 1 | 2);
                         g.goal = +args[3];
                         g.opponent.name = args.slice(4, args.length).join(" ");
                     }
@@ -94,8 +94,6 @@
     }
 
     function closeConnection() {
-        console.log("aaa");
-        
         if ($game?.host) {
             playerAnnounced = false;
             didReady = false;
