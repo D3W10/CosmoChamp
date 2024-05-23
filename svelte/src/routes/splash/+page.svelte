@@ -10,19 +10,19 @@
     const DEFAULT_STATUS = "Starting";
     let start = false, status = DEFAULT_STATUS, dlPercent = 0, splashReady = false, winReady = false;
 
-    $app?.updateReadyCallback(() => {
+    $app.updateReadyCallback(() => {
         winReady = true;
-        $app?.log("Main window ready");
+        $app.log("Main window ready");
         onReady();
     });
 
     function checkForUpdates() {
-        $app?.checkForUpdates((available) => {
+        $app.checkForUpdates((available) => {
             if (available)
                 status = "Updating";
             else {
                 splashReady = true;
-                $app?.log("Splash window ready");
+                $app.log("Splash window ready");
                 onReady();
             }
         }, (percent) => dlPercent = percent);
@@ -30,7 +30,7 @@
 
     function onReady() {
         if (splashReady && winReady)
-            $app?.openMain();
+            $app.openMain();
     }
 
     onMount(() => {

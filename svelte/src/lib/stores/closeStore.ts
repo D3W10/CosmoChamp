@@ -10,12 +10,12 @@ export const close = derived([app, sound], ([$app, $sound]) => {
             music = msc;
         },
         close: () => {
-            $app?.updateSocketCloseCallback(() => {});
+            $app.updateSocketCloseCallback(() => {});
 
             music?.fade($sound.bgVolume, 0, 500);
             music?.once("fade", () => music?.unload());
         
-            setTimeout(() => $app?.closeConnection(), 500); 
+            setTimeout(() => $app.closeConnection(), 500); 
         }
     }
 });

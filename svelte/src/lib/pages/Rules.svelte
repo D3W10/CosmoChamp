@@ -17,25 +17,25 @@
     let currentPage: number = 0, currentPageIdx: number = 0, selectedGameMode: 0 | 1 | 2 = $game ? $game?.mode : 0;
     let showErrorModal: boolean = false, modalData: [string, string, string?, string?] = ["", ""];
 
-    $app?.updateReceiveCallback(receiveMessage);
+    $app.updateReceiveCallback(receiveMessage);
 
     (async () => {
         if ($game?.host) {
-            let status = await $app?.createServer($game.ip, $game.port);
+            let status = await $app.createServer($game.ip, $game.port);
 
             if (status == "EADDRINUSE") {
                 modalData = ["Unable to Connect", "Looks like the specified port is already in use. Please try again with another port."];
                 showErrorModal = true;
             }
             else
-                $app?.updateSocketCloseCallback(closeConnection);
+                $app.updateSocketCloseCallback(closeConnection);
         }
         else {
-            let status = await $app?.connectClient($game?.ip!, $game?.port!);
+            let status = await $app.connectClient($game?.ip!, $game?.port!);
 
             if (status == "CONNECTED") {
-                $app?.sendMessage(`HEY ${$settings.playerName}`);
-                $app?.updateSocketCloseCallback(closeConnection);
+                $app.sendMessage(`HEY ${$settings.playerName}`);
+                $app.updateSocketCloseCallback(closeConnection);
             }
             else if (status == "ECONNREFUSED") {
                 modalData = ["Unable to Connect", "It appears there's no room hosted on the specified IP address and port. Please check those and try again."];
@@ -54,7 +54,7 @@
         let args = message.split(" ");
 
         if (args[0] == "HEY" && $game?.host) {
-            $app?.sendMessage(`HEY ${$info.version} ${$game.mode} ${$game.goal} ${$settings.playerName}`);
+            $app.sendMessage(`HEY ${$info.version} ${$game.mode} ${$game.goal} ${$settings.playerName}`);
 
             game.update((g) => {
                 if (g)
@@ -69,7 +69,7 @@
                 modalData = ["Incompatible Room", "The room you're trying to join is running a different version of the game. Please try again with a different room.", args[1], $info.version];;
                 showErrorModal = true;
 
-                $app?.closeConnection();
+                $app.closeConnection();
             }
             else {
                 game.update((g) => {
@@ -108,7 +108,7 @@
     function onReady() {
         if ($game?.host && didReady && opponentReady) {
             setTimeout(() => {
-                $app?.sendMessage("START");
+                $app.sendMessage("START");
                 page.set({ current: "game", back: false });
             }, 100);
         }
@@ -236,7 +236,7 @@
                     </div>
                 {:else}
                     <div class="w-full absolute flex flex-col justify-center items-center" in:fade={{ duration: 500, delay: 500 }} out:fade={{ duration: 500 }}>
-                        <Button className="w-36 text-base" disabled={didReady} on:click|once={() => { $app?.sendMessage("READY"); didReady = true; onReady(); }}>Ready</Button>
+                        <Button className="w-36 text-base" disabled={didReady} on:click|once={() => { $app.sendMessage("READY"); didReady = true; onReady(); }}>Ready</Button>
                     </div>
                 {/if}
             </div>

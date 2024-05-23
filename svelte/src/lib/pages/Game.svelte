@@ -25,7 +25,7 @@
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
     let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
     let playerGlow: boolean = false, opponentGlow: boolean = false, ogPlayerCard: string | null = null, ogOpponentCard: string | null = null;
-    let firstTimeSpecial = $app?.getSetting("firstTimeSpecial") as boolean;
+    let firstTimeSpecial = $app.getSetting("firstTimeSpecial") as boolean;
 
     const [send, receive] = crossfade({ duration: 500 });
     const wideSpace = new Howl({ src: ["sounds/wideSpace.mp3"], loop: true, html5: true, volume: $sound.bgVolume });
@@ -49,8 +49,8 @@
 
     setTimeout(() => versus = true, 1000);
 
-    $app?.updateReceiveCallback(receiveMessage);
-    $app?.updateSocketCloseCallback(() => {
+    $app.updateReceiveCallback(receiveMessage);
+    $app.updateSocketCloseCallback(() => {
         showErrorModal = true;
         runTimer = false;
         deckEnabled = false;
@@ -63,7 +63,7 @@
     if ($game?.host) {
         generateDeck();
         cards = drawDeck();
-        $app?.sendMessage(`DECK ${drawDeck().map((card) => card.id).join(";")}`);
+        $app.sendMessage(`DECK ${drawDeck().map((card) => card.id).join(";")}`);
     }
 
     function receiveMessage(message: string) {
@@ -121,7 +121,7 @@
 
     function checkHoverState() {
         if (deckEnabled && !cardsElmts.some((card) => card && card.matches(":hover")))
-            $app?.sendMessage("HOVER -1");
+            $app.sendMessage("HOVER -1");
     }
 
     async function countDown() {
@@ -146,7 +146,7 @@
         if ($game && ($game.stats.points >= $game.goal || $game.opponent.points >= $game.goal)) {
             if ($game?.host) {
                 receiveMessage("END");
-                $app?.sendMessage("END");
+                $app.sendMessage("END");
             }
         }
         else {
@@ -166,8 +166,8 @@
     function cardSelect(index: number) {
         deckEnabled = false;
         pSendState[index] = true;
-        $app?.sendMessage(`SELECT ${index}`);
-        $app?.sendMessage(`HOVER -1`);
+        $app.sendMessage(`SELECT ${index}`);
+        $app.sendMessage(`HOVER -1`);
         sendReveal();
     }
 
@@ -175,7 +175,7 @@
         if (pSendState.includes(true) && oSendState.includes(true)) {
             runTimer = false;
 
-            $app?.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id} ${!$game?.host ? specialCards.length : 0}${$game?.mode == 0 && specialSlot != null ? " " + specialSlot.id : ""}`);
+            $app.sendMessage(`REVEAL ${cards[pSendState.indexOf(true)].id} ${!$game?.host ? specialCards.length : 0}${$game?.mode == 0 && specialSlot != null ? " " + specialSlot.id : ""}`);
         }
     }
 
@@ -187,9 +187,9 @@
             elementAnim = id;
             elementAnimShow = true;
             special.play();
-            await $app?.sleep(2000);
+            await $app.sleep(2000);
             specialSprites[i] = true;
-            await $app?.sleep(500);
+            await $app.sleep(500);
 
             if (id == "energy" && specialSlot?.id == "energy") {
                 ogOpponentCard = oCard;
@@ -197,10 +197,10 @@
                 explode.play();
 
                 let parts = oCard.split(cardRegex);
-                await $app?.sleep(1000);
+                await $app.sleep(1000);
                 opponentCard = parts[0] + Math.max(1, +parts[1] - 3);
                 opponentGlow = false;
-                await $app?.sleep(800);
+                await $app.sleep(800);
             }
             if (id == "energy" && opponentSpecial == "energy") {
                 ogPlayerCard = pCard;
@@ -208,10 +208,10 @@
                 explode.play();
 
                 let parts = pCard.split(cardRegex);
-                await $app?.sleep(1000);
+                await $app.sleep(1000);
                 cards[pSendState.findIndex((v) => v)].id = parts[0] + Math.max(1, +parts[1] - 3);
                 playerGlow = false;
-                await $app?.sleep(800);
+                await $app.sleep(800);
             }
             if (id == "nature" && specialSlot?.id == "nature") {
                 if (ogPlayerCard)
@@ -220,10 +220,10 @@
                 opponentGlow = true;
                 explode.play();
 
-                await $app?.sleep(1000);
+                await $app.sleep(1000);
                 opponentCard = pCard.split(cardRegex)[0] + oCard.split(cardRegex)[1];
                 opponentGlow = false;
-                await $app?.sleep(800);
+                await $app.sleep(800);
             }
             if (id == "nature" && opponentSpecial == "nature") {
                 if (ogOpponentCard)
@@ -232,10 +232,10 @@
                 playerGlow = true;
                 explode.play();
 
-                await $app?.sleep(1000);
+                await $app.sleep(1000);
                 cards[pSendState.findIndex((v) => v)].id = oCard.split(cardRegex)[0] + pCard.split(cardRegex)[1];
                 playerGlow = false;
-                await $app?.sleep(800);
+                await $app.sleep(800);
             }
         };
 
@@ -273,7 +273,7 @@
         if (opponentSpecial)
             deliverUsedCard({ id: ogOpponentCard ? ogOpponentCard : opponentSpecial }, true);
 
-        $app?.sendMessage(`RESULT ${conversor[tempWinner]}`);
+        $app.sendMessage(`RESULT ${conversor[tempWinner]}`);
         setWinner(tempWinner);
     }
 
@@ -314,7 +314,7 @@
         setTimeout(() => {
             if ($game?.host) {
                 receiveMessage(`CARD ${drawCard().id}`);
-                $app?.sendMessage(`CARD ${drawCard().id}`);
+                $app.sendMessage(`CARD ${drawCard().id}`);
 
                 if ($game.mode == 0) {
                     if (Math.floor(Math.random() * 4) == 0 && specialCards.length < 7) {
@@ -330,7 +330,7 @@
                         let newSCard = drawSpecialCard();
 
                         if (newSCard)
-                            $app?.sendMessage(`SCARD ${newSCard.id}`);
+                            $app.sendMessage(`SCARD ${newSCard.id}`);
                     }
                 }
             }
@@ -342,7 +342,7 @@
             setTimeout(() => {
                 specialTooltip = true;
                 firstTimeSpecial = false;
-                $app?.setSetting("firstTimeSpecial", false);
+                $app.setSetting("firstTimeSpecial", false);
                 setTimeout(() => specialTooltip = false, 5000);
             }, 1000);
         }
@@ -530,7 +530,7 @@
                                 {#each cards as card, i}
                                     <div class="min-w-32 h-fit {i != 0 ? "-ml-10 " : ""} flex" style:z-index={i}>
                                         {#if !pSendState[i]}
-                                            <button class="player-card hover:-translate-y-5 disabled:hover:-translate-y-0" disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app?.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
+                                            <button class="player-card hover:-translate-y-5 disabled:hover:-translate-y-0" disabled={!deckEnabled} in:fly|global={{ duration: 800, y: 150, delay: i * 100, easing: backOut }} out:receive|global={{ key: "pCard" }} on:click={() => cardSelect(i)} on:pointerenter={(e) => { if (!e.currentTarget.disabled) $app.sendMessage(`HOVER ${i}`); }} on:pointerleave={checkHoverState}>
                                                 <img bind:this={cardsElmts[i]} src="./cards/{card.id}.png" alt={card.id.charAt(0).toUpperCase() + card.id.slice(1).replace(cardRegex, " ")} />
                                             </button>
                                         {/if}
