@@ -456,7 +456,7 @@
                         {/key}
                     </div>
                     <div class="flex space-x-6" in:fade={{ duration: 800 }}>
-                        <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!opponentGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out">
+                        <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "O" ? "drop-shadow-glow" : (winner[0] == "P" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!opponentGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out before:z-20">
                             {#if !opponentShow}
                                 <div class="absolute" out:flip={{ easing: linear }} on:outrostart={() => flipSfx.play()}>
                                     {#each Array(7) as _, i}
@@ -469,7 +469,7 @@
                                 <img class="absolute" src="./cards/{opponentCard}.png" alt={opponentCard.charAt(0).toUpperCase() + opponentCard.slice(1).replace(cardRegex, " ")} in:flip={{ delay: 200 }} out:fade={{ duration: 400 }} />
                             {/if}
                         </div>
-                        <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!playerGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out">
+                        <div class="w-32 flex relative bg-secondary rounded-lg transition duration-500 aspect-card {winner[0] == "P" ? "drop-shadow-glow" : (winner[0] == "O" ? "opacity-50 scale-95" : "")} before:w-full before:h-full before:absolute before:bg-white before:rounded-lg before:drop-shadow-shine {!playerGlow ? "before:opacity-0 before:duration-200" : "before:opacity-100 before:duration-1000"} before:transition-opacity before:ease-cubic-out before:z-20">
                             {#each cards as card, i}
                                 {#if pSendState[i]}
                                     <button class="player-card" disabled in:send={{ key: "pCard" }} out:fade={{ duration: 400 }}>
