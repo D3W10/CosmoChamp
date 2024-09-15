@@ -151,10 +151,10 @@
                 <div class="w-full h-full flex items-center space-x-14" in:fly={$transition.pageIn} out:fly={$transition.pageOut}>
                     <div class="w-1/3 relative">
                         <img src="./rules/graphTime.png" alt="Time Graph" class="w-full" />
-                        <p class="absolute bottom-10 right-10 text-6xl font-semibold">{selectedGameMode != 2 ? "15" : "5"}</p>
+                        <p class="absolute bottom-10 right-10 text-6xl font-semibold">{selectedGameMode != 2 ? "15" : "3"}</p>
                     </div>
                     <div class="w-2/3 h-full flex flex-col justify-center space-y-8">
-                        <p>When the time starts ticking down select 1 of your 7 cards, you will have {selectedGameMode != 2 ? "15" : "5"} seconds to do so.</p>
+                        <p>When the time starts ticking down select 1 of your 7 cards, you will have {selectedGameMode != 2 ? "15" : "3"} seconds to do so.</p>
                         <p>After both players select a card, both will be revealed. The player who played the card that won will be awarded with a Cosmo Point <img class="w-6 h-6 -mt-0.5 inline-block" src="./point.png" alt="Cosmo Points" title="Cosmo Points" /></p>
                     </div>
                 </div>

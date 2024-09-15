@@ -21,7 +21,7 @@
     let cards: Card[] = [], cardsElmts: HTMLImageElement[] = new Array(7), specialCards: Card[] = [], cardRegex: RegExp = /(?<=[a-zA-Z])(?=\d)/g;
     let pSendState: boolean[] = Array(7), oSendState: boolean[] = Array(7), showErrorModal: boolean = false, specialTooltip: boolean = false;
     let elementAnim: string = "energy", elementAnimShow: boolean = false, cosmoP: boolean = false, cosmoO: boolean = false;
-    let time: number = $game?.mode != 2 ? 15 : 5, timer: NodeJS.Timeout, runTimer: boolean = false, finalRun: boolean = false, finalSwitch: boolean = false;
+    let time: number = $game?.mode != 2 ? 15 : 3, timer: NodeJS.Timeout, runTimer: boolean = false, finalRun: boolean = false, finalSwitch: boolean = false;
     let deckEnabled: boolean = false, specialDeck: boolean = false, opponentShow: boolean = false, opponentCard: string, winner: WinChar = "U";
     let specialSlot: Card | null = null, opponentSpecial: string | null = null, opponentSCount: number = 0, specialSprites: boolean[] = [false, false, false, false];
     let playerGlow: boolean = false, opponentGlow: boolean = false, ogPlayerCard: string | null = null, ogOpponentCard: string | null = null;
@@ -90,8 +90,8 @@
 
                     if ($game?.host)
                         evaluateRound();
-                }, 1500);
-            }, 2000);
+                }, $game?.mode != 2 ? 1500 : 500);
+            }, $game?.mode != 2 ? 2000 : 500);
         }
         else if (args[0] == "RESULT")
             setWinner(args[1] as WinChar);
@@ -141,7 +141,7 @@
             runTimer = false;
             clearInterval(timer);
         }
-        else if ([3, 2, 1].includes(time))
+        else if (($game?.mode != 2 ? [3, 2, 1] : [2, 1]).includes(time))
             setTimeout(() => timeSfx.play(), 400);
     }
 
@@ -337,7 +337,7 @@
                     }
                 }
             }
-        }, 2500);
+        }, $game?.mode != 2 ? 2500 : 1500);
     }
 
     function checkSpecialTooltipStatus() {
@@ -359,7 +359,7 @@
 
     $: {
         if (runTimer) {
-            time = $game?.mode != 2 ? 15 : 5;
+            time = $game?.mode != 2 ? 15 : 3;
             clearInterval(timer);
             timer = setInterval(countDown, 1000);
         }
