@@ -125,6 +125,9 @@
     }
 
     async function countDown() {
+        if (!$game)
+            return;
+
         if (--time == 0) {
             if (specialDeck) {
                 specialDeck = false;
