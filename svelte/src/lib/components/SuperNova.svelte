@@ -23,7 +23,7 @@
         ctx.translate(canvas.width / 2, canvas.height / 2);
 
         function draw() {
-            if (run || firstFrame) {
+            if ((run || firstFrame) && canvas) {
                 let angle = rotationAngle;
                 ctx.clearRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
 
